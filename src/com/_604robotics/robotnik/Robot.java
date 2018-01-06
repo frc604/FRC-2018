@@ -17,6 +17,7 @@ import java.util.zip.InflaterInputStream;
 
 import com._604robotics.robotnik.utils.Pair;
 
+@SuppressWarnings("deprecation")
 public abstract class Robot extends SampleRobot {
     public static double DEFAULT_REPORT_INTERVAL = 5;
 
