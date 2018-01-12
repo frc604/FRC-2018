@@ -8,6 +8,7 @@ import com._604robotics.robotnik.prefabs.flow.SmartTimer;
 
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
+import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class PowerMonitor extends Module {
@@ -77,11 +78,11 @@ public class PowerMonitor extends Module {
                 theLogger.log("WARN","null tempOutput");
             }
         }
-    }
-    
-    public void initDashboardSendables() {
         SmartDashboard.putData("PDP", panel);
+        // Will be OK for 2018 plugins
+        LiveWindow.add(panel);
     }
+
     protected void begin() {
         resetTimers();
     }

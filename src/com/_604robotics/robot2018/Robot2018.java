@@ -17,6 +17,7 @@ public class Robot2018 extends Robot {
     public Robot2018() {
         setAutonomousMode(new AutonomousMode(this));
         setTeleopMode(new TeleopMode(this));
+        setTestMode(new TeleopMode(this));
         
         addSystem(DashboardSystem.class, new DashboardSystem(this));
     }
