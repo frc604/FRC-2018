@@ -174,7 +174,6 @@ public abstract class Robot extends SampleRobot {
         	try {
 				copyInt=compInflate.read();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 				copyInt=-1;
 			}
