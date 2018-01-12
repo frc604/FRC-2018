@@ -28,10 +28,15 @@ public class Calibration {
     public static final double DRIVE_MOVE_STILL_TARGET = 0;
     public static final double DRIVE_ROTATE_STILL_TARGET = 0;
     
+    /*
+     * 2.5 in diameter of wheels
+     * 30.08 in width = sqrt(28^2+(33/3)^2)
+     * 28 is width, 33/3 is wheel spacing
+     */
     @Unreal("Width and wheelRadius need to be adjusted."
-            + "Remaining two parameters are to be empirically determined.")
+            + "Remaining two parameters are to be empirically determined if necessary.")
     public static final AutonMovement.DriveTrainProperties DRIVE_PROPERTIES
-    = new AutonMovement.DriveTrainProperties(490, 29.5, 2, 20.767, 8.323); // second to last = coefficient second value = offset
+    = new AutonMovement.DriveTrainProperties(490, 30.08, 2.5, 20.767, 8.323); // second to last = coefficient second value = offset
     static {
         System.out.println("Clicks over inches is "+DRIVE_PROPERTIES.getClicksOverInches());
         System.out.println("Clicks over degrees is "+DRIVE_PROPERTIES.getDegreesOverClicks());
