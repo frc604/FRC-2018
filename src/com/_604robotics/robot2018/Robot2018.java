@@ -12,7 +12,7 @@ import com._604robotics.robotnik.prefabs.modules.PowerMonitor;
 public class Robot2018 extends Robot {
     public final Dashboard dashboard = addModule(new Dashboard());
     public final Drive drive = addModule(new Drive());
-    public final PowerMonitor powermonitor = addModule(new PowerMonitor(Ports.PDP_MODULE, Ports.COMPRESSOR));
+    //public final PowerMonitor powermonitor = addModule(new PowerMonitor(Ports.PDP_MODULE, Ports.COMPRESSOR));
     
     public Robot2018() {
         setAutonomousMode(new AutonomousMode(this));

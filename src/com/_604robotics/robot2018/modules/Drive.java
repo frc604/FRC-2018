@@ -16,7 +16,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Drive extends Module {
     Victor m_frontLeft = new Victor(Ports.DRIVE_FRONT_LEFT_MOTOR);
-    Victor m_rearLeft = new Victor(Ports.DRIVE_REAR_RIGHT_MOTOR);
+    Victor m_rearLeft = new Victor(Ports.DRIVE_REAR_LEFT_MOTOR);
     SpeedControllerGroup m_left = new SpeedControllerGroup(m_frontLeft, m_rearLeft);
 
     Victor m_frontRight = new Victor(Ports.DRIVE_FRONT_RIGHT_MOTOR);

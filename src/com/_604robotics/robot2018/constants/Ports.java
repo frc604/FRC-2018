@@ -8,17 +8,17 @@ public class Ports {
     // Motors
     // Remember to take note of PDP ports for these too once they are determined
     @Unreal("Wiring yet to be determined. Use Ratchet wiring for now")
-    public static final int DRIVE_FRONT_LEFT_MOTOR = 0;
+    public static final int DRIVE_FRONT_LEFT_MOTOR = 7;
     @Unreal("Wiring yet to be determined. Use Ratchet wiring for now")
-    public static final int DRIVE_REAR_LEFT_MOTOR = 1;
+    public static final int DRIVE_REAR_LEFT_MOTOR = 5;
     @Unreal("Wiring yet to be determined. Use Ratchet wiring for now")
-    public static final int DRIVE_FRONT_RIGHT_MOTOR = 2;
+    public static final int DRIVE_FRONT_RIGHT_MOTOR = 0;
     @Unreal("Wiring yet to be determined. Use Ratchet wiring for now")
-    public static final int DRIVE_REAR_RIGHT_MOTOR = 3;
-    @Unreal("Third motor for drive yet to be wired")
+    public static final int DRIVE_REAR_RIGHT_MOTOR = 9;
+    /*@Unreal("Third motor for drive yet to be wired")
     public static final int DRIVE_TOP_LEFT_MOTOR = 4;
     @Unreal("Third motor for drive yet to be wired")
-    public static final int DRIVE_TOP_RIGHT_MOTOR = 5;
+    public static final int DRIVE_TOP_RIGHT_MOTOR = 5;*/
 
     // Digital Inputs
     @Unreal("Wiring yet to be determined")

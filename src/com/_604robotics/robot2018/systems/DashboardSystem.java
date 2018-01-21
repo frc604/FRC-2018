@@ -14,12 +14,13 @@ public class DashboardSystem extends Coordinator {
     @Override
     public boolean run () {
         //@Janky("Will soon be replacable with initDashboardSendables")
+        robot.drive.updateDashboardSendables();
         robot.dashboard.leftDriveClicks.set(robot.drive.leftClicks.get());
         robot.dashboard.rightDriveClicks.set(robot.drive.rightClicks.get());
         robot.dashboard.leftDriveRate.set(robot.drive.leftClickRate.get());
         robot.dashboard.rightDriveRate.set(robot.drive.rightClickRate.get());
         //robot.dashboard.gyroAngle.set(robot.drive.gyroAngle.get());
-        robot.dashboard.totalCurrent.set(robot.powermonitor.totalPortCurrent.get());        
+        //robot.dashboard.totalCurrent.set(robot.powermonitor.totalPortCurrent.get());        
         return true;
     }
 }
