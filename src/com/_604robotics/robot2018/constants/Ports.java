@@ -41,4 +41,10 @@ public class Ports {
           + "These will probably stay the same, but just in case...")
     public static final int COMPRESSOR = 1;
     public static final int PDP_MODULE = 0;
+    
+    // Elevator
+    public static final int ELEVATOR_ENCODER_A = 4;
+    public static final int ELEVATOR_ENCODER_B = 5;
+    
+    public static final int ELEVATOR_MOTOR = 6;
 }

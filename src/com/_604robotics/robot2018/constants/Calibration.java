@@ -54,4 +54,14 @@ public class Calibration {
     
     // Empirical auton mode
     public static final double DRIVE_MOVE_FORWARD_TEST_INCHES = AutonMovement.empericalInchesToClicks(DRIVE_PROPERTIES, 36);
+    
+    // Elevator
+    public static final double ELEVATOR_RATE_TARGET = 500;
+    public static final double ELEVATOR_RATE_TOLERANCE = 50;
+    
+    public static final double ELEVATOR_P = 0.0125;
+    public static final double ELEVATOR_I = 0.005;
+    public static final double ELEVATOR_C = Double.MAX_VALUE;
+    public static final double ELEVATOR_A = 0.5;
+    public static final double ELEVATOR_D = 0.0125;
 }
