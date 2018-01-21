@@ -7,13 +7,13 @@ public class Ports {
     
     // Motors
     // Remember to take note of PDP ports for these too once they are determined
-    @Unreal("Wiring yet to be determined. Use Frank wiring for now")
+    @Unreal("Wiring yet to be determined. Use Ratchet wiring for now")
     public static final int DRIVE_FRONT_LEFT_MOTOR = 0;
-    @Unreal("Wiring yet to be determined. Use Frank wiring for now")
+    @Unreal("Wiring yet to be determined. Use Ratchet wiring for now")
     public static final int DRIVE_REAR_LEFT_MOTOR = 1;
-    @Unreal("Wiring yet to be determined. Use Frank wiring for now")
+    @Unreal("Wiring yet to be determined. Use Ratchet wiring for now")
     public static final int DRIVE_FRONT_RIGHT_MOTOR = 2;
-    @Unreal("Wiring yet to be determined. Use Frank wiring for now")
+    @Unreal("Wiring yet to be determined. Use Ratchet wiring for now")
     public static final int DRIVE_REAR_RIGHT_MOTOR = 3;
     @Unreal("Third motor for drive yet to be wired")
     public static final int DRIVE_TOP_LEFT_MOTOR = 4;
@@ -32,12 +32,12 @@ public class Ports {
    
     // Analog
     @Deprecated
-    @Unreal("Wiring yet to be determined. Use Frank wiring for now"
+    @Unreal("Wiring yet to be determined. Use Ratchet wiring for now"
           + "After development over summer this will probably be gone")
     public static final int HORIZGYRO = 0;
     
     // CAN
-    @Unreal("Wiring yet to be determined. Use Frank wiring for now."
+    @Unreal("Wiring yet to be determined. Use Ratchet wiring for now."
           + "These will probably stay the same, but just in case...")
     public static final int COMPRESSOR = 1;
     public static final int PDP_MODULE = 0;
