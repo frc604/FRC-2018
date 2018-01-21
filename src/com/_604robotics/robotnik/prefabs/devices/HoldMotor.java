@@ -50,7 +50,7 @@ public class HoldMotor implements PIDOutput {
 			offset = 0;
 		}
 		upwardsRange = 1-offset;
-		downwardsRange = -1+offset;
+		downwardsRange = 1+offset;
 		set(0);
 	}
 	
@@ -65,5 +65,8 @@ public class HoldMotor implements PIDOutput {
 		} else {
 			set(output);
 		}
+		System.out.println(offset);
+		System.out.println(upwardsRange);
+		System.out.println(downwardsRange);
 	}
 }
