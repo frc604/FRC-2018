@@ -35,7 +35,7 @@ public class Elevator extends Module {
     private boolean timing = false;
 	
 	public final Boolean atElevatorTarget() {
-		if (pid.isEnable() && pid.onTarget()) {
+		if (pid.isEnabled() && pid.onTarget()) {
             if (!timing) {
                 timing = true;
                 timer.start();
