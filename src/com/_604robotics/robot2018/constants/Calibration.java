@@ -61,7 +61,7 @@ public class Calibration {
     
     public static final double ELEVATOR_P = 0.0125;
     public static final double ELEVATOR_I = 0.005;
-    public static final double ELEVATOR_C = Double.MAX_VALUE;
-    public static final double ELEVATOR_A = 0.5;
     public static final double ELEVATOR_D = 0.0125;
+    public static final double ELEVATOR_MIN_INTEGRAL = -10;
+    public static final double ELEVATOR_MAX_INTEGRAL = 10;
 }

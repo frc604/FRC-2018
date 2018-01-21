@@ -5,6 +5,7 @@ import com._604robotics.robot2018.constants.Ports;
 import com._604robotics.robotnik.Module;
 import com._604robotics.robotnik.Output;
 import com._604robotics.robotnik.prefabs.controller.AntiWindupPIDController;
+import com._604robotics.robotnik.prefabs.controller.ClampedIntegralPIDController;
 import com._604robotics.robotnik.prefabs.devices.RateLimitedMotor;
 
 import edu.wpi.first.wpilibj.CounterBase;
@@ -23,8 +24,8 @@ public class Elevator extends Module {
     
     private final RateLimitedMotor rateLimitedMotor = new RateLimitedMotor(encoder, Calibration.ELEVATOR_RATE_TARGET, Calibration.ELEVATOR_RATE_TOLERANCE, motor);
     
-    private final AntiWindupPIDController pid = 
-            new AntiWindupPIDController(Calibration.ELEVATOR_P, Calibration.ELEVATOR_I, Calibration.ELEVATOR_A, Calibration.ELEVATOR_C, Calibration.ELEVATOR_D, encoder, rateLimitedMotor);
+    private final ClampedIntegralPIDController pid = 
+            new ClampedIntegralPIDController(Calibration.ELEVATOR_P, Calibration.ELEVATOR_I, Calibration.ELEVATOR_D, encoder, rateLimitedMotor);
     
     public final Output<Integer> elevatorClicks = addOutput("Elevator Clicks", encoder::get);
     public final Output<Double> elevatorRate = addOutput("Elevator Rate", encoder::getRate);
@@ -61,6 +62,7 @@ public class Elevator extends Module {
         super(Elevator.class);
 
         SmartDashboard.putData("Elevator PID", pid);
+        pid.setIntegralLimits(Calibration.ELEVATOR_MIN_INTEGRAL, Calibration.ELEVATOR_MAX_INTEGRAL);
         pid.setAbsoluteTolerance(12);
         encoder.setDistancePerPulse(1);
         encoder.reset();
