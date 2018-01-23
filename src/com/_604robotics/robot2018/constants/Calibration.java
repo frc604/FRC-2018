@@ -64,4 +64,7 @@ public class Calibration {
     public static final double ELEVATOR_C = Double.MAX_VALUE;
     public static final double ELEVATOR_A = 0.5;
     public static final double ELEVATOR_D = 0.0125;
+    
+    public static final double ELEVATOR_TARGET_SPEED = 0.5;
+    public static final int ELEVATOR_CLICK_TOLERANCE = 25;
 }

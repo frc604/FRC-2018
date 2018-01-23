@@ -1,5 +1,6 @@
 package com._604robotics.robot2018.modules;
 
+import com._604robotics.robot2018.constants.Calibration;
 import com._604robotics.robot2018.constants.Ports;
 import com._604robotics.robotnik.Action;
 import com._604robotics.robotnik.Input;
@@ -14,7 +15,7 @@ public class Elevator extends Module {
 	
 	public Spark motor = new Spark(Ports.ELEVATOR_MOTOR);
 	public Encoder encoder = new Encoder(Ports.ELEVATOR_ENCODER_A, Ports.ELEVATOR_ENCODER_B);
-	public HoldMotor manualControl = new HoldMotor(motor, encoder);
+	public HoldMotor holdMotor = new HoldMotor(motor, encoder, Calibration.ELEVATOR_TARGET_SPEED, Calibration.ELEVATOR_CLICK_TOLERANCE);
 	
 	public final Action hold = new Hold();
 	
@@ -41,19 +42,19 @@ public class Elevator extends Module {
 	}
 	
 	public double getOffset() {
-		return manualControl.offset;
+		return holdMotor.offset;
 	}
 	
 	public double getUpwardsRange() {
-		return manualControl.upwardsRange;
+		return holdMotor.upwardsRange;
 	}
 	
 	public double getDownwardsRange() {
-		return manualControl.downwardsRange;
+		return holdMotor.downwardsRange;
 	}
 	
 	public boolean getFailsafe() {
-		return manualControl.failsafed;
+		return holdMotor.failsafed;
 	}
 	
 	public class Hold extends Action {
@@ -64,7 +65,7 @@ public class Elevator extends Module {
         @Override
         public void run () {
         	holding = true;
-            manualControl.hold();
+            holdMotor.hold();
         }
     }
 	
@@ -84,7 +85,26 @@ public class Elevator extends Module {
 		public void run () {
 			holding = false;
 			power = liftPower.get();
-			manualControl.set(liftPower.get());
+			holdMotor.set(liftPower.get());
+		}
+	}
+	
+	public class Setpoint extends Action {
+		public final Input<Integer> target_clicks;
+		
+		public Setpoint() {
+			this(0);
+		}
+		
+		public Setpoint( int clicks) {
+			super(Elevator.this, Setpoint.class);
+			target_clicks = addInput("Target Clicks", clicks, true);
+		}
+		
+		@Override
+		public void run () {
+			holding = false;
+			holdMotor.setpointHold(target_clicks.get());
 		}
 	}
 	

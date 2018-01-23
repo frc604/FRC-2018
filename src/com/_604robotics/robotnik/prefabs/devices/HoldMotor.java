@@ -16,6 +16,14 @@ public class HoldMotor implements PIDOutput {
 	
 	public boolean failsafed;
 	
+	public double setpoint_offset;
+	public double setpoint_increment;
+	public double click_tolerance;
+	
+	public double moving_offset;
+	
+	public double target_speed;
+	
 	public double elevatorRateOffset() {
 		return offset;
 	}	
@@ -23,13 +31,38 @@ public class HoldMotor implements PIDOutput {
 	public HoldMotor(PWMSpeedController motor, Encoder encoder) {
 		this.motor = motor;
 		this.encoder = encoder;
-		this.offset = 0;
-		this.increment = 0.001;
+		offset = 0;
+		increment = 0.001;
 		
 		upwardsRange = 1;
 		downwardsRange = 1;
 		
 		failsafed = false;
+		
+		setpoint_offset = 0;
+		setpoint_increment = 0.001;
+		click_tolerance = 0;
+		
+		moving_offset = 0;
+		
+		target_speed = 0.5;
+	}
+	
+	public HoldMotor(PWMSpeedController motor, Encoder encoder, double target_speed, int click_tolerance) {
+		this.motor = motor;
+		this.encoder = encoder;
+		offset = 0;
+		increment = 0.001;
+		
+		upwardsRange = 1;
+		downwardsRange = 1;
+		
+		failsafed = false;
+		
+		setpoint_offset = 0;
+		setpoint_increment = 0.001;
+		this.target_speed = target_speed;
+		this.click_tolerance = click_tolerance;
 	}
 	
 	public void set(double output) {
@@ -58,6 +91,41 @@ public class HoldMotor implements PIDOutput {
 		upwardsRange = 1-offset;
 		downwardsRange = 1+offset;
 		set(0);
+	}
+	
+	public void setpointMove(int click_target) {
+		double speed = 0;
+		
+		if( encoder.get() < click_target - click_tolerance ) {
+			speed = target_speed;
+		} else if( encoder.get() > click_target + click_tolerance ) {
+			speed = -target_speed;
+		}
+		
+		if( encoder.getRate() > speed ) {
+			moving_offset -= increment;
+		} else if( encoder.getRate() < speed ) {
+			moving_offset += increment;
+		}
+		
+		if( moving_offset > 1 ) {
+			moving_offset = 1;
+		} else if( moving_offset < -1 ) {
+			moving_offset = -1;
+		}
+		
+		motor.set(moving_offset + speed);
+	}
+	
+	public void setpointHold(int click_target) {
+		if( click_target + click_tolerance > encoder.get() && encoder.get() > click_target - click_tolerance ) {
+			hold();
+		} else {
+			// TODO: implement PIDs here
+			
+			/* Temporary Solution */
+			setpointMove(click_target);
+		}
 	}
 	
 	@Override
