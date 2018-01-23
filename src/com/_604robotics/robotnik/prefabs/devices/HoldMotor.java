@@ -6,21 +6,25 @@ import edu.wpi.first.wpilibj.PWMSpeedController;
 
 public class HoldMotor implements PIDOutput {
 	
-	private PWMSpeedController motor;
-	private Encoder encoder;
-	private double offset;
-	private double increment;
+	public PWMSpeedController motor;
+	public Encoder encoder;
+	public double offset;
+	public double increment;
 	
-	private double upwardsRange;
-	private double downwardsRange;
+	public double upwardsRange;
+	public double downwardsRange;
 	
-	private boolean failsafed;
+	public boolean failsafed;
+	
+	public double elevatorRateOffset() {
+		return offset;
+	}	
 	
 	public HoldMotor(PWMSpeedController motor, Encoder encoder) {
 		this.motor = motor;
 		this.encoder = encoder;
 		this.offset = 0;
-		this.increment = 0.01;
+		this.increment = 0.001;
 		
 		upwardsRange = 1;
 		downwardsRange = 1;
@@ -28,26 +32,28 @@ public class HoldMotor implements PIDOutput {
 		failsafed = false;
 	}
 	
-	private void set(double output) {
+	public void set(double output) {
 		if( output > 0 ) {
-			motor.set(output * upwardsRange + offset);
+			motor.set(offset + output * upwardsRange);
 		} else if( output < 0 ) {
-			motor.set(output * downwardsRange - offset);
+			motor.set(offset + output * downwardsRange);
 		} else {
 			motor.set(offset);
 		}
 	}
 	
-	private void hold() {
-		if( encoder.getRate() > 0 ) {
-			offset -= increment;
-		} else if( encoder.getRate() < 0 ) {
-			offset += increment;
-		}
-		if( Math.abs(offset) > 1 ) {
-			// means elevator or encoder is broken
-			failsafed = true;
-			offset = 0;
+	public void hold() {
+		if( !failsafed ) {
+			if( encoder.getRate() > 0 ) {
+				offset -= increment;
+			} else if( encoder.getRate() < 0 ) {
+				offset += increment;
+			}
+			if( Math.abs(offset) > 1 ) {
+				// means elevator or encoder is broken
+				failsafed = true;
+				offset = 0;
+			}
 		}
 		upwardsRange = 1-offset;
 		downwardsRange = 1+offset;
@@ -56,7 +62,7 @@ public class HoldMotor implements PIDOutput {
 	
 	@Override
 	public void pidWrite(double output) {
-		if( !failsafed ) { 
+		if( !failsafed ) {
 			if( output != 0 ) {
 				set(output);
 			} else {
@@ -65,8 +71,5 @@ public class HoldMotor implements PIDOutput {
 		} else {
 			set(output);
 		}
-		System.out.println(offset);
-		System.out.println(upwardsRange);
-		System.out.println(downwardsRange);
 	}
 }
