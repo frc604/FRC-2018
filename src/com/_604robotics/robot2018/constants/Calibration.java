@@ -67,4 +67,6 @@ public class Calibration {
     
     public static final double ELEVATOR_TARGET_SPEED = 0.5;
     public static final int ELEVATOR_CLICK_TOLERANCE = 25;
+    
+    public static final int  ELEVATOR_Y_TARGET = 300;
 }

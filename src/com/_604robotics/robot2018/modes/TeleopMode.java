@@ -61,19 +61,27 @@ public class TeleopMode extends Coordinator {
     private class ElevatorManager {
     	private final Elevator.Move move;
     	private final Elevator.Hold hold;
+    	private final Elevator.Setpoint setpoint;
     	
     	public ElevatorManager() {
     		move = robot.elevator.new Move();
     		hold = robot.elevator.new Hold();
+    		setpoint = robot.elevator.new Setpoint();
     	}
     	
     	public void run() {
     		double leftY = manip.leftStick.y.get();
-    		if( leftY == 0 ) {
-    			hold.activate();
+    		boolean buttonY = manip.buttons.y.get();
+    		if( buttonY ) {
+    			setpoint.target_clicks.set(Calibration.ELEVATOR_Y_TARGET);
+    			setpoint.activate();
     		} else {
-    			move.liftPower.set(leftY);
-    			move.activate();
+	    		if( leftY == 0 ) {
+	    			hold.activate();
+	    		} else {
+	    			move.liftPower.set(leftY);
+	    			move.activate();
+	    		}
     		}
     	}
     }

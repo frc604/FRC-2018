@@ -24,6 +24,9 @@ public class HoldMotor implements PIDOutput {
 	
 	public double target_speed;
 	
+	public boolean at_speed;
+	public boolean at_position;
+	
 	public double elevatorRateOffset() {
 		return offset;
 	}	
@@ -46,6 +49,9 @@ public class HoldMotor implements PIDOutput {
 		moving_offset = 0;
 		
 		target_speed = 0.5;
+		
+		at_speed = false;
+		at_position = true;
 	}
 	
 	public HoldMotor(PWMSpeedController motor, Encoder encoder, double target_speed, int click_tolerance) {
@@ -63,6 +69,9 @@ public class HoldMotor implements PIDOutput {
 		setpoint_increment = 0.001;
 		this.target_speed = target_speed;
 		this.click_tolerance = click_tolerance;
+		
+		at_speed = false;
+		at_position = false;
 	}
 	
 	public void set(double output) {
@@ -79,8 +88,12 @@ public class HoldMotor implements PIDOutput {
 		if( !failsafed ) {
 			if( encoder.getRate() > 0 ) {
 				offset -= increment;
+				at_speed = false;
 			} else if( encoder.getRate() < 0 ) {
 				offset += increment;
+				at_speed = false;
+			} else {
+				at_speed = true;
 			}
 			if( Math.abs(offset) > 1 ) {
 				// means elevator or encoder is broken
@@ -104,8 +117,12 @@ public class HoldMotor implements PIDOutput {
 		
 		if( encoder.getRate() > speed ) {
 			moving_offset -= increment;
+			at_speed = false;
 		} else if( encoder.getRate() < speed ) {
 			moving_offset += increment;
+			at_speed = false;
+		} else {
+			at_speed = true;
 		}
 		
 		if( moving_offset > 1 ) {
@@ -120,7 +137,9 @@ public class HoldMotor implements PIDOutput {
 	public void setpointHold(int click_target) {
 		if( click_target + click_tolerance > encoder.get() && encoder.get() > click_target - click_tolerance ) {
 			hold();
+			at_position = true;
 		} else {
+			at_position = false;
 			// TODO: implement PIDs here
 			
 			/* Temporary Solution */

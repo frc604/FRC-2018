@@ -1,6 +1,5 @@
 package com._604robotics.robot2018.modules;
 
-import com._604robotics.robot2018.constants.Calibration;
 import com._604robotics.robotnik.Input;
 import com._604robotics.robotnik.Output;
 import com._604robotics.robotnik.prefabs.modules.DashboardModule;

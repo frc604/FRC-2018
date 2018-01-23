@@ -33,6 +33,17 @@ public class Elevator extends Module {
 	public final Output<Boolean> getHolding = addOutput("Holding", this::getHolding);
 	public final Output<Double> getPower = addOutput("Power", this::getPower);
 	
+	public final Output<Boolean> atSpeed = addOutput("Elevator At Speed", this::atSpeed);
+	public final Output<Boolean> atPosition = addOutput("Elevator At Position", this::atSpeed);
+	
+	public boolean atSpeed() {
+		return holdMotor.at_speed;
+	}
+	
+	public boolean atPosition() {
+		return holdMotor.at_position;
+	}
+	
 	public boolean getHolding() {
 		return holding;
 	}
