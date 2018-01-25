@@ -1,23 +1,25 @@
 package com._604robotics.robotnik;
 
-import edu.wpi.first.wpilibj.networktables.NetworkTable;
-import edu.wpi.first.wpilibj.tables.ITable;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public abstract class Module {
-    private final ITable table;
+	private final NetworkTableInstance network = NetworkTableInstance.create();
+	
+    private final NetworkTable table;
 
-    private final ITable inputsTable;
+    private final NetworkTable inputsTable;
     private final TableIndex inputsTableIndex;
 
-    private final ITable outputsTable;
+    private final NetworkTable outputsTable;
     private final TableIndex outputsTableIndex;
 
-    private final ITable activeActionTable;
-    private final ITable activeActionInputsTable;
-    private final ITable activeActionOutputsTable;
+    private final NetworkTable activeActionTable;
+    private final NetworkTable activeActionInputsTable;
+    private final NetworkTable activeActionOutputsTable;
 
     private final String name;
 
@@ -39,7 +41,7 @@ public abstract class Module {
     public Module (String name) {
         this.name = name;
 
-        table = NetworkTable.getTable("robotnik")
+        table = network.getTable("robotnik")
                 .getSubTable("modules")
                 .getSubTable(name);
 
@@ -50,8 +52,8 @@ public abstract class Module {
         outputsTableIndex = new TableIndex(table, "outputList");
 
         activeActionTable = table.getSubTable("activeAction");
-        activeActionTable.putString("name", "");
-        activeActionTable.putString("inputList", "");
+        activeActionTable.getEntry("name").setString("");
+        activeActionTable.getEntry("inputList").setString("");
 
         activeActionInputsTable = activeActionTable.getSubTable("inputs");
         activeActionOutputsTable = activeActionTable.getSubTable("outputs");
@@ -101,9 +103,9 @@ public abstract class Module {
             // Must be one of Boolean Number String byte[] boolean[] double[] Boolean[] Number[] String[]
             //System.out.println("Put key:"+output.getName()+" value:"+output.get());
             if (output.get()==null) {
-                outputsTable.putString(output.getName(), "null");
+            	outputsTable.getEntry( output.getName() ).setString( "null" );
             } else {
-                outputsTable.putString(output.getName(), output.get().toString());
+            	outputsTable.getEntry( output.getName() ).setString( output.get().toString() );
             }
         }
 
@@ -120,7 +122,7 @@ public abstract class Module {
 
     void update () {
         for (@SuppressWarnings("rawtypes") Input input : inputs) {
-            inputsTable.putValue(input.getName(), input.get());
+        	inputsTable.getEntry( input.getName() ).setValue( input.get() );
         }
     }
 
@@ -134,8 +136,8 @@ public abstract class Module {
             runningAction = activeAction;
 
             if (activeAction == null) {
-                activeActionTable.putString("name", "");
-                activeActionTable.putString("inputList", "");
+                activeActionTable.getEntry("name").setString("");
+                activeActionTable.getEntry("inputList").setString("");
             } else {
                 activeAction.updateActiveAction(activeActionTable);
                 Reliability.swallowThrowables(activeAction::initiate,
@@ -157,7 +159,7 @@ public abstract class Module {
         }
         runningAction = null;
 
-        activeActionTable.putString("name", "");
-        activeActionTable.putString("inputList", "");
+        activeActionTable.getEntry("name").setString("");
+        activeActionTable.getEntry("inputList").setString("");
     }
 }
