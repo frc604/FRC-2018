@@ -25,7 +25,7 @@ public class HoldMotor implements PIDOutput {
 	public double target_speed;
 	
 	public boolean at_speed;
-	public boolean at_position;
+	private boolean at_position;
 	
 	public double elevatorRateOffset() {
 		return offset;
@@ -105,7 +105,7 @@ public class HoldMotor implements PIDOutput {
 		downwardsRange = 1+offset;
 		set(0);
 	}
-	
+
 	public void setpointMove(int click_target) {
 		double speed = 0;
 		
@@ -132,6 +132,15 @@ public class HoldMotor implements PIDOutput {
 		}
 		
 		motor.set(moving_offset + speed);
+	}
+	
+	public boolean canHold(int click_target) {
+		if( click_target + click_tolerance > encoder.get() && encoder.get() > click_target - click_tolerance ) {
+			at_position = true;
+		} else {
+			at_position = false;
+			}
+		return at_position;
 	}
 	
 	public void setpointHold(int click_target) {

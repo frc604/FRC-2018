@@ -2,6 +2,7 @@ package com._604robotics.robot2018.constants;
 
 import com._604robotics.robotnik.utils.AutonMovement;
 import com._604robotics.robotnik.utils.annotations.Unreal;
+import com._604robotics.robotnik.utils.annotations.Untested;
 
 public class Calibration {
     private Calibration () {}
@@ -36,7 +37,8 @@ public class Calibration {
     @Unreal("Width and wheelRadius need to be adjusted."
             + "Remaining two parameters are to be empirically determined if necessary.")
     public static final AutonMovement.DriveTrainProperties DRIVE_PROPERTIES
-    = new AutonMovement.DriveTrainProperties(490, 26.08, 2.5, 20.767, 8.323); // second to last = coefficient second value = offset
+    = new AutonMovement.DriveTrainProperties(490, 26.08, 2.5, 20.767, 8.323);
+    // second to last = coefficient, second value = offset
     static {
         System.out.println("Clicks over inches is "+DRIVE_PROPERTIES.getClicksOverInches());
         System.out.println("Clicks over degrees is "+DRIVE_PROPERTIES.getDegreesOverClicks());
@@ -53,17 +55,27 @@ public class Calibration {
     = AutonMovement.inchesToClicks(DRIVE_PROPERTIES, -72);
     
     // Empirical auton mode
-    public static final double DRIVE_MOVE_FORWARD_TEST_INCHES = AutonMovement.empericalInchesToClicks(DRIVE_PROPERTIES, 36);
+    public static final double DRIVE_MOVE_FORWARD_TEST_INCHES
+    = AutonMovement.empericalInchesToClicks(DRIVE_PROPERTIES, 36);
     
     // Elevator
     public static final double ELEVATOR_RATE_TARGET = 500;
     public static final double ELEVATOR_RATE_TOLERANCE = 50;
     
+    @Untested("PID Calibration necessary")
     public static final double ELEVATOR_P = 0.0125;
+    @Untested("PID Calibration necessary")
     public static final double ELEVATOR_I = 0.005;
-    public static final double ELEVATOR_C = Double.MAX_VALUE;
-    public static final double ELEVATOR_A = 0.5;
-    public static final double ELEVATOR_D = 0.0125;
+    @Untested("PID Calibration necessary")
+    public static final double ELEVATOR_MAX_SUM = 20;
+    // I term which props up elevator should never be negative
+    public static final double ELEVATOR_MIN_SUM = 0;
+    // Generally D term reacts too early to actually dampen vibrations in this case
+    @Untested("PID Calibration necessary")
+    public static final double ELEVATOR_D = 0.001;
+    @Untested("Calibration necessary but magnitude smaller than max")
+    public static final double ELEVATOR_MIN_SPEED = -0.6;
+    public static final double ELEVATOR_MAX_SPEED = 1;
     
     public static final double ELEVATOR_TARGET_SPEED = 0.5;
     public static final int ELEVATOR_CLICK_TOLERANCE = 25;

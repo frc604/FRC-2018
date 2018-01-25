@@ -6,6 +6,7 @@ import com._604robotics.robotnik.Action;
 import com._604robotics.robotnik.Input;
 import com._604robotics.robotnik.Module;
 import com._604robotics.robotnik.Output;
+import com._604robotics.robotnik.prefabs.controller.ClampedIntegralPIDController;
 import com._604robotics.robotnik.prefabs.devices.HoldMotor;
 
 import edu.wpi.first.wpilibj.Encoder;
@@ -15,7 +16,8 @@ public class Elevator extends Module {
 	
 	public Spark motor = new Spark(Ports.ELEVATOR_MOTOR);
 	public Encoder encoder = new Encoder(Ports.ELEVATOR_ENCODER_A, Ports.ELEVATOR_ENCODER_B);
-	public HoldMotor holdMotor = new HoldMotor(motor, encoder, Calibration.ELEVATOR_TARGET_SPEED, Calibration.ELEVATOR_CLICK_TOLERANCE);
+	public HoldMotor holdMotor = new HoldMotor(motor, encoder, 
+	        Calibration.ELEVATOR_TARGET_SPEED, Calibration.ELEVATOR_CLICK_TOLERANCE);
 	
 	public final Action hold = new Hold();
 	
@@ -36,12 +38,10 @@ public class Elevator extends Module {
 	public final Output<Boolean> atSpeed = addOutput("Elevator At Speed", this::atSpeed);
 	public final Output<Boolean> atPosition = addOutput("Elevator At Position", this::atSpeed);
 	
+	private final ClampedIntegralPIDController pid;
+	
 	public boolean atSpeed() {
 		return holdMotor.at_speed;
-	}
-	
-	public boolean atPosition() {
-		return holdMotor.at_position;
 	}
 	
 	public boolean getHolding() {
@@ -75,7 +75,7 @@ public class Elevator extends Module {
 
         @Override
         public void run () {
-        	holding = true;
+            holding = true;
             holdMotor.hold();
         }
     }
@@ -113,14 +113,31 @@ public class Elevator extends Module {
 		}
 		
 		@Override
+		public void begin() {
+		    pid.enable();
+		}
+		@Override
 		public void run () {
 			holding = false;
-			holdMotor.setpointHold(target_clicks.get());
+			pid.setSetpoint(target_clicks.get());
+			
+			//holdMotor.setpointHold(target_clicks.get());
+		}
+		@Override
+		public void end () {
+		    pid.reset();
 		}
 	}
 	
 	public Elevator() {
-        super(Elevator.class);
+	    super(Elevator.class);
+	    pid = new ClampedIntegralPIDController(Calibration.ELEVATOR_P,
+	            Calibration.ELEVATOR_I,
+	            Calibration.ELEVATOR_D,
+	            encoder,
+	            motor);
+	    pid.setIntegralLimits(Calibration.ELEVATOR_MIN_SUM, Calibration.ELEVATOR_MAX_SUM);
+	    pid.setOutputRange(Calibration.ELEVATOR_MIN_SPEED, Calibration.ELEVATOR_MAX_SPEED);
         setDefaultAction(hold);
 	}
 }
