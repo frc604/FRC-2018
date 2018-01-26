@@ -14,7 +14,7 @@ public class Ports {
     @Unreal("Wiring yet to be determined. Use Frank wiring for now")
     public static final int DRIVE_FRONT_RIGHT_MOTOR = 2;
     @Unreal("Wiring yet to be determined. Use Frank wiring for now")
-    public static final int DRIVE_REAR_RIGHT_MOTOR = 3;
+    public static final int DRIVE_REAR_RIGHT_MOTOR = 6;//3;
     @Unreal("Third motor for drive yet to be wired")
     public static final int DRIVE_TOP_LEFT_MOTOR = 4;
     @Unreal("Third motor for drive yet to be wired")
@@ -46,5 +46,5 @@ public class Ports {
     public static final int ELEVATOR_ENCODER_A = 4;
     public static final int ELEVATOR_ENCODER_B = 5;
     
-    public static final int ELEVATOR_MOTOR = 6;
+    public static final int ELEVATOR_MOTOR = 3;
 }

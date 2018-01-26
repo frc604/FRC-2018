@@ -19,7 +19,8 @@ public class Elevator extends Module {
 	public HoldMotor holdMotor = new HoldMotor(motor, encoder, 
 	        Calibration.ELEVATOR_TARGET_SPEED, Calibration.ELEVATOR_CLICK_TOLERANCE);
 	
-	public final Action hold = new Hold();
+	public final Hold hold = new Hold();
+	public final Setpoint setpoint = new Setpoint();
 	
 	public final Output<Double> getOffset = addOutput("Elevator Offset", this::getOffset);
 	public final Output<Double> getUpwardsRange = addOutput("Upwards Range", this::getUpwardsRange);
@@ -74,9 +75,15 @@ public class Elevator extends Module {
         }
 
         @Override
+        public void begin () {
+        	holding=true;
+        }
+        @Override
         public void run () {
-            holding = true;
             holdMotor.hold();
+            if (pid.getError()>setpoint.target_clicks.get()) {
+            	setpoint.activate();
+            }
         }
     }
 	
@@ -115,11 +122,15 @@ public class Elevator extends Module {
 		@Override
 		public void begin() {
 		    pid.enable();
+			holding = false;
 		}
 		@Override
 		public void run () {
-			holding = false;
 			pid.setSetpoint(target_clicks.get());
+			if (pid.getError()<target_clicks.get()) {
+				pid.disable();
+				hold.activate();
+			}
 			
 			//holdMotor.setpointHold(target_clicks.get());
 		}
@@ -131,6 +142,7 @@ public class Elevator extends Module {
 	
 	public Elevator() {
 	    super(Elevator.class);
+	    encoder.setReverseDirection(true);
 	    pid = new ClampedIntegralPIDController(Calibration.ELEVATOR_P,
 	            Calibration.ELEVATOR_I,
 	            Calibration.ELEVATOR_D,
