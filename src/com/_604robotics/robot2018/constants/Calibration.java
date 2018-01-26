@@ -12,6 +12,7 @@ public class Calibration {
     
     public static final double DRIVE_MOVE_PID_P = 0.005;
     public static final double DRIVE_MOVE_PID_I = 0;
+    // TODO: This probably needs to be mush smaller
     public static final double DRIVE_MOVE_PID_D = 0.01;
     public static final double DRIVE_MOVE_PID_MAX = 0.5;
     public static final double DRIVE_MOVE_TOLERANCE = 20;
@@ -63,11 +64,11 @@ public class Calibration {
     public static final double ELEVATOR_RATE_TOLERANCE = 50;
     
     @Untested("PID Calibration necessary")
-    public static final double ELEVATOR_P = 0.0125;
+    public static final double ELEVATOR_P = 0.01;
     @Untested("PID Calibration necessary")
     public static final double ELEVATOR_I = 0.005;
     @Untested("PID Calibration necessary")
-    public static final double ELEVATOR_MAX_SUM = 20;
+    public static final double ELEVATOR_MAX_SUM = 0.8/ELEVATOR_I;
     // I term which props up elevator should never be negative
     public static final double ELEVATOR_MIN_SUM = 0;
     // Generally D term reacts too early to actually dampen vibrations in this case
