@@ -76,7 +76,7 @@ public class TeleopMode extends Coordinator {
     		if( buttonY ) {
     			setpoint.activate();
     		} else {
-	    		if( leftY == 0 && manip.buttons.start.get()) {
+	    		if( /*leftY == 0 &&*/ manip.buttons.start.get()) {
 	    			hold.activate();
 	    		} else {
 	    			move.liftPower.set(leftY);
