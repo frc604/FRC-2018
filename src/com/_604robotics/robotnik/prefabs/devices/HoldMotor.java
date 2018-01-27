@@ -135,26 +135,12 @@ public class HoldMotor implements PIDOutput {
 	}
 	
 	public boolean canHold(int click_target) {
-		// TODO: Add timer mechanism
 		if( click_target + click_tolerance > encoder.get() && encoder.get() > click_target - click_tolerance ) {
 			at_position = true;
 		} else {
 			at_position = false;
 			}
 		return at_position;
-	}
-	
-	public void setpointHold(int click_target) {
-		if( click_target + click_tolerance > encoder.get() && encoder.get() > click_target - click_tolerance ) {
-			hold();
-			at_position = true;
-		} else {
-			at_position = false;
-			// TODO: implement PIDs here
-			
-			/* Temporary Solution */
-			setpointMove(click_target);
-		}
 	}
 	
 	@Override

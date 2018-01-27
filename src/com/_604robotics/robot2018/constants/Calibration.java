@@ -62,19 +62,16 @@ public class Calibration {
     // Elevator
     public static final double ELEVATOR_RATE_TARGET = 500;
     public static final double ELEVATOR_RATE_TOLERANCE = 50;
-    
-    @Untested("PID Calibration necessary")
+
     public static final double ELEVATOR_P = 0.01;
-    @Untested("PID Calibration necessary")
     public static final double ELEVATOR_I = 0.002;
-    @Untested("PID Calibration necessary")
+    public static final double ELEVATOR_D = 0.001;
+    
+    // Bound I term motor output to 0.8
     public static final double ELEVATOR_MAX_SUM = 0.8/ELEVATOR_I;
     // I term which props up elevator should never be negative
     public static final double ELEVATOR_MIN_SUM = 0;
-    // Generally D term reacts too early to actually dampen vibrations in this case
-    @Untested("PID Calibration necessary")
-    public static final double ELEVATOR_D = 0.001;
-    @Untested("Calibration necessary but magnitude smaller than max")
+    // Lower speed going down due to weight
     public static final double ELEVATOR_MIN_SPEED = -0.7;
     public static final double ELEVATOR_MAX_SPEED = 1;
     
