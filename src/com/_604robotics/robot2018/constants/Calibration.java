@@ -66,7 +66,7 @@ public class Calibration {
     @Untested("PID Calibration necessary")
     public static final double ELEVATOR_P = 0.01;
     @Untested("PID Calibration necessary")
-    public static final double ELEVATOR_I = 0.005;
+    public static final double ELEVATOR_I = 0.002;
     @Untested("PID Calibration necessary")
     public static final double ELEVATOR_MAX_SUM = 0.8/ELEVATOR_I;
     // I term which props up elevator should never be negative
@@ -75,11 +75,13 @@ public class Calibration {
     @Untested("PID Calibration necessary")
     public static final double ELEVATOR_D = 0.001;
     @Untested("Calibration necessary but magnitude smaller than max")
-    public static final double ELEVATOR_MIN_SPEED = -0.6;
+    public static final double ELEVATOR_MIN_SPEED = -0.7;
     public static final double ELEVATOR_MAX_SPEED = 1;
     
     public static final double ELEVATOR_TARGET_SPEED = 0.5;
     public static final int ELEVATOR_CLICK_TOLERANCE = 25;
     
-    public static final int  ELEVATOR_Y_TARGET = 300;
+    public static final int  ELEVATOR_Y_TARGET = 1000;//300
+    @Unreal("Find more reasonable time or eliminate hold part altogether")
+	public static final double ELEVATOR_PID_CONTINUE = 10;
 }

@@ -8,6 +8,7 @@ import com._604robotics.robotnik.Module;
 import com._604robotics.robotnik.Output;
 import com._604robotics.robotnik.prefabs.controller.ClampedIntegralPIDController;
 import com._604robotics.robotnik.prefabs.devices.HoldMotor;
+import com._604robotics.robotnik.prefabs.flow.SmartTimer;
 
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Spark;
@@ -40,6 +41,7 @@ public class Elevator extends Module {
 	public final Output<Boolean> atPosition = addOutput("Elevator At Position", this::atSpeed);
 	
 	private final ClampedIntegralPIDController pid;
+	private final SmartTimer PIDTimer = new SmartTimer();
 	
 	public boolean atSpeed() {
 		return holdMotor.at_speed;
@@ -109,6 +111,7 @@ public class Elevator extends Module {
 	
 	public class Setpoint extends Action {
 		public final Input<Integer> target_clicks;
+		private int i=0;
 		
 		public Setpoint() {
 			this(0);
@@ -121,21 +124,38 @@ public class Elevator extends Module {
 		
 		@Override
 		public void begin() {
+			System.out.println("Enabling PID");
 		    pid.enable();
 			holding = false;
 		}
 		@Override
 		public void run () {
+			i++;
 			pid.setSetpoint(target_clicks.get());
-			if (pid.getError()<target_clicks.get()) {
-				pid.disable();
-				hold.activate();
+			if (i%100==99) {
+				System.out.println("PID Error is "+pid.getError());
+			}
+			if (Math.abs(pid.getError())<Calibration.ELEVATOR_CLICK_TOLERANCE) {
+				PIDTimer.startIfNotRunning();
+				if (i%100==0) {
+					System.out.println("Timer is now at "+PIDTimer.get());
+				}
+				if (PIDTimer.get()>Calibration.ELEVATOR_PID_CONTINUE) {
+					pid.disable();
+					System.out.println("Switching to hold");
+					hold.activate();
+					PIDTimer.stop();
+				}
+			} else {
+				PIDTimer.restart();
 			}
 			
 			//holdMotor.setpointHold(target_clicks.get());
 		}
 		@Override
 		public void end () {
+			System.out.println("Resetting PID");
+			PIDTimer.reset();
 		    pid.reset();
 		}
 	}

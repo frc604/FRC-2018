@@ -168,7 +168,6 @@ public class HoldMotor implements PIDOutput {
 		} else {
 			set(output);
 		}*/
-		System.out.println("Holdmotor "+output);
 		set(output);
 	}
 }
