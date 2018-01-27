@@ -35,7 +35,7 @@ public class HoldMotor implements PIDOutput {
 		this.motor = motor;
 		this.encoder = encoder;
 		offset = 0;
-		increment = 0.001;
+		increment = 0.0001;
 		
 		upwardsRange = 1;
 		downwardsRange = 1;
@@ -43,7 +43,7 @@ public class HoldMotor implements PIDOutput {
 		failsafed = false;
 		
 		setpoint_offset = 0;
-		setpoint_increment = 0.001;
+		setpoint_increment = 0.0001;
 		click_tolerance = 0;
 		
 		moving_offset = 0;
