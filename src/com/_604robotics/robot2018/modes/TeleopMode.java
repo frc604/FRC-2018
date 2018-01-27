@@ -57,35 +57,35 @@ public class TeleopMode extends Coordinator {
         elevatorManager.run();
         return true;
     }
-    
+
     private class ElevatorManager {
-    	private final Elevator.Move move;
-    	private final Elevator.Hold hold;
-    	private final Elevator.Setpoint setpoint;
-    	
-    	public ElevatorManager() {
-    		move = robot.elevator.new Move();
-    		hold = robot.elevator.new Hold();
-    		setpoint = robot.elevator.new Setpoint();
-    	}
-    	
-    	public void run() {
-    		double leftY = manip.leftStick.y.get();
-    		boolean buttonY = manip.buttons.y.get();
-    		setpoint.target_clicks.set(Calibration.ELEVATOR_Y_TARGET);
-    		if( buttonY ) {
-    			setpoint.activate();
-    		} else {
-	    		if( /*leftY == 0 &&*/ manip.buttons.start.get()) {
-	    			hold.activate();
-	    		} else {
-	    			move.liftPower.set(leftY);
-	    			move.activate();
-	    		}
-    		}
-    	}
+        private final Elevator.Move move;
+        private final Elevator.Hold hold;
+        private final Elevator.Setpoint setpoint;
+
+        public ElevatorManager() {
+            move = robot.elevator.new Move();
+            hold = robot.elevator.new Hold();
+            setpoint = robot.elevator.new Setpoint();
+        }
+
+        public void run() {
+            double leftY = manip.leftStick.y.get();
+            boolean buttonY = manip.buttons.y.get();
+            setpoint.target_clicks.set(Calibration.ELEVATOR_Y_TARGET);
+            if( buttonY ) {
+                setpoint.activate();
+            } else {
+                if( /*leftY == 0 &&*/ manip.buttons.start.get()) {
+                    hold.activate();
+                } else {
+                    move.liftPower.set(leftY);
+                    move.activate();
+                }
+            }
+        }
     }
-    
+
     private enum CurrentDrive {
         IDLE, ARCADE, TANK
     }
