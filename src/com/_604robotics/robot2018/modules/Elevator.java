@@ -130,16 +130,9 @@ public class Elevator extends Module {
 		}
 		@Override
 		public void run () {
-			i++;
 			pid.setSetpoint(target_clicks.get());
-			if (i%100==99) {
-				System.out.println("PID Error is "+pid.getError());
-			}
 			if (Math.abs(pid.getError())<Calibration.ELEVATOR_CLICK_TOLERANCE) {
 				PIDTimer.startIfNotRunning();
-				if (i%100==0) {
-					System.out.println("Timer is now at "+PIDTimer.get());
-				}
 				if (PIDTimer.get()>Calibration.ELEVATOR_PID_CONTINUE) {
 					pid.disable();
 					System.out.println("Switching to hold");
@@ -154,7 +147,6 @@ public class Elevator extends Module {
 		}
 		@Override
 		public void end () {
-			System.out.println("Resetting PID");
 			PIDTimer.reset();
 		    pid.reset();
 		}
