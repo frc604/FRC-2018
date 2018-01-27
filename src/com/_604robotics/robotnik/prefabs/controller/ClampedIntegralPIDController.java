@@ -1,11 +1,8 @@
 package com._604robotics.robotnik.prefabs.controller;
 
-import com._604robotics.robotnik.utils.annotations.Untested;
-
 import edu.wpi.first.wpilibj.PIDOutput;
 import edu.wpi.first.wpilibj.PIDSource;
 
-@Deprecated @Untested("The integral term needs to be verified to not blow up")
 public class ClampedIntegralPIDController extends ExtendablePIDController {
     
     public double minIntegral = -10;
@@ -38,6 +35,11 @@ public class ClampedIntegralPIDController extends ExtendablePIDController {
         minIntegral=limitmin;
         maxIntegral=limitmax;
     }
+
+    @Override
+    protected synchronized double modifyTotalError(double totalError) {
+        return clamp(totalError, minIntegral, maxIntegral);
+    }
     @Override
     protected synchronized double calculateProportional(double p, double error) {
         double val=super.calculateProportional(p, error);
@@ -47,8 +49,8 @@ public class ClampedIntegralPIDController extends ExtendablePIDController {
     
     @Override
     protected double calculateIntegral(double i, double totalError) {
-        double val= clamp(i*totalError,minIntegral,maxIntegral);
-        System.out.println("i is "+i+", error is "+totalError+", term is "+val);
+        double val= super.calculateIntegral(i, totalError);
+        System.out.println("i is "+i+", totalError is "+totalError+", term is "+val);
         return val;
     }
     

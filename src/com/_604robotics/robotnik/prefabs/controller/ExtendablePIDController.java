@@ -12,8 +12,6 @@ package com._604robotics.robotnik.prefabs.controller;
 import java.util.TimerTask;
 import java.util.concurrent.locks.ReentrantLock;
 
-import com._604robotics.robotnik.utils.annotations.Untested;
-
 import edu.wpi.first.wpilibj.HLUsageReporting;
 import edu.wpi.first.wpilibj.PIDInterface;
 import edu.wpi.first.wpilibj.PIDOutput;
@@ -39,7 +37,6 @@ import static java.util.Objects.requireNonNull;
  * given set of PID constants.
  */
 
-@Deprecated @Untested("No reason this shouldn't work because modifications are minimal, but just in case")
 public class ExtendablePIDController extends SendableBase implements PIDInterface, Sendable {
   public static final double kDefaultPeriod = .05;
   private static int instances = 0;
@@ -314,17 +311,21 @@ public class ExtendablePIDController extends SendableBase implements PIDInterfac
       // Storage for function outputs
       double result;
 
+      error=modifyError(error);
+
       if (pidSourceType.equals(PIDSourceType.kRate)) {
         if (P != 0) {
           totalError = clamp(totalError + error, minimumOutput / P,
               maximumOutput / P);
+          totalError=modifyTotalError(error);
         }
 
-        result = P * totalError + D * error + feedForward;
+        result = calculateProportional(P, totalError) + calculateIntegral(D, error) + feedForward;
       } else {
         if (I != 0) {
           totalError = clamp(totalError + error, minimumOutput / I,
               maximumOutput / I);
+          totalError=modifyTotalError(error);
         }
 
         result = calculateProportional(P, error)
@@ -365,6 +366,13 @@ public class ExtendablePIDController extends SendableBase implements PIDInterfac
         m_thisMutex.unlock();
       }
     }
+  }
+  
+  protected synchronized double modifyError(double error) {
+    return error;
+  }
+  protected synchronized double modifyTotalError(double totalError) {
+    return totalError;
   }
   
   protected synchronized double calculateProportional(double p, double error) {
