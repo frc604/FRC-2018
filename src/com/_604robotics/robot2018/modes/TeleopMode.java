@@ -62,6 +62,8 @@ public class TeleopMode extends Coordinator {
         private final Elevator.Move move;
         private final Elevator.Hold hold;
         private final Elevator.Setpoint setpoint;
+        private boolean isStationary=false;
+        private int holdClicks = 0;
 
         public ElevatorManager() {
             move = robot.elevator.new Move();
@@ -70,15 +72,24 @@ public class TeleopMode extends Coordinator {
         }
 
         public void run() {
+            System.out.println("Encoder is "+robot.elevator.encoderClicks.get());
+            System.out.println("PID setpoint is "+setpoint.target_clicks.get());
             double leftY = manip.leftStick.y.get();
             boolean buttonY = manip.buttons.y.get();
-            setpoint.target_clicks.set(Calibration.ELEVATOR_Y_TARGET);
             if( buttonY ) {
+                isStationary=false;
+                setpoint.target_clicks.set(Calibration.ELEVATOR_Y_TARGET);
                 setpoint.activate();
             } else {
                 if( /*leftY == 0 &&*/ manip.buttons.start.get()) {
-                    hold.activate();
+                    if (!isStationary) {
+                        isStationary=true;
+                        holdClicks=robot.elevator.encoderClicks.get();
+                    }
+                    setpoint.target_clicks.set(holdClicks);
+                    setpoint.activate();
                 } else {
+                    isStationary=false;
                     move.liftPower.set(leftY);
                     move.activate();
                 }

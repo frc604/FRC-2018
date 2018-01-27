@@ -129,7 +129,7 @@ public class Elevator extends Module {
         @Override
         public void run () {
             pid.setSetpoint(target_clicks.get());
-            if (Math.abs(pid.getError())<Calibration.ELEVATOR_CLICK_TOLERANCE) {
+            /*if (Math.abs(pid.getError())<Calibration.ELEVATOR_CLICK_TOLERANCE) {
                 PIDTimer.startIfNotRunning();
                 if (PIDTimer.get()>Calibration.ELEVATOR_PID_CONTINUE) {
                     pid.disable();
@@ -139,7 +139,7 @@ public class Elevator extends Module {
                 }
             } else {
                 PIDTimer.restart();
-            }
+            }*/
 
             //holdMotor.setpointHold(target_clicks.get());
         }
@@ -157,9 +157,10 @@ public class Elevator extends Module {
                 Calibration.ELEVATOR_I,
                 Calibration.ELEVATOR_D,
                 encoder,
-                holdMotor);
+                motor);
         pid.setIntegralLimits(Calibration.ELEVATOR_MIN_SUM, Calibration.ELEVATOR_MAX_SUM);
         pid.setOutputRange(Calibration.ELEVATOR_MIN_SPEED, Calibration.ELEVATOR_MAX_SPEED);
-        setDefaultAction(hold);
+        setpoint.target_clicks.set(encoder.get());
+        setDefaultAction(setpoint);
     }
 }
