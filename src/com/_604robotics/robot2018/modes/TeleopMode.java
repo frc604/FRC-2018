@@ -62,7 +62,6 @@ public class TeleopMode extends Coordinator {
     	private final Elevator.Move move;
     	private final Elevator.Hold hold;
     	private final Elevator.Setpoint setpoint;
-    	private int i=0;
     	
     	public ElevatorManager() {
     		move = robot.elevator.new Move();
@@ -71,9 +70,6 @@ public class TeleopMode extends Coordinator {
     	}
     	
     	public void run() {
-    		i++;
-    		if (i%100==0)
-    			System.out.println("Encoder "+robot.elevator.encoderClicks.get());
     		double leftY = manip.leftStick.y.get();
     		boolean buttonY = manip.buttons.y.get();
     		setpoint.target_clicks.set(Calibration.ELEVATOR_Y_TARGET);
