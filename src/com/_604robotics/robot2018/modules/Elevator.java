@@ -111,7 +111,6 @@ public class Elevator extends Module {
 	
 	public class Setpoint extends Action {
 		public final Input<Integer> target_clicks;
-		private int i=0;
 		
 		public Setpoint() {
 			this(0);
@@ -124,7 +123,6 @@ public class Elevator extends Module {
 		
 		@Override
 		public void begin() {
-			System.out.println("Enabling PID");
 		    pid.enable();
 			holding = false;
 		}
