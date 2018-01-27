@@ -83,7 +83,7 @@ public class Elevator extends Module {
         @Override
         public void run () {
             holdMotor.hold();
-            if (pid.getError()>setpoint.target_clicks.get()) {
+            if (Math.abs(pid.getError())>setpoint.target_clicks.get()) {
             	setpoint.activate();
             }
         }
