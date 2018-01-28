@@ -2,7 +2,8 @@ package com._604robotics.robotnik;
 
 import edu.wpi.first.networktables.NetworkTable;
 
-class TableIndex {
+@Deprecated
+class TableIndex { // Stores multiple values under one key. Why, though.
     private final NetworkTable table;
     private final String key;
 
@@ -13,7 +14,7 @@ class TableIndex {
         table.getEntry(key).setString("");
     }
 
-    public void add (String type, String name) {
+    public void add( String type, String name ) {
         if (name.isEmpty()) {
             throw new IllegalArgumentException(type + " names may not be empty");
         }
