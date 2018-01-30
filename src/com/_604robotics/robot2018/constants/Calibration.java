@@ -71,6 +71,8 @@ public class Calibration {
     public static final double ELEVATOR_MAX_SUM = 0.8/ELEVATOR_I;
     // I term which props up elevator should never be negative
     public static final double ELEVATOR_MIN_SUM = 0;
+    // This is the default value but specify it explicitly
+    public static final double ELEVATOR_PID_PERIOD = 0.05;
     // Lower speed going down due to weight
     public static final double ELEVATOR_MIN_SPEED = -0.7;
     public static final double ELEVATOR_MAX_SPEED = 1;
