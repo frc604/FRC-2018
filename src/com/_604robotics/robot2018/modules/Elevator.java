@@ -186,7 +186,8 @@ public class Elevator extends Module {
                         return getEncoderPos();
                     }
                 },
-                motor);
+                motor,
+                Calibration.ELEVATOR_PID_PERIOD);
         pid.setIntegralLimits(Calibration.ELEVATOR_MIN_SUM, Calibration.ELEVATOR_MAX_SUM);
         pid.setOutputRange(Calibration.ELEVATOR_MIN_SPEED, Calibration.ELEVATOR_MAX_SPEED);
         setpoint.target_clicks.set(getEncoderPos());

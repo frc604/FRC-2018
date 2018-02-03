@@ -63,16 +63,16 @@ public class Calibration {
     public static final double ELEVATOR_RATE_TARGET = 500;
     public static final double ELEVATOR_RATE_TOLERANCE = 50;
 
-    public static final double ELEVATOR_P = 0.0012;
-    public static final double ELEVATOR_I = 0.00024;
-    public static final double ELEVATOR_D = 0.00012;
+    public static final double ELEVATOR_P = 0.0002;
+    public static final double ELEVATOR_I = 0.0001;
+    public static final double ELEVATOR_D = 0.00002;
     
     // Bound I term motor output to 0.8
     public static final double ELEVATOR_MAX_SUM = 0.6/ELEVATOR_I;
     // I term which props up elevator should never be negative
     public static final double ELEVATOR_MIN_SUM = 0;
     // This is the default value but specify it explicitly
-    public static final double ELEVATOR_PID_PERIOD = 0.05;
+    public static final double ELEVATOR_PID_PERIOD = 0.02;
     // Lower speed going down due to weight
     public static final double ELEVATOR_MIN_SPEED = -0.7;
     public static final double ELEVATOR_MAX_SPEED = 1;
