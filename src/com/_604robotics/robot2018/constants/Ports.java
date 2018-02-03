@@ -32,10 +32,5 @@ public class Ports {
     public static final int COMPRESSOR = 0;
     public static final int PDP_MODULE = 1;
     
-    @Deprecated @Unreal("Using integrated now")
-    public static final int ELEVATOR_ENCODER_A = 4;
-    @Deprecated @Unreal("Using integrated now")
-    public static final int ELEVATOR_ENCODER_B = 5;
-    
     public static final int ELEVATOR_MOTOR = 10;
 }
