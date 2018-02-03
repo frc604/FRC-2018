@@ -60,20 +60,16 @@ public class TeleopMode extends Coordinator {
 
     private class ElevatorManager {
         private final Elevator.Move move;
-        private final Elevator.Hold hold;
         private final Elevator.Setpoint setpoint;
         private boolean isStationary=false;
         private int holdClicks = 0;
 
         public ElevatorManager() {
             move = robot.elevator.new Move();
-            hold = robot.elevator.new Hold();
             setpoint = robot.elevator.new Setpoint();
         }
 
         public void run() {
-            //System.out.println("Encoder is "+robot.elevator.encoderClicks.get());
-            //System.out.println("PID setpoint is "+setpoint.target_clicks.get());
             //System.out.println(robot.elevator.getEncoderPos());
             double leftY = manip.leftStick.y.get();
             boolean buttonY = manip.buttons.y.get();
