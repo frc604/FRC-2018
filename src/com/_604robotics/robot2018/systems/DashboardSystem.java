@@ -14,6 +14,7 @@ public class DashboardSystem extends Coordinator {
     @Override
     public boolean run () {
         //@Janky("Will soon be replacable with initDashboardSendables")
+        robot.drive.updateDashboardSendables();
         robot.dashboard.leftDriveClicks.set(robot.drive.leftClicks.get());
         robot.dashboard.rightDriveClicks.set(robot.drive.rightClicks.get());
         robot.dashboard.leftDriveRate.set(robot.drive.leftClickRate.get());
