@@ -2,11 +2,11 @@ package com._604robotics.robotnik.prefabs.devices;
 
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.PIDOutput;
-import edu.wpi.first.wpilibj.PWMSpeedController;
+import edu.wpi.first.wpilibj.SpeedController;
 
 public class HoldMotor implements PIDOutput {
 	
-	public PWMSpeedController motor;
+	public SpeedController motor;
 	public Encoder encoder;
 	public double offset;
 	public double increment;
@@ -31,7 +31,7 @@ public class HoldMotor implements PIDOutput {
 		return offset;
 	}	
 	
-	public HoldMotor(PWMSpeedController motor, Encoder encoder) {
+	public HoldMotor(SpeedController motor, Encoder encoder) {
 		this.motor = motor;
 		this.encoder = encoder;
 		offset = 0;
@@ -54,7 +54,7 @@ public class HoldMotor implements PIDOutput {
 		at_position = true;
 	}
 	
-	public HoldMotor(PWMSpeedController motor, Encoder encoder, double target_speed, int click_tolerance) {
+	public HoldMotor(SpeedController motor, Encoder encoder, double target_speed, int click_tolerance) {
 		this.motor = motor;
 		this.encoder = encoder;
 		offset = 0;

@@ -46,5 +46,5 @@ public class Ports {
     public static final int ELEVATOR_ENCODER_A = 4;
     public static final int ELEVATOR_ENCODER_B = 5;
     
-    public static final int ELEVATOR_MOTOR = 3;
+    public static final int ELEVATOR_MOTOR = 10;
 }

@@ -63,12 +63,12 @@ public class Calibration {
     public static final double ELEVATOR_RATE_TARGET = 500;
     public static final double ELEVATOR_RATE_TOLERANCE = 50;
 
-    public static final double ELEVATOR_P = 0.01;
-    public static final double ELEVATOR_I = 0.002;
-    public static final double ELEVATOR_D = 0.001;
+    public static final double ELEVATOR_P = 0.0012;
+    public static final double ELEVATOR_I = 0.00024;
+    public static final double ELEVATOR_D = 0.00012;
     
     // Bound I term motor output to 0.8
-    public static final double ELEVATOR_MAX_SUM = 0.8/ELEVATOR_I;
+    public static final double ELEVATOR_MAX_SUM = 0.6/ELEVATOR_I;
     // I term which props up elevator should never be negative
     public static final double ELEVATOR_MIN_SUM = 0;
     // This is the default value but specify it explicitly
@@ -78,9 +78,9 @@ public class Calibration {
     public static final double ELEVATOR_MAX_SPEED = 1;
     
     public static final double ELEVATOR_TARGET_SPEED = 0.5;
-    public static final int ELEVATOR_CLICK_TOLERANCE = 25;
+    public static final int ELEVATOR_CLICK_TOLERANCE = 100;//25
     
-    public static final int  ELEVATOR_Y_TARGET = 1000;//300
+    public static final int  ELEVATOR_Y_TARGET = 8000;//about 1000 * 4096/490
     @Unreal("Find more reasonable time or eliminate hold part altogether")
 	public static final double ELEVATOR_PID_CONTINUE = 10;
 }

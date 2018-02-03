@@ -8,28 +8,34 @@ import com._604robotics.robotnik.Module;
 import com._604robotics.robotnik.Output;
 import com._604robotics.robotnik.prefabs.controller.ClampedIntegralPIDController;
 import com._604robotics.robotnik.prefabs.devices.HoldMotor;
+import com._604robotics.robotnik.prefabs.devices.wrappers.InvertPIDSource;
 import com._604robotics.robotnik.prefabs.flow.SmartTimer;
 
 import edu.wpi.first.wpilibj.Encoder;
-import edu.wpi.first.wpilibj.Spark;
+import edu.wpi.first.wpilibj.PIDSource;
+import edu.wpi.first.wpilibj.PIDSourceType;
+
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 public class Elevator extends Module {
 
-    public Spark motor = new Spark(Ports.ELEVATOR_MOTOR);
-    public Encoder encoder = new Encoder(Ports.ELEVATOR_ENCODER_A, Ports.ELEVATOR_ENCODER_B);
-    public HoldMotor holdMotor = new HoldMotor(motor, encoder, 
-            Calibration.ELEVATOR_TARGET_SPEED, Calibration.ELEVATOR_CLICK_TOLERANCE);
+    public WPI_TalonSRX motor = new WPI_TalonSRX(Ports.ELEVATOR_MOTOR);
+    //public Encoder encoder = new Encoder(Ports.ELEVATOR_ENCODER_A, Ports.ELEVATOR_ENCODER_B);
+    /*public HoldMotor holdMotor = new HoldMotor(motor, encoder, 
+            Calibration.ELEVATOR_TARGET_SPEED, Calibration.ELEVATOR_CLICK_TOLERANCE);*/
 
     public final Hold hold = new Hold();
     public final Setpoint setpoint = new Setpoint();
 
-    public final Output<Double> getOffset = addOutput("Elevator Offset", this::getOffset);
-    public final Output<Double> getUpwardsRange = addOutput("Upwards Range", this::getUpwardsRange);
-    public final Output<Double> getDownwardsRange = addOutput("Downwards Range", this::getDownwardsRange);
-    public final Output<Boolean> getFailsafe = addOutput("Failsafed", this::getFailsafe);
+    //public final Output<Double> getOffset = addOutput("Elevator Offset", this::getOffset);
+    //public final Output<Double> getUpwardsRange = addOutput("Upwards Range", this::getUpwardsRange);
+    //public final Output<Double> getDownwardsRange = addOutput("Downwards Range", this::getDownwardsRange);
+    //public final Output<Boolean> getFailsafe = addOutput("Failsafed", this::getFailsafe);
 
-    public final Output<Double> encoderRate = addOutput("Elevator Rate", encoder::getRate);
-    public final Output<Integer> encoderClicks = addOutput("Elevator Clicks", encoder::get);
+    //public final Output<Double> encoderRate = addOutput("Elevator Rate", encoder::getRate);
+    //public final Output<Integer> encoderClicks = addOutput("Elevator Clicks", encoder::get);
+    public final Output<Integer> encoderRate = addOutput("Elevator Rate", this::getEncoderRate);
+    public final Output<Integer> encoderClicks = addOutput("Elevator Clicks", this::getEncoderPos);
 
     public boolean holding = true;
     public double power = 0;
@@ -37,15 +43,23 @@ public class Elevator extends Module {
     public final Output<Boolean> getHolding = addOutput("Holding", this::getHolding);
     public final Output<Double> getPower = addOutput("Power", this::getPower);
 
-    public final Output<Boolean> atSpeed = addOutput("Elevator At Speed", this::atSpeed);
-    public final Output<Boolean> atPosition = addOutput("Elevator At Position", this::atSpeed);
+    //public final Output<Boolean> atSpeed = addOutput("Elevator At Speed", this::atSpeed);
+    //public final Output<Boolean> atPosition = addOutput("Elevator At Position", this::atSpeed);
 
     private final ClampedIntegralPIDController pid;
     private final SmartTimer PIDTimer = new SmartTimer();
 
-    public boolean atSpeed() {
-        return holdMotor.at_speed;
+    
+    public int getEncoderPos() {
+        return -motor.getSensorCollection().getPulseWidthPosition(); 
     }
+    public int getEncoderRate() {
+        return -motor.getSensorCollection().getPulseWidthVelocity(); 
+    }
+
+    /*public boolean atSpeed() {
+        return holdMotor.at_speed;
+    }*/
 
     public boolean getHolding() {
         return holding;
@@ -55,7 +69,7 @@ public class Elevator extends Module {
         return power;
     }
 
-    public double getOffset() {
+    /*public double getOffset() {
         return holdMotor.offset;
     }
 
@@ -69,7 +83,7 @@ public class Elevator extends Module {
 
     public boolean getFailsafe() {
         return holdMotor.failsafed;
-    }
+    }*/
 
     public class Hold extends Action {
         public Hold () {
@@ -82,7 +96,7 @@ public class Elevator extends Module {
         }
         @Override
         public void run () {
-            holdMotor.hold();
+            //holdMotor.hold();
             if (Math.abs(pid.getError())>setpoint.target_clicks.get()) {
                 setpoint.activate();
             }
@@ -105,7 +119,7 @@ public class Elevator extends Module {
         public void run () {
             holding = false;
             power = liftPower.get();
-            holdMotor.set(liftPower.get());
+            motor.set(liftPower.get());
         }
     }
 
@@ -152,16 +166,30 @@ public class Elevator extends Module {
 
     public Elevator() {
         super(Elevator.class);
-        encoder.setReverseDirection(true);
         pid = new ClampedIntegralPIDController(Calibration.ELEVATOR_P,
                 Calibration.ELEVATOR_I,
                 Calibration.ELEVATOR_D,
-                encoder,
-                motor,
-                Calibration.ELEVATOR_PID_PERIOD);
+                new PIDSource() {
+
+                    @Override
+                    public void setPIDSourceType(PIDSourceType pidSource) {
+                        // Ignore and do nothing
+                    }
+
+                    @Override
+                    public PIDSourceType getPIDSourceType() {
+                        return PIDSourceType.kDisplacement;
+                    }
+
+                    @Override
+                    public double pidGet() {
+                        return getEncoderPos();
+                    }
+                },
+                motor);
         pid.setIntegralLimits(Calibration.ELEVATOR_MIN_SUM, Calibration.ELEVATOR_MAX_SUM);
         pid.setOutputRange(Calibration.ELEVATOR_MIN_SPEED, Calibration.ELEVATOR_MAX_SPEED);
-        setpoint.target_clicks.set(encoder.get());
+        setpoint.target_clicks.set(getEncoderPos());
         setDefaultAction(setpoint);
     }
 }

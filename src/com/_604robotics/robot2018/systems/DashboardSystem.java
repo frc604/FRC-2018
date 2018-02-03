@@ -21,10 +21,10 @@ public class DashboardSystem extends Coordinator {
         //robot.dashboard.gyroAngle.set(robot.drive.gyroAngle.get());
         //robot.dashboard.totalCurrent.set(robot.powermonitor.totalPortCurrent.get());  
         
-        robot.dashboard.elevatorOffset.set(robot.elevator.getOffset.get());
+        /*robot.dashboard.elevatorOffset.set(robot.elevator.getOffset.get());
         robot.dashboard.elevatorUpwardsRange.set(robot.elevator.getUpwardsRange.get());
         robot.dashboard.elevatorDownwardsRange.set(robot.elevator.getDownwardsRange.get());
-        robot.dashboard.elevatorFailsafed.set(robot.elevator.getFailsafe.get());
+        robot.dashboard.elevatorFailsafed.set(robot.elevator.getFailsafe.get());*/
         
         robot.dashboard.elevatorRate.set(robot.elevator.encoderRate.get());
         robot.dashboard.elevatorClicks.set(robot.elevator.encoderClicks.get());

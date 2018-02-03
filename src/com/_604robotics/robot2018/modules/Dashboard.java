@@ -25,7 +25,7 @@ public class Dashboard extends DashboardModule {
     public final Input<Double> elevatorDownwardsRange = addDashboardInput("Downwards Range", 0.0);
     public final Input<Boolean> elevatorFailsafed = addDashboardInput("Failsafed", false);
     
-    public final Input<Double> elevatorRate = addDashboardInput("Elevator Rate", 0.0);
+    public final Input<Integer> elevatorRate = addDashboardInput("Elevator Rate", 0);
     public final Input<Integer> elevatorClicks = addDashboardInput("Elevator Clicks", 0);
     
     public final Input<Boolean> holding = addDashboardInput("Holding", true);
