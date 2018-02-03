@@ -3,13 +3,12 @@ package com._604robotics.robot2018.modes;
 import com._604robotics.robot2018.Robot2018;
 import com._604robotics.robot2018.constants.Calibration;
 import com._604robotics.robot2018.modules.Drive;
+import com._604robotics.robot2018.modules.Elevator;
 import com._604robotics.robotnik.Coordinator;
-import com._604robotics.robotnik.prefabs.flow.SmartTimer;
 import com._604robotics.robotnik.prefabs.flow.Toggle;
 import com._604robotics.robotnik.prefabs.inputcontroller.xbox.XboxController;
 
 public class TeleopMode extends Coordinator {
-    private boolean started = false;
 
     private final XboxController driver = new XboxController(0);
     private final XboxController manip = new XboxController(1);
@@ -17,6 +16,7 @@ public class TeleopMode extends Coordinator {
     private final Robot2018 robot;
 
     private final DriveManager driveManager;
+    private final ElevatorManager elevatorManager;
 
 
 
@@ -48,13 +48,51 @@ public class TeleopMode extends Coordinator {
         this.robot = robot;
 
         driveManager = new DriveManager();
+        elevatorManager = new ElevatorManager();
     }
 
     @Override
     public boolean run () {
         driveManager.run();
+        elevatorManager.run();
         return true;
-    }    
+    }
+
+    private class ElevatorManager {
+        private final Elevator.Move move;
+        private final Elevator.Setpoint setpoint;
+        private boolean isStationary=false;
+        private int holdClicks = 0;
+
+        public ElevatorManager() {
+            move = robot.elevator.new Move();
+            setpoint = robot.elevator.new Setpoint();
+        }
+
+        public void run() {
+            //System.out.println(robot.elevator.getEncoderPos());
+            double leftY = manip.leftStick.y.get();
+            boolean buttonY = manip.buttons.y.get();
+            if( buttonY ) {
+                isStationary=false;
+                setpoint.target_clicks.set(Calibration.ELEVATOR_Y_TARGET);
+                setpoint.activate();
+            } else {
+                if( /*leftY == 0 &&*/ manip.buttons.start.get()) {
+                    if (!isStationary) {
+                        isStationary=true;
+                        holdClicks=robot.elevator.encoderClicks.get();
+                    }
+                    setpoint.target_clicks.set(holdClicks);
+                    setpoint.activate();
+                } else {
+                    isStationary=false;
+                    move.liftPower.set(leftY);
+                    move.activate();
+                }
+            }
+        }
+    }
 
     private enum CurrentDrive {
         IDLE, ARCADE, TANK

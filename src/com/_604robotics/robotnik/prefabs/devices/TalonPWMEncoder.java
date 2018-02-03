@@ -5,25 +5,44 @@ import edu.wpi.first.wpilibj.PIDSource;
 import edu.wpi.first.wpilibj.PIDSourceType;
 
 public class TalonPWMEncoder implements PIDSource {
+    // Use TalonSRX because WPI_TalonSRX extends this
     private final TalonSRX talon;
     private PIDSourceType sourceType;
+    public enum EncoderType {
+        ABSOLUTE,
+        RELATIVE
+    }
+    private final EncoderType encoderType;
 
     public TalonPWMEncoder (TalonSRX talon) {
         this(talon, PIDSourceType.kDisplacement);
     }
-
+    
     public TalonPWMEncoder (TalonSRX talon, PIDSourceType sourceType) {
-        this.talon = talon;
-        this.sourceType = sourceType;
+        this(talon,sourceType,EncoderType.ABSOLUTE);
     }
 
-    // Verify getPulseWidth vs getQuadrature
+    public TalonPWMEncoder (TalonSRX talon, PIDSourceType sourceType, EncoderType type) {
+        this.talon = talon;
+        this.sourceType = sourceType;
+        this.encoderType = type;
+    }
+
+    // Absolute encoder setup
     public double getPosition () {
-        return talon.getSensorCollection().getPulseWidthPosition();
+        if (encoderType==EncoderType.ABSOLUTE) {
+            return talon.getSensorCollection().getPulseWidthPosition();
+        } else {
+            return talon.getSensorCollection().getQuadraturePosition();
+        }
     }
 
     public double getVelocity () {
-        return talon.getSensorCollection().getPulseWidthVelocity();
+        if (encoderType==EncoderType.ABSOLUTE) {
+            return talon.getSensorCollection().getPulseWidthVelocity();
+        } else {
+            return talon.getSensorCollection().getQuadratureVelocity();
+        }
     }
 
     @Override

@@ -19,7 +19,7 @@ import edu.wpi.first.wpilibj.PIDOutput;
  * Zero is assumed to be horizontal. Users are responsible for properly zeroing the AbsoluteEncoder beforehand.
  */
 @Deprecated @Untested("Math needs to be checked by constructing an actual arm")
-public class RotatingArmPIDController extends PIDController {
+public class RotatingArmPIDController extends ExtendablePIDController {
 
     public RotatingArmPIDController(double Kp, double Ki, double Kd, AbsoluteEncoder source, PIDOutput output) {
         super(Kp, Ki, Kd, source, output);
@@ -70,9 +70,12 @@ public class RotatingArmPIDController extends PIDController {
         // Calculate cosine for torque factor
         double angle;
         double fValue;
-        synchronized (this) {
+        m_thisMutex.lock();
+        try {
             angle = m_pidInput.pidGet();
             fValue = getF();
+        } finally {
+            m_thisMutex.unlock();
         }
         // Cosine is periodic so sawtooth wraparound is not a concern
         double cosine = Math.cos(Math.toRadians(angle));

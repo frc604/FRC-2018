@@ -1,6 +1,5 @@
 package com._604robotics.robot2018.modules;
 
-import com._604robotics.robot2018.constants.Calibration;
 import com._604robotics.robotnik.Input;
 import com._604robotics.robotnik.Output;
 import com._604robotics.robotnik.prefabs.modules.DashboardModule;
@@ -20,6 +19,17 @@ public class Dashboard extends DashboardModule {
     public final Output<Double> PIDRotateError = addDashboardOutput("PID Rotate Error",0.0);
     
     public final Input<Boolean> XboxFlipped = addDashboardInput("XboxFlipped", false);
+    
+    public final Input<Double> elevatorOffset = addDashboardInput("Elevator Offset", 0.0);
+    public final Input<Double> elevatorUpwardsRange = addDashboardInput("Upwards Range", 0.0);
+    public final Input<Double> elevatorDownwardsRange = addDashboardInput("Downwards Range", 0.0);
+    public final Input<Boolean> elevatorFailsafed = addDashboardInput("Failsafed", false);
+    
+    public final Input<Integer> elevatorRate = addDashboardInput("Elevator Rate", 0);
+    public final Input<Integer> elevatorClicks = addDashboardInput("Elevator Clicks", 0);
+    
+    public final Input<Boolean> holding = addDashboardInput("Holding", true);
+    public final Input<Double> power = addDashboardInput("Elevator Power", 0.0);
     
     public enum AutonMode {
         OFF,
