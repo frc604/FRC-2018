@@ -74,7 +74,7 @@ public class TeleopMode extends Coordinator {
         public void run() {
             //System.out.println("Encoder is "+robot.elevator.encoderClicks.get());
             //System.out.println("PID setpoint is "+setpoint.target_clicks.get());
-            System.out.println(robot.elevator.getEncoderPos());
+            //System.out.println(robot.elevator.getEncoderPos());
             double leftY = manip.leftStick.y.get();
             boolean buttonY = manip.buttons.y.get();
             if( buttonY ) {
