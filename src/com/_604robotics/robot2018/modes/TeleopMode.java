@@ -78,7 +78,7 @@ public class TeleopMode extends Coordinator {
                 setpoint.target_clicks.set(Calibration.ELEVATOR_Y_TARGET);
                 setpoint.activate();
             } else {
-                if( /*leftY == 0 &&*/ manip.buttons.start.get()) {
+                if( leftY == 0 ) {
                     if (!isStationary) {
                         isStationary=true;
                         holdClicks=robot.elevator.encoderClicks.get();
