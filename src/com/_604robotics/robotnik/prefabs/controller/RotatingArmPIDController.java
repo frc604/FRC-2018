@@ -19,7 +19,7 @@ import edu.wpi.first.wpilibj.PIDOutput;
  * Zero is assumed to be horizontal. Users are responsible for properly zeroing the AbsoluteEncoder beforehand.
  */
 @Deprecated @Untested("Math needs to be checked by constructing an actual arm")
-public class RotatingArmPIDController extends ExtendablePIDController {
+public class RotatingArmPIDController extends ClampedIntegralPIDController {
 
     public RotatingArmPIDController(double Kp, double Ki, double Kd, AbsoluteEncoder source, PIDOutput output) {
         super(Kp, Ki, Kd, source, output);
