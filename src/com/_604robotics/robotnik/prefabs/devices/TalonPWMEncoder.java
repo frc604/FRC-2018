@@ -28,7 +28,7 @@ public class TalonPWMEncoder implements PIDSource {
         this.encoderType = type;
     }
 
-    // Absolute encoder setup
+    // Use quadrature output for relative and pulse width output for absolute
     public double getPosition () {
         if (encoderType==EncoderType.ABSOLUTE) {
             return talon.getSensorCollection().getPulseWidthPosition();
@@ -37,6 +37,7 @@ public class TalonPWMEncoder implements PIDSource {
         }
     }
 
+    // Use quadrature output for relative and pulse width output for absolute
     public double getVelocity () {
         if (encoderType==EncoderType.ABSOLUTE) {
             return talon.getSensorCollection().getPulseWidthVelocity();
