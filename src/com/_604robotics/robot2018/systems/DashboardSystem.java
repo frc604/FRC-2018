@@ -27,11 +27,11 @@ public class DashboardSystem extends Coordinator {
         robot.dashboard.elevatorDownwardsRange.set(robot.elevator.getDownwardsRange.get());
         robot.dashboard.elevatorFailsafed.set(robot.elevator.getFailsafe.get());*/
         
-        robot.dashboard.elevatorRate.set(robot.elevator.encoderRate.get());
-        robot.dashboard.elevatorClicks.set(robot.elevator.encoderClicks.get());
+        //robot.dashboard.elevatorRate.set(robot.elevator.encoderRate.get());
+        //robot.dashboard.elevatorClicks.set(robot.elevator.encoderClicks.get());
         
-        robot.dashboard.holding.set(robot.elevator.getHolding.get());
-        robot.dashboard.power.set(robot.elevator.getPower.get());
+        //robot.dashboard.holding.set(robot.elevator.getHolding.get());
+        //robot.dashboard.power.set(robot.elevator.getPower.get());
         return true;
     }
 }

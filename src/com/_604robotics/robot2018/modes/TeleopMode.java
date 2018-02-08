@@ -4,6 +4,7 @@ import com._604robotics.robot2018.Robot2018;
 import com._604robotics.robot2018.constants.Calibration;
 import com._604robotics.robot2018.modules.Drive;
 import com._604robotics.robot2018.modules.Elevator;
+import com._604robotics.robot2018.modules.SimpleVictor;
 import com._604robotics.robotnik.Coordinator;
 import com._604robotics.robotnik.prefabs.flow.Toggle;
 import com._604robotics.robotnik.prefabs.inputcontroller.xbox.XboxController;
@@ -12,12 +13,13 @@ public class TeleopMode extends Coordinator {
 
     private final XboxController driver = new XboxController(0);
     private final XboxController manip = new XboxController(1);
+    private final XboxController debug = new XboxController(2);
 
     private final Robot2018 robot;
 
     private final DriveManager driveManager;
-    private final ElevatorManager elevatorManager;
-
+    //private final ElevatorManager elevatorManager;
+    private final SimpleVictorManager simpleVictorManager;
 
 
     public TeleopMode (Robot2018 robot) {
@@ -44,20 +46,54 @@ public class TeleopMode extends Coordinator {
 
         manip.rightStick.x.setFactor(Calibration.TELEOP_FACTOR);
         manip.rightStick.y.setFactor(Calibration.TELEOP_FACTOR);
+        
+        debug.leftStick.x.setDeadband(Calibration.TELEOP_DEADBAND);
+        debug.leftStick.y.setDeadband(Calibration.TELEOP_DEADBAND);
+
+        debug.leftStick.x.setFactor(Calibration.TELEOP_FACTOR);
+        debug.leftStick.y.setFactor(Calibration.TELEOP_FACTOR);
+
+        debug.rightStick.x.setDeadband(Calibration.TELEOP_DEADBAND);
+        debug.rightStick.y.setDeadband(Calibration.TELEOP_DEADBAND);
+
+        debug.rightStick.x.setFactor(Calibration.TELEOP_FACTOR);
+        debug.rightStick.y.setFactor(Calibration.TELEOP_FACTOR);
 
         this.robot = robot;
 
         driveManager = new DriveManager();
-        elevatorManager = new ElevatorManager();
+        //elevatorManager = new ElevatorManager();
+        simpleVictorManager = new SimpleVictorManager();
     }
 
     @Override
     public boolean run () {
         driveManager.run();
-        elevatorManager.run();
+        //elevatorManager.run();
+        simpleVictorManager.run();
         return true;
     }
 
+    private class SimpleVictorManager {
+    	private final SimpleVictor.Move move;
+    	private final SimpleVictor.Idle idle;
+    	
+    	public SimpleVictorManager() {
+    		move = robot.simpleVictor.new Move();
+    		idle = robot.simpleVictor.new Idle();
+    	}
+    	
+    	public void run() {
+    		double leftY = debug.leftStick.y.get();
+    		if( leftY == 0 ) {
+    			idle.activate();
+    		} else {
+    			move.power.set(leftY);
+    			move.activate();
+    		}
+    	}
+    }
+    /*
     private class ElevatorManager {
         private final Elevator.Move move;
         private final Elevator.Setpoint setpoint;
@@ -93,7 +129,7 @@ public class TeleopMode extends Coordinator {
             }
         }
     }
-
+     */
     private enum CurrentDrive {
         IDLE, ARCADE, TANK
     }
