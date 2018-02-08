@@ -13,7 +13,6 @@ public class TeleopMode extends Coordinator {
 
     private final XboxController driver = new XboxController(0);
     private final XboxController manip = new XboxController(1);
-    private final XboxController debug = new XboxController(2);
 
     private final Robot2018 robot;
 
@@ -46,18 +45,6 @@ public class TeleopMode extends Coordinator {
 
         manip.rightStick.x.setFactor(Calibration.TELEOP_FACTOR);
         manip.rightStick.y.setFactor(Calibration.TELEOP_FACTOR);
-        
-        debug.leftStick.x.setDeadband(Calibration.TELEOP_DEADBAND);
-        debug.leftStick.y.setDeadband(Calibration.TELEOP_DEADBAND);
-
-        debug.leftStick.x.setFactor(Calibration.TELEOP_FACTOR);
-        debug.leftStick.y.setFactor(Calibration.TELEOP_FACTOR);
-
-        debug.rightStick.x.setDeadband(Calibration.TELEOP_DEADBAND);
-        debug.rightStick.y.setDeadband(Calibration.TELEOP_DEADBAND);
-
-        debug.rightStick.x.setFactor(Calibration.TELEOP_FACTOR);
-        debug.rightStick.y.setFactor(Calibration.TELEOP_FACTOR);
 
         this.robot = robot;
 
@@ -84,7 +71,7 @@ public class TeleopMode extends Coordinator {
     	}
     	
     	public void run() {
-    		double leftY = debug.leftStick.y.get();
+    		double leftY = manip.rightStick.y.get();
     		if( leftY == 0 ) {
     			idle.activate();
     		} else {
