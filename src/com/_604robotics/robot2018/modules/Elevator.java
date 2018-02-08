@@ -16,7 +16,7 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 public class Elevator extends Module {
 
-    public WPI_TalonSRX motor = new WPI_TalonSRX(Ports.ELEVATOR_MOTOR);
+    public WPI_TalonSRX motor = new WPI_TalonSRX(Ports.ELEVATOR_MOTOR_A);
 
     public final Setpoint setpoint = new Setpoint();
 

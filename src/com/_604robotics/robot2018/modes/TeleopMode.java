@@ -3,7 +3,7 @@ package com._604robotics.robot2018.modes;
 import com._604robotics.robot2018.Robot2018;
 import com._604robotics.robot2018.constants.Calibration;
 import com._604robotics.robot2018.modules.Drive;
-import com._604robotics.robot2018.modules.Elevator;
+import com._604robotics.robot2018.modules.TalonTest;
 import com._604robotics.robotnik.Coordinator;
 import com._604robotics.robotnik.prefabs.flow.Toggle;
 import com._604robotics.robotnik.prefabs.inputcontroller.xbox.XboxController;
@@ -16,9 +16,9 @@ public class TeleopMode extends Coordinator {
     private final Robot2018 robot;
 
     private final DriveManager driveManager;
-    private final ElevatorManager elevatorManager;
+    //private final ElevatorManager elevatorManager;
 
-
+    private final TalonTestManager talonTestManager;
 
     public TeleopMode (Robot2018 robot) {
         driver.leftStick.x.setDeadband(Calibration.TELEOP_DEADBAND);
@@ -48,16 +48,18 @@ public class TeleopMode extends Coordinator {
         this.robot = robot;
 
         driveManager = new DriveManager();
-        elevatorManager = new ElevatorManager();
+        talonTestManager = new TalonTestManager();
+        //elevatorManager = new ElevatorManager();
     }
 
     @Override
     public boolean run () {
         driveManager.run();
-        elevatorManager.run();
+        talonTestManager.run();
+        //elevatorManager.run();
         return true;
     }
-
+    /*
     private class ElevatorManager {
         private final Elevator.Move move;
         private final Elevator.Setpoint setpoint;
@@ -90,6 +92,29 @@ public class TeleopMode extends Coordinator {
                     move.liftPower.set(leftY);
                     move.activate();
                 }
+            }
+        }
+    }
+    
+    */
+    
+    private class TalonTestManager {
+        private final TalonTest.Move move;
+        private final TalonTest.Idle idle;
+
+        public TalonTestManager() {
+            move = robot.talonTest.new Move();
+            idle = robot.talonTest.new Idle();
+        }
+
+        public void run() {
+            //System.out.println(robot.elevator.getEncoderPos());
+            double leftY = manip.leftStick.y.get();
+            if( leftY == 0 ) {
+            	idle.activate();
+            } else {
+                move.liftPower.set(leftY);
+                move.activate();
             }
         }
     }
