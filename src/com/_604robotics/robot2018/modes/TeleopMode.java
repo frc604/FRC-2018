@@ -18,7 +18,7 @@ public class TeleopMode extends Coordinator {
     private final Robot2018 robot;
 
     private final DriveManager driveManager;
-    //private final ElevatorManager elevatorManager;
+    private final ElevatorManager elevatorManager;
     private final SimpleVictorManager simpleVictorManager;
 
 
@@ -62,14 +62,14 @@ public class TeleopMode extends Coordinator {
         this.robot = robot;
 
         driveManager = new DriveManager();
-        //elevatorManager = new ElevatorManager();
+        elevatorManager = new ElevatorManager();
         simpleVictorManager = new SimpleVictorManager();
     }
 
     @Override
     public boolean run () {
         driveManager.run();
-        //elevatorManager.run();
+        elevatorManager.run();
         simpleVictorManager.run();
         return true;
     }
@@ -93,7 +93,7 @@ public class TeleopMode extends Coordinator {
     		}
     	}
     }
-    /*
+    
     private class ElevatorManager {
         private final Elevator.Move move;
         private final Elevator.Setpoint setpoint;
@@ -129,7 +129,7 @@ public class TeleopMode extends Coordinator {
             }
         }
     }
-     */
+     
     private enum CurrentDrive {
         IDLE, ARCADE, TANK
     }
