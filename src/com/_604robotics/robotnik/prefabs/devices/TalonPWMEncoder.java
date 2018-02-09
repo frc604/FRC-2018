@@ -13,6 +13,8 @@ public class TalonPWMEncoder implements PIDSource {
         RELATIVE
     }
     private final EncoderType encoderType;
+    private boolean inverted;
+    private double offset = 0;
 
     public TalonPWMEncoder (TalonSRX talon) {
         this(talon, PIDSourceType.kDisplacement);
@@ -26,23 +28,34 @@ public class TalonPWMEncoder implements PIDSource {
         this.talon = talon;
         this.sourceType = sourceType;
         this.encoderType = type;
+        this.inverted = false;
+    }
+
+    public boolean isInverted() {
+        return inverted;
+    }
+
+    public void setInverted(boolean inverted) {
+        this.inverted = inverted;
     }
 
     // Use quadrature output for relative and pulse width output for absolute
     public double getPosition () {
+        int multfactor = inverted ? -1 : 1;
         if (encoderType==EncoderType.ABSOLUTE) {
-            return talon.getSensorCollection().getPulseWidthPosition();
+            return multfactor*(talon.getSensorCollection().getPulseWidthPosition()-offset);
         } else {
-            return talon.getSensorCollection().getQuadraturePosition();
+            return multfactor*talon.getSensorCollection().getQuadraturePosition();
         }
     }
 
     // Use quadrature output for relative and pulse width output for absolute
     public double getVelocity () {
+        int multfactor = inverted ? -1 : 1;
         if (encoderType==EncoderType.ABSOLUTE) {
-            return talon.getSensorCollection().getPulseWidthVelocity();
+            return multfactor*talon.getSensorCollection().getPulseWidthVelocity();
         } else {
-            return talon.getSensorCollection().getQuadratureVelocity();
+            return multfactor*talon.getSensorCollection().getQuadratureVelocity();
         }
     }
 
@@ -65,6 +78,13 @@ public class TalonPWMEncoder implements PIDSource {
     @Override
     public void setPIDSourceType (PIDSourceType sourceType) {
         this.sourceType = sourceType;
+    }
+    
+    public void zero() {
+        if (encoderType==EncoderType.ABSOLUTE) {
+            int multfactor = inverted ? -1 : 1;
+            offset=multfactor*talon.getSensorCollection().getPulseWidthPosition();
+        }
     }
 }
 
