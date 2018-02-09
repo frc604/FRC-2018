@@ -7,21 +7,26 @@ import com._604robotics.robotnik.Input;
 import com._604robotics.robotnik.Module;
 import com._604robotics.robotnik.Output;
 import com._604robotics.robotnik.prefabs.controller.ClampedIntegralPIDController;
+import com._604robotics.robotnik.prefabs.devices.TalonPWMEncoder;
+import com._604robotics.robotnik.prefabs.devices.wrappers.InvertPIDSource;
 import com._604robotics.robotnik.prefabs.flow.SmartTimer;
 
 import edu.wpi.first.wpilibj.PIDSource;
 import edu.wpi.first.wpilibj.PIDSourceType;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 public class Elevator extends Module {
 
     public WPI_TalonSRX motor = new WPI_TalonSRX(Ports.ELEVATOR_MOTOR_A);
+    public WPI_TalonSRX motorb = new WPI_TalonSRX(Ports.ELEVATOR_MOTOR_B);
+    public TalonPWMEncoder encod = new TalonPWMEncoder(motor);
 
     public final Setpoint setpoint = new Setpoint();
 
-    public final Output<Integer> encoderRate = addOutput("Elevator Rate", this::getEncoderRate);
-    public final Output<Integer> encoderClicks = addOutput("Elevator Clicks", this::getEncoderPos);
+    public final Output<Double> encoderRate = addOutput("Elevator Rate", encod::getVelocity);
+    public final Output<Double> encoderClicks = addOutput("Elevator Clicks", encod::getPosition);
 
     public boolean holding = true;
     public double power = 0;
@@ -30,15 +35,8 @@ public class Elevator extends Module {
     public final Output<Double> getPower = addOutput("Power", this::getPower);
 
     private final ClampedIntegralPIDController pid;
-    private final SmartTimer PIDTimer = new SmartTimer();
-
     
-    public int getEncoderPos() {
-        return -motor.getSensorCollection().getPulseWidthPosition(); 
-    }
-    public int getEncoderRate() {
-        return -motor.getSensorCollection().getPulseWidthVelocity(); 
-    }
+    public final Output<Double> pidError;
 
     public boolean getHolding() {
         return holding;
@@ -69,13 +67,13 @@ public class Elevator extends Module {
     }
 
     public class Setpoint extends Action {
-        public final Input<Integer> target_clicks;
+        public final Input<Double> target_clicks;
 
         public Setpoint() {
             this(0);
         }
 
-        public Setpoint(int clicks) {
+        public Setpoint(double clicks) {
             super(Elevator.this, Setpoint.class);
             target_clicks = addInput("Target Clicks", clicks, true);
         }
@@ -91,38 +89,26 @@ public class Elevator extends Module {
         }
         @Override
         public void end () {
-            PIDTimer.reset();
             pid.reset();
         }
     }
 
     public Elevator() {
         super(Elevator.class);
+        encod.setInverted(false);
+        motor.setInverted(true);
+        motorb.setInverted(true);
+        motorb.set(ControlMode.Follower,Ports.ELEVATOR_MOTOR_A);
         pid = new ClampedIntegralPIDController(Calibration.ELEVATOR_P,
                 Calibration.ELEVATOR_I,
                 Calibration.ELEVATOR_D,
-                new PIDSource() {
-
-                    @Override
-                    public void setPIDSourceType(PIDSourceType pidSource) {
-                        // Ignore and do nothing
-                    }
-
-                    @Override
-                    public PIDSourceType getPIDSourceType() {
-                        return PIDSourceType.kDisplacement;
-                    }
-
-                    @Override
-                    public double pidGet() {
-                        return getEncoderPos();
-                    }
-                },
+                encod,
                 motor,
                 Calibration.ELEVATOR_PID_PERIOD);
+        pidError = addOutput("PID Error", pid::getError);
         pid.setIntegralLimits(Calibration.ELEVATOR_MIN_SUM, Calibration.ELEVATOR_MAX_SUM);
         pid.setOutputRange(Calibration.ELEVATOR_MIN_SPEED, Calibration.ELEVATOR_MAX_SPEED);
-        setpoint.target_clicks.set(getEncoderPos());
+        setpoint.target_clicks.set(encod.getPosition());
         setDefaultAction(setpoint);
     }
 }
