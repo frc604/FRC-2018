@@ -22,26 +22,26 @@ public class TeleopMode extends Coordinator {
 
 
     public TeleopMode (Robot2018 robot) {
-        driver.leftStick.x.setDeadband(Calibration.TELEOP_DEADBAND);
-        driver.leftStick.y.setDeadband(Calibration.TELEOP_DEADBAND);
+        driver.leftStick.x.setDeadband(Calibration.TELEOP_DRIVE_DEADBAND);
+        driver.leftStick.y.setDeadband(Calibration.TELEOP_DRIVE_DEADBAND);
 
         driver.leftStick.x.setFactor(Calibration.TELEOP_FACTOR);
         driver.leftStick.y.setFactor(Calibration.TELEOP_FACTOR);
 
-        driver.rightStick.x.setDeadband(Calibration.TELEOP_DEADBAND);
-        driver.rightStick.y.setDeadband(Calibration.TELEOP_DEADBAND);
+        driver.rightStick.x.setDeadband(Calibration.TELEOP_DRIVE_DEADBAND);
+        driver.rightStick.y.setDeadband(Calibration.TELEOP_DRIVE_DEADBAND);
 
         driver.rightStick.x.setFactor(Calibration.TELEOP_FACTOR);
         driver.rightStick.y.setFactor(Calibration.TELEOP_FACTOR);
 
-        manip.leftStick.x.setDeadband(Calibration.TELEOP_DEADBAND);
-        manip.leftStick.y.setDeadband(Calibration.TELEOP_DEADBAND);
+        manip.leftStick.x.setDeadband(Calibration.TELEOP_MANIP_DEADBAND);
+        manip.leftStick.y.setDeadband(Calibration.TELEOP_MANIP_DEADBAND);
 
         manip.leftStick.x.setFactor(Calibration.TELEOP_FACTOR);
         manip.leftStick.y.setFactor(Calibration.TELEOP_FACTOR);
 
-        manip.rightStick.x.setDeadband(Calibration.TELEOP_DEADBAND);
-        manip.rightStick.y.setDeadband(Calibration.TELEOP_DEADBAND);
+        manip.rightStick.x.setDeadband(Calibration.TELEOP_MANIP_DEADBAND);
+        manip.rightStick.y.setDeadband(Calibration.TELEOP_MANIP_DEADBAND);
 
         manip.rightStick.x.setFactor(Calibration.TELEOP_FACTOR);
         manip.rightStick.y.setFactor(Calibration.TELEOP_FACTOR);
@@ -85,7 +85,7 @@ public class TeleopMode extends Coordinator {
         private final Elevator.Move move;
         private final Elevator.Setpoint setpoint;
         private boolean isStationary=false;
-        private int holdClicks = 0;
+        private double holdClicks = 0;
 
         public ElevatorManager() {
             move = robot.elevator.new Move();
@@ -95,10 +95,31 @@ public class TeleopMode extends Coordinator {
         public void run() {
             //System.out.println(robot.elevator.getEncoderPos());
             double leftY = manip.leftStick.y.get();
-            boolean buttonY = manip.buttons.y.get();
-            if( buttonY ) {
+            boolean start = manip.buttons.start.get();
+            System.out.println("Error is "+robot.elevator.pidError.get());
+            if (start) {
+                robot.elevator.encod.zero();
+                holdClicks = robot.elevator.encoderClicks.get();
+                setpoint.target_clicks.set(holdClicks);
+                setpoint.activate();
+                // Restructure into else later
+                return;
+            }
+            if( manip.buttons.y.get() ) {
                 isStationary=false;
                 setpoint.target_clicks.set(Calibration.ELEVATOR_Y_TARGET);
+                setpoint.activate();
+            } else if ( manip.buttons.x.get() ) {
+                isStationary=false;
+                setpoint.target_clicks.set(Calibration.ELEVATOR_X_TARGET);
+                setpoint.activate();
+            } else if ( manip.buttons.b.get() ) {
+                isStationary=false;
+                setpoint.target_clicks.set(Calibration.ELEVATOR_B_TARGET);
+                setpoint.activate();
+            } else if ( manip.buttons.a.get() ) {
+                isStationary=false;
+                setpoint.target_clicks.set(Calibration.ELEVATOR_A_TARGET);
                 setpoint.activate();
             } else {
                 if( leftY == 0 ) {

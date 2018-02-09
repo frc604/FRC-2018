@@ -7,12 +7,13 @@ import com._604robotics.robotnik.utils.annotations.Untested;
 public class Calibration {
     private Calibration () {}
 
-    public static final double TELEOP_DEADBAND = 0.3;
-    public static final double TELEOP_FACTOR   = -1;
+    public static final double TELEOP_DRIVE_DEADBAND = 0.3;
+    public static final double TELEOP_MANIP_DEADBAND = 0.08;
+    public static final double TELEOP_FACTOR = -1;
     
     public static final double DRIVE_MOVE_PID_P = 0.005;
     public static final double DRIVE_MOVE_PID_I = 0;
-    // TODO: This probably needs to be mush smaller
+    // TODO: This probably needs to be much smaller?
     public static final double DRIVE_MOVE_PID_D = 0.01;
     public static final double DRIVE_MOVE_PID_MAX = 0.5;
     public static final double DRIVE_MOVE_TOLERANCE = 20;
@@ -63,24 +64,28 @@ public class Calibration {
     public static final double ELEVATOR_RATE_TARGET = 500;
     public static final double ELEVATOR_RATE_TOLERANCE = 50;
 
-    public static final double ELEVATOR_P = 0.0002;
-    public static final double ELEVATOR_I = 0.0001;
+    // Elevator steady-state power is ~0.1 without arm attached
+    public static final double ELEVATOR_P = 0.00007;
+    public static final double ELEVATOR_I = 0.00006;
     public static final double ELEVATOR_D = 0.00002;
     
-    // Bound I term motor output to 0.8
-    public static final double ELEVATOR_MAX_SUM = 0.6/ELEVATOR_I;
+    // Bound I term motor output to 1
+    public static final double ELEVATOR_MAX_SUM = 1/ELEVATOR_I;
     // I term which props up elevator should never be negative
     public static final double ELEVATOR_MIN_SUM = 0;
-    // This is the default value but specify it explicitly
     public static final double ELEVATOR_PID_PERIOD = 0.02;
     // Lower speed going down due to weight
-    public static final double ELEVATOR_MIN_SPEED = -0.7;
-    public static final double ELEVATOR_MAX_SPEED = 1;
+    public static final double ELEVATOR_MIN_SPEED = -0.1;
+    @Unreal("Will need to be adjusted up once weight is attached")
+    public static final double ELEVATOR_MAX_SPEED = 0.4;
     
     public static final double ELEVATOR_TARGET_SPEED = 0.5;
     public static final int ELEVATOR_CLICK_TOLERANCE = 100;//25
     
-    public static final int  ELEVATOR_Y_TARGET = 8000;//about 1000 * 4096/490
+    public static final double  ELEVATOR_Y_TARGET = 16000;
+    public static final double ELEVATOR_B_TARGET = 8000;
+    public static final double ELEVATOR_X_TARGET = 4000;
+    public static final double ELEVATOR_A_TARGET = 1000;
     @Unreal("Find more reasonable time or eliminate hold part altogether")
 	public static final double ELEVATOR_PID_CONTINUE = 10;
 }
