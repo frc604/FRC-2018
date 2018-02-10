@@ -56,9 +56,102 @@ public class TeleopMode extends Coordinator {
         intakeManager = new IntakeManager();
         armManager = new ArmManager();
     }
-
+    
+    public double driverLeftJoystickY;
+    public double driverLeftJoystickX;
+    public double driverLeftTrigger;
+    
+    public boolean driverLeftJoystickButton;
+    public boolean driverLeftTriggerButton;
+    public boolean driverLeftBumper;
+    
+    public double driverRightJoystickY;
+    public double driverRightJoystickX;
+    public double driverRightTrigger;
+    
+    public boolean driverRightJoystickButton;
+    public boolean driverRightTriggerButton;
+    public boolean driverRightBumper;
+    
+    public boolean driverBack;
+    public boolean driverStart;
+    public boolean driverA;
+    public boolean driverB;
+    public boolean driverX;
+    public boolean driverY;
+    
+    public double manipLeftJoystickY;
+    public double manipLeftJoystickX;
+    public double manipLeftTrigger;
+    
+    public boolean manipLeftJoystickButton;
+    public boolean manipLeftTriggerButton;
+    public boolean manipLeftBumper;
+    
+    public double manipRightJoystickY;
+    public double manipRightJoystickX;
+    public double manipRightTrigger;
+    
+    public boolean manipRightJoystickButton;
+    public boolean manipRightTriggerButton;
+    public boolean manipRightBumper;
+    
+    public boolean manipBack;
+    public boolean manipStart;
+    public boolean manipA;
+    public boolean manipB;
+    public boolean manipX;
+    public boolean manipY;
+    
     @Override
     public boolean run () {
+    	
+    	driverLeftJoystickY = driver.leftStick.y.get();
+        driverLeftJoystickX = driver.leftStick.x.get();
+        driverLeftTrigger = driver.triggers.left.get();
+        
+        driverLeftJoystickButton = driver.buttons.leftStick.get();
+        driverLeftTriggerButton = driver.buttons.lt.get();
+        driverLeftBumper = driver.buttons.lb.get();
+        
+        driverRightJoystickY = driver.rightStick.y.get();
+        driverRightJoystickX = driver.rightStick.x.get();
+        driverRightTrigger = driver.triggers.right.get();
+        
+        driverRightJoystickButton = driver.buttons.rightStick.get();
+        driverRightTriggerButton = driver.buttons.lt.get();
+        driverRightBumper = driver.buttons.lb.get();
+        
+        driverBack = driver.buttons.back.get();
+        driverStart = driver.buttons.start.get();
+        driverA = driver.buttons.a.get();
+        driverB = driver.buttons.b.get();
+        driverX = driver.buttons.x.get();
+        driverY = driver.buttons.y.get();
+        
+        manipLeftJoystickY = manip.leftStick.y.get();
+        manipLeftJoystickX = manip.leftStick.x.get();
+        manipLeftTrigger = manip.triggers.left.get();
+        
+        manipLeftJoystickButton = manip.buttons.leftStick.get();
+        manipLeftTriggerButton = manip.buttons.lt.get();
+        manipLeftBumper = manip.buttons.lb.get();
+        
+        manipRightJoystickY = manip.rightStick.y.get();
+        manipRightJoystickX = manip.rightStick.x.get();
+        manipRightTrigger = manip.triggers.right.get();
+        
+        manipRightJoystickButton = manip.buttons.rightStick.get();
+        manipRightTriggerButton = manip.buttons.lt.get();
+        manipRightBumper = manip.buttons.lb.get();
+        
+        manipBack = manip.buttons.back.get();
+        manipStart = manip.buttons.start.get();
+        manipA = manip.buttons.a.get();
+        manipB = manip.buttons.b.get();
+        manipX = manip.buttons.x.get();
+        manipY = manip.buttons.y.get();
+    	
         driveManager.run();
         elevatorManager.run();
         intakeManager.run();
@@ -76,31 +169,27 @@ public class TeleopMode extends Coordinator {
     	}
     	
     	public void run() {
-    		// TODO; literally everything
+    		
     	}
     }
     
     
     private class IntakeManager {
     	private final Intake.Idle idle;
-    	private final Intake.Spit spit;
-    	private final Intake.Suck suck;
+    	private final Intake.Run run;
     	
     	public IntakeManager() {
     		idle = robot.intake.new Idle();
-    		spit = robot.intake.new Spit();
-    		suck = robot.intake.new Suck();
+    		run = robot.intake.new Run();
     	}
     	
     	public void run() {
-    		double leftTrigger = driver.triggers.left.get();
-    		double rightTrigger = driver.triggers.right.get();
-    		if( leftTrigger == 0 && rightTrigger == 0 ) {
+    		if( driverLeftTrigger != 0 || driverRightTrigger != 0 ) {
+    			run.runPower.set(driverLeftTrigger*driverLeftTrigger - driverRightTrigger*driverRightTrigger);
+    		} else if( manipLeftTrigger != 0 || manipLeftTrigger != 0 ) {
+    			run.runPower.set(manipLeftTrigger*manipLeftTrigger - manipRightTrigger*manipRightTrigger);
+    		} else {
     			idle.activate();
-    		} else if( leftTrigger != 0 ) {
-    			suck.suckPower.set(leftTrigger*leftTrigger);
-    		} else if( rightTrigger != 0 ) {
-    			spit.spitPower.set(rightTrigger*rightTrigger);
     		}
     	}
     }
@@ -205,16 +294,12 @@ public class TeleopMode extends Coordinator {
             } else if (gearState.isInOffState()) {
                 robot.shifter.lowGear.activate();
             }*/
-            // Get Xbox data
-            double leftY=driver.leftStick.y.get();
-            double rightX=driver.rightStick.x.get();
-            double rightY=driver.rightStick.y.get();
             // Flip values if xbox inverted
             inverted.update(driver.buttons.rb.get());
             robot.dashboard.XboxFlipped.set(inverted.isInOnState());
             if (inverted.isInOnState()) {
-                leftY*=-1;
-                rightY*=-1;
+                driverLeftJoystickY*=-1;
+                driverRightJoystickY*=-1;
             }
             // Get Dashboard option for drive
             switch (robot.dashboard.driveMode.get()){
@@ -230,11 +315,11 @@ public class TeleopMode extends Coordinator {
                 case DYNAMIC:
                     // Dynamic Drive mode detection logic
                     if (currentDrive == CurrentDrive.TANK) {
-                        if (Math.abs(rightY) <= 0.2 && Math.abs(rightX) > 0.3) {
+                        if (Math.abs(driverRightJoystickY) <= 0.2 && Math.abs(driverRightJoystickX) > 0.3) {
                             currentDrive = CurrentDrive.ARCADE;
                         }
                     } else { // currentDrive == CurrentDrive.ARCADE
-                        if (Math.abs(rightX) <= 0.2 && Math.abs(rightY) > 0.3) {
+                        if (Math.abs(driverRightJoystickX) <= 0.2 && Math.abs(driverRightJoystickY) > 0.3) {
                             currentDrive = CurrentDrive.TANK;
                         }
                     }
@@ -250,13 +335,13 @@ public class TeleopMode extends Coordinator {
                     idle.activate();
                     break;
                 case ARCADE:
-                    arcade.movePower.set(leftY);
-                    arcade.rotatePower.set(rightX);
+                    arcade.movePower.set(driverLeftJoystickY);
+                    arcade.rotatePower.set(driverRightJoystickX);
                     arcade.activate();
                     break;
                 case TANK:
-                    tank.leftPower.set(leftY);
-                    tank.rightPower.set(rightY);
+                    tank.leftPower.set(driverLeftJoystickY);
+                    tank.rightPower.set(driverRightJoystickY);
                     tank.activate();
                     break;
             }
