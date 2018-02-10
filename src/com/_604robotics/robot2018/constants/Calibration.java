@@ -66,7 +66,7 @@ public class Calibration {
 
     // Elevator steady-state power is ~0.1 without arm attached
     public static final double ELEVATOR_P = 0.00007;
-    public static final double ELEVATOR_I = 0.00006;
+    public static final double ELEVATOR_I = 0.00004;
     public static final double ELEVATOR_D = 0.00002;
     
     // Bound I term motor output to 1
@@ -78,6 +78,8 @@ public class Calibration {
     public static final double ELEVATOR_MIN_SPEED = -0.1;
     @Unreal("Will need to be adjusted up once weight is attached")
     public static final double ELEVATOR_MAX_SPEED = 0.4;
+    @Unreal("Will change once the final weight characteristics are found")
+    public static final double ELEVATOR_INTEGRAL_RESET = 0.1;
     
     public static final double ELEVATOR_TARGET_SPEED = 0.5;
     public static final int ELEVATOR_CLICK_TOLERANCE = 100;//25
