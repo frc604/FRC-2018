@@ -2,10 +2,10 @@ package com._604robotics.robot2018.modes;
 
 import com._604robotics.robot2018.Robot2018;
 import com._604robotics.robot2018.constants.Calibration;
+import com._604robotics.robot2018.modules.Arm;
 import com._604robotics.robot2018.modules.Drive;
 import com._604robotics.robot2018.modules.Elevator;
 import com._604robotics.robot2018.modules.Intake;
-import com._604robotics.robot2018.modules.SimpleVictor;
 import com._604robotics.robotnik.Coordinator;
 import com._604robotics.robotnik.prefabs.flow.Pulse;
 import com._604robotics.robotnik.prefabs.flow.Toggle;
@@ -20,8 +20,8 @@ public class TeleopMode extends Coordinator {
 
     private final DriveManager driveManager;
     private final ElevatorManager elevatorManager;
-    //private final SimpleVictorManager simpleVictorManager;
     private final IntakeManager intakeManager;
+    private final ArmManager armManager;
 
 
     public TeleopMode (Robot2018 robot) {
@@ -54,7 +54,7 @@ public class TeleopMode extends Coordinator {
         driveManager = new DriveManager();
         elevatorManager = new ElevatorManager();
         intakeManager = new IntakeManager();
-        //simpleVictorManager = new SimpleVictorManager();
+        armManager = new ArmManager();
     }
 
     @Override
@@ -62,31 +62,24 @@ public class TeleopMode extends Coordinator {
         driveManager.run();
         elevatorManager.run();
         intakeManager.run();
-        //simpleVictorManager.run();
+        armManager.run();
         return true;
     }
-    
-    /*
-    private class SimpleVictorManager {
-    	private final SimpleVictor.Move move;
-    	private final SimpleVictor.Idle idle;
+   
+    private class ArmManager {
+    	private final Arm.Move move;
+    	private final Arm.Setpoint setpoint;
     	
-    	public SimpleVictorManager() {
-    		move = robot.simpleVictor.new Move();
-    		idle = robot.simpleVictor.new Idle();
+    	public ArmManager() {
+    		move = robot.arm.new Move();
+    		setpoint = robot.arm.new Setpoint();
     	}
     	
     	public void run() {
-    		double leftY = manip.rightStick.y.get();
-    		if( leftY == 0 ) {
-    			idle.activate();
-    		} else {
-    			move.power.set(leftY);
-    			move.activate();
-    		}
+    		// TODO; literally everything
     	}
     }
-    */
+    
     
     private class IntakeManager {
     	private final Intake.Idle idle;
@@ -131,11 +124,11 @@ public class TeleopMode extends Coordinator {
             boolean start = manip.buttons.start.get();
             System.out.println("Error is "+robot.elevator.pidError.get());
             if (start) {
-                robot.elevator.encod.zero();
+                robot.elevator.encoder.zero();
                 holdClicks = robot.elevator.encoderClicks.get();
                 setpoint.target_clicks.set(holdClicks);
                 setpoint.activate();
-                // Restructure into else later
+                // TODO: Restructure into else later
                 return;
             }
             if( manip.buttons.y.get() ) {
