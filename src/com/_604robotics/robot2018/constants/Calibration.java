@@ -2,7 +2,6 @@ package com._604robotics.robot2018.constants;
 
 import com._604robotics.robotnik.utils.AutonMovement;
 import com._604robotics.robotnik.utils.annotations.Unreal;
-import com._604robotics.robotnik.utils.annotations.Untested;
 
 public class Calibration {
     private Calibration () {}
@@ -86,10 +85,25 @@ public class Calibration {
     public static final double ELEVATOR_TARGET_SPEED = 0.5;
     public static final int ELEVATOR_CLICK_TOLERANCE = 100;//25
     
-    public static final double  ELEVATOR_Y_TARGET = 16000;
+    public static final double ELEVATOR_Y_TARGET = 16000;
     public static final double ELEVATOR_B_TARGET = 12000;
     public static final double ELEVATOR_X_TARGET = 8000;
     public static final double ELEVATOR_A_TARGET = 4000;
     //@Unreal("Find more reasonable time or eliminate hold part altogether")
     //public static final double ELEVATOR_PID_CONTINUE = 10;
+    
+    public static final double ARM_P = 0.00007;
+    public static final double ARM_I = 0.00004;
+    public static final double ARM_D = 0.00002;
+    
+    /* Arm */
+    // Bound I term motor output to 1
+    public static final double ARM_MAX_SUM = 1/ARM_I;
+    // I term which props up ARM should never be negative
+    public static final double ARM_MIN_SUM = 0;
+    public static final double ARM_PID_PERIOD = 0.02;
+    // Lower speed going down due to weight
+    public static final double ARM_MIN_SPEED = -0.1;
+    @Unreal("Will need to be adjusted up once weight is attached")
+    public static final double ARM_MAX_SPEED = 0.4;
 }

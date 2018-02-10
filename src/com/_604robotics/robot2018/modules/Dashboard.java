@@ -11,7 +11,7 @@ public class Dashboard extends DashboardModule {
     public final Input<Double> leftDriveRate = addDashboardInput("leftDriveRate", 0.0);
     public final Input<Double> rightDriveRate = addDashboardInput("rightDriveRate", 0.0);
 
-    public final Input<Double> totalCurrent = addDashboardInput("Current Drawn",0.0);
+    //public final Input<Double> totalCurrent = addDashboardInput("Current Drawn",0.0);
 
     public final Output<Boolean> driveOn = addDashboardOutput("driveOn", true);
 
@@ -20,16 +20,19 @@ public class Dashboard extends DashboardModule {
     
     public final Input<Boolean> XboxFlipped = addDashboardInput("XboxFlipped", false);
     
-    public final Input<Double> elevatorOffset = addDashboardInput("Elevator Offset", 0.0);
-    public final Input<Double> elevatorUpwardsRange = addDashboardInput("Upwards Range", 0.0);
-    public final Input<Double> elevatorDownwardsRange = addDashboardInput("Downwards Range", 0.0);
-    public final Input<Boolean> elevatorFailsafed = addDashboardInput("Failsafed", false);
+    //public final Input<Double> elevatorOffset = addDashboardInput("Elevator Offset", 0.0);
+    //public final Input<Double> elevatorUpwardsRange = addDashboardInput("Upwards Range", 0.0);
+    //public final Input<Double> elevatorDownwardsRange = addDashboardInput("Downwards Range", 0.0);
+    //public final Input<Boolean> elevatorFailsafed = addDashboardInput("Failsafed", false);
     
     public final Input<Double> elevatorRate = addDashboardInput("Elevator Rate", 0.0);
     public final Input<Double> elevatorClicks = addDashboardInput("Elevator Clicks", 0.0);
     
-    public final Input<Boolean> holding = addDashboardInput("Holding", true);
-    public final Input<Double> power = addDashboardInput("Elevator Power", 0.0);
+    //public final Input<Boolean> holding = addDashboardInput("Holding", true);
+    //public final Input<Double> power = addDashboardInput("Elevator Power", 0.0);
+    
+    public final Input<Double> armRate = addDashboardInput("Arm Rate", 0.0);
+    public final Input<Double> armClicks = addDashboardInput("Arm Clicks", 0.0);
     
     public enum AutonMode {
         OFF,
