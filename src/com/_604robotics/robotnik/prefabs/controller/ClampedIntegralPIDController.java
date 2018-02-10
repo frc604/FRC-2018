@@ -47,7 +47,7 @@ public class ClampedIntegralPIDController extends ExtendablePIDController {
     @Override
     protected double calculateIntegral(double i, double totalError) {
         double val = super.calculateIntegral(i, totalError);
-        System.out.println("i is "+i+", totalError is "+totalError+", term is "+val);
+        // System.out.println("i is "+i+", totalError is "+totalError+", term is "+val);
         return val;
     }
 
