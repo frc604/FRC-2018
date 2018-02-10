@@ -91,10 +91,17 @@ public class Calibration {
     //@Unreal("Find more reasonable time or eliminate hold part altogether")
     //public static final double ELEVATOR_PID_CONTINUE = 10;
     
+    @Unreal("Calibration necessary")
     public static final double ARM_P = 0.00007;
+    @Unreal("Calibration necessary")
     public static final double ARM_I = 0.00004;
+    @Unreal("Calibration necessary")
     public static final double ARM_D = 0.00002;
+    @Unreal("Calibration necessary")
     public static final double ARM_F = 0.35;
+    @Unreal("Work out absolute offset after assembly complete")
+    public static final double ARM_ENCODER_ZERO = 0;
+    public static final double ARM_ENCODER_FULL_ROT=4096*54/30;
     /* Arm */
     // Bound I term motor output to 1
     public static final double ARM_MAX_SUM = 1/ARM_I;

@@ -50,8 +50,8 @@ public class ExtendablePIDController extends SendableBase implements PIDInterfac
   private double m_F; // factor for feedforward term
   private double m_maximumOutput = 1.0; // |maximum output|
   private double m_minimumOutput = -1.0; // |minimum output|
-  private double m_maximumInput = 0.0; // maximum input - limit setpoint to this
-  private double m_minimumInput = 0.0; // minimum input - limit setpoint to this
+  protected double m_maximumInput = 0.0; // maximum input - limit setpoint to this
+  protected double m_minimumInput = 0.0; // minimum input - limit setpoint to this
   private double m_inputRange = 0.0; // input range - difference between maximum and minimum
   // do the endpoints wrap around? eg. Absolute encoder
   private boolean m_continuous = false;
