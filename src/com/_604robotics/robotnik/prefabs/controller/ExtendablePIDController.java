@@ -364,10 +364,22 @@ public class ExtendablePIDController extends SendableBase implements PIDInterfac
     }
   }
   
+  /**
+   * Method that modifies the error before feeding into the PID calculation.
+   * The default passses the error through unchanged
+   * @param error the input error
+   * @return the modified error
+   */
   protected synchronized double modifyError(double error) {
     return error;
   }
   
+  /**
+   * Method that modifies the error sum before feeding into the PID calculation.
+   * The default is to clamp the value to the min and max allowable output.
+   * @param totalError the input totalError
+   * @return the modified totalError
+   */
   protected synchronized double modifyTotalError(double totalError) {
     double divparam;
     double min,max;
@@ -384,6 +396,19 @@ public class ExtendablePIDController extends SendableBase implements PIDInterfac
       m_thisMutex.unlock();
     }
     return clamp(totalError, min / divparam, max / divparam);
+  }
+  
+  /**
+   * Method to directly set the integral sum
+   * @param sum the sum to set
+   */
+  public synchronized void setErrorSum(double sum) {
+    m_thisMutex.lock();
+    try {
+      m_totalError = sum;
+    } finally {
+      m_thisMutex.unlock();
+    }
   }
   
   protected synchronized double calculateProportional(double p, double error) {
