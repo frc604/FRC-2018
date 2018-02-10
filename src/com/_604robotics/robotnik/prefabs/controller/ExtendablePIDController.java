@@ -315,17 +315,13 @@ public class ExtendablePIDController extends SendableBase implements PIDInterfac
 
       if (pidSourceType.equals(PIDSourceType.kRate)) {
         if (P != 0) {
-          totalError = clamp(totalError + error, minimumOutput / P,
-              maximumOutput / P);
-          totalError=modifyTotalError(error);
+          totalError=modifyTotalError(totalError + error);
         }
 
         result = calculateProportional(P, totalError) + calculateDerivative(D, error) + feedForward;
       } else {
         if (I != 0) {
-          totalError = clamp(totalError + error, minimumOutput / I,
-              maximumOutput / I);
-          totalError=modifyTotalError(error);
+          totalError=modifyTotalError(totalError + error);
         }
 
         result = calculateProportional(P, error)
@@ -371,8 +367,23 @@ public class ExtendablePIDController extends SendableBase implements PIDInterfac
   protected synchronized double modifyError(double error) {
     return error;
   }
+  
   protected synchronized double modifyTotalError(double totalError) {
-    return totalError;
+    double divparam;
+    double min,max;
+    m_thisMutex.lock();
+    try {
+      if (m_pidInput.getPIDSourceType().equals(PIDSourceType.kRate)) {
+          divparam = m_P;
+      } else {
+          divparam = m_I;
+      }
+      min=m_minimumOutput;
+      max=m_maximumOutput;
+    } finally {
+      m_thisMutex.unlock();
+    }
+    return clamp(totalError, min / divparam, max / divparam);
   }
   
   protected synchronized double calculateProportional(double p, double error) {
