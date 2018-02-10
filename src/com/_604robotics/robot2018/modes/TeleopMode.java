@@ -126,10 +126,10 @@ public class TeleopMode extends Coordinator {
         }
 
         public void run() {
-            //System.out.println(robot.elevator.getEncoderPos());
             double leftY = manip.leftStick.y.get();
             boolean start = manip.buttons.start.get();
-            System.out.println("Error is "+robot.elevator.pidError.get());
+            //System.out.println("LeftY is "+leftY);
+            //System.out.println("Error is "+robot.elevator.pidError.get());
             if (start) {
                 robot.elevator.encod.zero();
                 holdClicks = robot.elevator.encoderClicks.get();
@@ -173,9 +173,6 @@ public class TeleopMode extends Coordinator {
                     move.activate();
                     manualMove.update(true);
                 }
-            }
-            if (manualMove.isFallingEdge()) {
-                robot.elevator.resetIntegral(Calibration.ELEVATOR_INTEGRAL_RESET);
             }
         }
     }
