@@ -7,7 +7,7 @@ public class Calibration {
     private Calibration () {}
 
     public static final double TELEOP_DRIVE_DEADBAND = 0.3;
-    public static final double TELEOP_MANIP_DEADBAND = 0.08;
+    public static final double TELEOP_MANIP_DEADBAND = 0.1;
     public static final double TELEOP_FACTOR = -1;
     
     public static final double DRIVE_MOVE_PID_P = 0.005;
@@ -64,36 +64,37 @@ public class Calibration {
     public static final double ELEVATOR_RATE_TOLERANCE = 50;
 
     // Elevator steady-state power is ~0.1 without arm attached
-    public static final double ELEVATOR_P = 0.00007;
-    public static final double ELEVATOR_I = 0.00004;
-    public static final double ELEVATOR_D = 0.00002;
+    // Elevator steady-state power is ~0.2 with 15 lbs attached
+    // Multiply above by 0.8 since gear ratio was increased from 16 to 20
+    public static final double ELEVATOR_P = 0.00008;
+    public static final double ELEVATOR_I = 0.00002;
+    public static final double ELEVATOR_D = 0.00000;
     
     // Bound I term motor output to 1
-    public static final double ELEVATOR_MAX_SUM = 1/ELEVATOR_I;
+    public static final double ELEVATOR_MAX_SUM = 0.35/ELEVATOR_I;
     // I term which props up elevator should never be negative
-    public static final double ELEVATOR_MIN_SUM = 0;
+    // Needs to be positive as well to counter the weight
+    public static final double ELEVATOR_MIN_SUM = 0.14/ELEVATOR_I;
     public static final double ELEVATOR_PID_PERIOD = 0.02;
     // Lower speed going down due to weight
-    public static final double ELEVATOR_MIN_SPEED = -0.1;
+    public static final double ELEVATOR_MIN_SPEED = 0;
     @Unreal("Will need to be adjusted up once weight is attached")
-    public static final double ELEVATOR_MAX_SPEED = 0.4;
-    @Unreal("Will change once the final weight characteristics are found")
-    public static final double ELEVATOR_INTEGRAL_RESET = 0.1;
+    public static final double ELEVATOR_MAX_SPEED = 0.5;
     
     public static final double ELEVATOR_TARGET_SPEED = 0.5;
     public static final int ELEVATOR_CLICK_TOLERANCE = 100;//25
     
     public static final double ELEVATOR_Y_TARGET = 16000;
-    public static final double ELEVATOR_B_TARGET = 8000;
-    public static final double ELEVATOR_X_TARGET = 4000;
-    public static final double ELEVATOR_A_TARGET = 1000;
-    @Unreal("Find more reasonable time or eliminate hold part altogether")
-	public static final double ELEVATOR_PID_CONTINUE = 10;
+    public static final double ELEVATOR_B_TARGET = 12000;
+    public static final double ELEVATOR_X_TARGET = 8000;
+    public static final double ELEVATOR_A_TARGET = 4000;
+    //@Unreal("Find more reasonable time or eliminate hold part altogether")
+    //public static final double ELEVATOR_PID_CONTINUE = 10;
     
     public static final double ARM_P = 0.00007;
     public static final double ARM_I = 0.00004;
     public static final double ARM_D = 0.00002;
-    
+    public static final double ARM_F = 0.35;
     /* Arm */
     // Bound I term motor output to 1
     public static final double ARM_MAX_SUM = 1/ARM_I;
