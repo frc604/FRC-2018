@@ -1,7 +1,8 @@
 package com._604robotics.robot2018.modes;
 
 import com._604robotics.robot2018.Robot2018;
-import com._604robotics.robot2018.constants.Calibration;
+import com._604robotics.robot2018.constants.Calibration.ElevatorFactors;
+import com._604robotics.robot2018.constants.Calibration.TeleopFactors;
 import com._604robotics.robot2018.modules.Drive;
 import com._604robotics.robot2018.modules.Elevator;
 import com._604robotics.robot2018.modules.SimpleVictor;
@@ -22,29 +23,29 @@ public class TeleopMode extends Coordinator {
 
 
     public TeleopMode (Robot2018 robot) {
-        driver.leftStick.x.setDeadband(Calibration.TELEOP_DEADBAND);
-        driver.leftStick.y.setDeadband(Calibration.TELEOP_DEADBAND);
+        driver.leftStick.x.setDeadband(TeleopFactors.TELEOP_DEADBAND);
+        driver.leftStick.y.setDeadband(TeleopFactors.TELEOP_DEADBAND);
 
-        driver.leftStick.x.setFactor(Calibration.TELEOP_FACTOR);
-        driver.leftStick.y.setFactor(Calibration.TELEOP_FACTOR);
+        driver.leftStick.x.setFactor(TeleopFactors.TELEOP_FACTOR);
+        driver.leftStick.y.setFactor(TeleopFactors.TELEOP_FACTOR);
 
-        driver.rightStick.x.setDeadband(Calibration.TELEOP_DEADBAND);
-        driver.rightStick.y.setDeadband(Calibration.TELEOP_DEADBAND);
+        driver.rightStick.x.setDeadband(TeleopFactors.TELEOP_DEADBAND);
+        driver.rightStick.y.setDeadband(TeleopFactors.TELEOP_DEADBAND);
 
-        driver.rightStick.x.setFactor(Calibration.TELEOP_FACTOR);
-        driver.rightStick.y.setFactor(Calibration.TELEOP_FACTOR);
+        driver.rightStick.x.setFactor(TeleopFactors.TELEOP_FACTOR);
+        driver.rightStick.y.setFactor(TeleopFactors.TELEOP_FACTOR);
 
-        manip.leftStick.x.setDeadband(Calibration.TELEOP_DEADBAND);
-        manip.leftStick.y.setDeadband(Calibration.TELEOP_DEADBAND);
+        manip.leftStick.x.setDeadband(TeleopFactors.TELEOP_DEADBAND);
+        manip.leftStick.y.setDeadband(TeleopFactors.TELEOP_DEADBAND);
 
-        manip.leftStick.x.setFactor(Calibration.TELEOP_FACTOR);
-        manip.leftStick.y.setFactor(Calibration.TELEOP_FACTOR);
+        manip.leftStick.x.setFactor(TeleopFactors.TELEOP_FACTOR);
+        manip.leftStick.y.setFactor(TeleopFactors.TELEOP_FACTOR);
 
-        manip.rightStick.x.setDeadband(Calibration.TELEOP_DEADBAND);
-        manip.rightStick.y.setDeadband(Calibration.TELEOP_DEADBAND);
+        manip.rightStick.x.setDeadband(TeleopFactors.TELEOP_DEADBAND);
+        manip.rightStick.y.setDeadband(TeleopFactors.TELEOP_DEADBAND);
 
-        manip.rightStick.x.setFactor(Calibration.TELEOP_FACTOR);
-        manip.rightStick.y.setFactor(Calibration.TELEOP_FACTOR);
+        manip.rightStick.x.setFactor(TeleopFactors.TELEOP_FACTOR);
+        manip.rightStick.y.setFactor(TeleopFactors.TELEOP_FACTOR);
 
         this.robot = robot;
 
@@ -98,7 +99,7 @@ public class TeleopMode extends Coordinator {
             boolean buttonY = manip.buttons.y.get();
             if( buttonY ) {
                 isStationary=false;
-                setpoint.target_clicks.set(Calibration.ELEVATOR_Y_TARGET);
+                setpoint.target_clicks.set(ElevatorFactors.ELEVATOR_Y_TARGET);
                 setpoint.activate();
             } else {
                 if( leftY == 0 ) {

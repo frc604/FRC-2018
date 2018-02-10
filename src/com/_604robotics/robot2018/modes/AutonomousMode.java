@@ -1,7 +1,8 @@
 package com._604robotics.robot2018.modes;
 
 import com._604robotics.robot2018.Robot2018;
-import com._604robotics.robot2018.constants.Calibration;
+import com._604robotics.robot2018.constants.Calibration.DriveFactors;
+import com._604robotics.robot2018.constants.Calibration.DriveMovementFactors;
 import com._604robotics.robot2018.macros.ArcadeTimedDriveMacro;
 import com._604robotics.robot2018.modules.Drive;
 import com._604robotics.robotnik.Coordinator;
@@ -32,22 +33,22 @@ public class AutonomousMode extends Coordinator {
     public AutonomousMode (Robot2018 robot) {
         this.robot = robot;
 
-        rotateLeftStateMacro = new ArcadePIDStateMacro(Calibration.DRIVE_MOVE_STILL_TARGET,
-                Calibration.DRIVE_ROTATE_LEFT_TARGET);
-        rotateRightStateMacro = new ArcadePIDStateMacro(Calibration.DRIVE_MOVE_STILL_TARGET,
-                Calibration.DRIVE_ROTATE_RIGHT_TARGET);
-        forwardStateMacro = new ArcadePIDStateMacro(Calibration.DRIVE_MOVE_FORWARD_TARGET,
-                Calibration.DRIVE_ROTATE_STILL_TARGET);
-        forwardEmpericalMacro = new ArcadePIDStateMacro(Calibration.DRIVE_MOVE_FORWARD_TEST_INCHES, 0);
-        backwardStateMacro = new ArcadePIDStateMacro(Calibration.DRIVE_MOVE_BACKWARD_TARGET,
-                Calibration.DRIVE_ROTATE_STILL_TARGET);
+        rotateLeftStateMacro = new ArcadePIDStateMacro(DriveFactors.DRIVE_MOVE_STILL_TARGET,
+                DriveMovementFactors.DRIVE_ROTATE_LEFT_TARGET);
+        rotateRightStateMacro = new ArcadePIDStateMacro(DriveFactors.DRIVE_MOVE_STILL_TARGET,
+                DriveMovementFactors.DRIVE_ROTATE_RIGHT_TARGET);
+        forwardStateMacro = new ArcadePIDStateMacro(DriveMovementFactors.DRIVE_MOVE_FORWARD_TARGET,
+                DriveFactors.DRIVE_ROTATE_STILL_TARGET);
+        forwardEmpericalMacro = new ArcadePIDStateMacro(DriveMovementFactors.DRIVE_MOVE_FORWARD_TEST_INCHES, 0);
+        backwardStateMacro = new ArcadePIDStateMacro(DriveMovementFactors.DRIVE_MOVE_BACKWARD_TARGET,
+                DriveFactors.DRIVE_ROTATE_STILL_TARGET);
         kinematicFallback =new ArcadeTimedDriveMacro(robot) {{
             
         }
 
         @Override
         protected double getMovePower() {
-            return Calibration.DRIVE_MOVE_PID_MAX;
+            return DriveFactors.DRIVE_MOVE_PID_MAX;
         }
 
         @Override
@@ -195,34 +196,34 @@ public class AutonomousMode extends Coordinator {
             encoderDiff.setPIDSourceType(PIDSourceType.kDisplacement);
             encoderAvg.setPIDSourceType(PIDSourceType.kDisplacement);
             // Set up rotation PID controller
-            rotController = new PIDController(Calibration.DRIVE_ROTATE_PID_P,
-                    Calibration.DRIVE_ROTATE_PID_I,
-                    Calibration.DRIVE_ROTATE_PID_D,
+            rotController = new PIDController(DriveFactors.DRIVE_ROTATE_PID_P,
+                    DriveFactors.DRIVE_ROTATE_PID_I,
+                    DriveFactors.DRIVE_ROTATE_PID_D,
                     encoderDiff,
                     rotateBot,
-                    Calibration.DRIVE_PID_SAMPLE_RATE);
+                    DriveFactors.DRIVE_PID_SAMPLE_RATE);
             rotController.setSetpoint(rotSetpoint);
-            rotController.setOutputRange(-Calibration.DRIVE_ROTATE_PID_MAX,
-                    Calibration.DRIVE_ROTATE_PID_MAX);
-            rotController.setAbsoluteTolerance(Calibration.DRIVE_ROTATE_TOLERANCE);
+            rotController.setOutputRange(-DriveFactors.DRIVE_ROTATE_PID_MAX,
+                    DriveFactors.DRIVE_ROTATE_PID_MAX);
+            rotController.setAbsoluteTolerance(DriveFactors.DRIVE_ROTATE_TOLERANCE);
             // Set up move PID controller
-            moveController = new PIDController(Calibration.DRIVE_MOVE_PID_P,
-                    Calibration.DRIVE_MOVE_PID_I,
-                    Calibration.DRIVE_MOVE_PID_D,
+            moveController = new PIDController(DriveFactors.DRIVE_MOVE_PID_P,
+                    DriveFactors.DRIVE_MOVE_PID_I,
+                    DriveFactors.DRIVE_MOVE_PID_D,
                     encoderAvg,
                     moveBot,
-                    Calibration.DRIVE_PID_SAMPLE_RATE);
+                    DriveFactors.DRIVE_PID_SAMPLE_RATE);
             moveController.setSetpoint(moveSetpoint);
-            moveController.setOutputRange(-Calibration.DRIVE_MOVE_PID_MAX,
-                    Calibration.DRIVE_MOVE_PID_MAX);
-            moveController.setAbsoluteTolerance(Calibration.DRIVE_MOVE_TOLERANCE);
+            moveController.setOutputRange(-DriveFactors.DRIVE_MOVE_PID_MAX,
+                    DriveFactors.DRIVE_MOVE_PID_MAX);
+            moveController.setAbsoluteTolerance(DriveFactors.DRIVE_MOVE_TOLERANCE);
             arcadePIDLog.log("INFO", "Enabling rotation controller");
             rotController.enable();
             // Stagger the timings of the PIDs slightly
             try {
                 // 500 = 1000 / 2
                 // Set up PIDs to output in even staggering
-                Thread.sleep((long) (Calibration.DRIVE_PID_SAMPLE_RATE*500));
+                Thread.sleep((long) (DriveFactors.DRIVE_PID_SAMPLE_RATE*500));
             } catch (InterruptedException e) {
                 // Do nothing
             }
@@ -238,7 +239,7 @@ public class AutonomousMode extends Coordinator {
         protected synchronized boolean run() {
             arcadeDrive.activate();
             System.out.println("Move error is " + getMoveError() + ", Rot error is " + getRotError());
-            return timeElapsed.runUntil(Calibration.DRIVE_PID_AFTER_TIMING, new Runnable() {
+            return timeElapsed.runUntil(DriveFactors.DRIVE_PID_AFTER_TIMING, new Runnable() {
                 @Override
                 public void run() {
                     boolean targetReached = rotController.onTarget() && moveController.onTarget();
@@ -292,11 +293,11 @@ public class AutonomousMode extends Coordinator {
     private class DemoStateMacro extends StatefulCoordinator {
         public DemoStateMacro() {
             super(DemoStateMacro.class);
-            addState("Forward 12 feet", new ArcadePIDCoordinator(AutonMovement.empericalInchesToClicks(Calibration.DRIVE_PROPERTIES, 12*12), 0));
+            addState("Forward 12 feet", new ArcadePIDCoordinator(AutonMovement.empericalInchesToClicks(DriveFactors.DRIVE_PROPERTIES, 12*12), 0));
             addState("Sleep 0.5 seconds", new SleepCoordinator(0.5));
-            addState("Rotate 180 right", new ArcadePIDCoordinator(0,AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, 180)));
+            addState("Rotate 180 right", new ArcadePIDCoordinator(0,AutonMovement.degreesToClicks(DriveFactors.DRIVE_PROPERTIES, 180)));
             addState("Sleep 0.5 seconds", new SleepCoordinator(0.5));
-            addState("Forward 12 feet", new ArcadePIDCoordinator(AutonMovement.empericalInchesToClicks(Calibration.DRIVE_PROPERTIES, 12*12), 0));
+            addState("Forward 12 feet", new ArcadePIDCoordinator(AutonMovement.empericalInchesToClicks(DriveFactors.DRIVE_PROPERTIES, 12*12), 0));
         }
     }
 }

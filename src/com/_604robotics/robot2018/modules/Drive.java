@@ -1,6 +1,7 @@
 package com._604robotics.robot2018.modules;
 
-import com._604robotics.robot2018.constants.Ports;
+import com._604robotics.robot2018.constants.Ports.DriveMotorFactors;
+import com._604robotics.robot2018.constants.Ports.EncoderFactors;
 import com._604robotics.robotnik.Action;
 import com._604robotics.robotnik.Input;
 import com._604robotics.robotnik.Module;
@@ -15,23 +16,23 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Drive extends Module {
-    Victor m_frontLeft = new Victor(Ports.DRIVE_FRONT_LEFT_MOTOR);
-    Victor m_rearLeft = new Victor(Ports.DRIVE_REAR_LEFT_MOTOR);
+    Victor m_frontLeft = new Victor(DriveMotorFactors.DRIVE_FRONT_LEFT_MOTOR);
+    Victor m_rearLeft = new Victor(DriveMotorFactors.DRIVE_REAR_LEFT_MOTOR);
     SpeedControllerGroup m_left = new SpeedControllerGroup(m_frontLeft, m_rearLeft);
 
-    Victor m_frontRight = new Victor(Ports.DRIVE_FRONT_RIGHT_MOTOR);
-    Victor m_rearRight = new Victor(Ports.DRIVE_REAR_RIGHT_MOTOR);
+    Victor m_frontRight = new Victor(DriveMotorFactors.DRIVE_FRONT_RIGHT_MOTOR);
+    Victor m_rearRight = new Victor(DriveMotorFactors.DRIVE_REAR_RIGHT_MOTOR);
     SpeedControllerGroup m_right = new SpeedControllerGroup(m_frontRight, m_rearRight);
 
     DifferentialDrive robotDrive = new DifferentialDrive(m_left, m_right);
 
     // Reversed from previously due to new mountings
-    private final Encoder encoderLeft = new Encoder(Ports.ENCODER_LEFT_A,
-            Ports.ENCODER_LEFT_B,
+    private final Encoder encoderLeft = new Encoder(EncoderFactors.ENCODER_LEFT_A,
+            EncoderFactors.ENCODER_LEFT_B,
             true,
             CounterBase.EncodingType.k4X);
-    private final Encoder encoderRight = new Encoder(Ports.ENCODER_RIGHT_A,
-            Ports.ENCODER_RIGHT_B,
+    private final Encoder encoderRight = new Encoder(EncoderFactors.ENCODER_RIGHT_A,
+            EncoderFactors.ENCODER_RIGHT_B,
             false,
             CounterBase.EncodingType.k4X);
     

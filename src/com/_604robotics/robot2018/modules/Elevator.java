@@ -1,6 +1,6 @@
 package com._604robotics.robot2018.modules;
 
-import com._604robotics.robot2018.constants.Calibration;
+import com._604robotics.robot2018.constants.Calibration.ElevatorFactors;
 import com._604robotics.robot2018.constants.Ports;
 import com._604robotics.robotnik.Action;
 import com._604robotics.robotnik.Input;
@@ -98,9 +98,9 @@ public class Elevator extends Module {
 
     public Elevator() {
         super(Elevator.class);
-        pid = new ClampedIntegralPIDController(Calibration.ELEVATOR_P,
-                Calibration.ELEVATOR_I,
-                Calibration.ELEVATOR_D,
+        pid = new ClampedIntegralPIDController(ElevatorFactors.ELEVATOR_P,
+                ElevatorFactors.ELEVATOR_I,
+                ElevatorFactors.ELEVATOR_D,
                 new PIDSource() {
 
                     @Override
@@ -119,9 +119,9 @@ public class Elevator extends Module {
                     }
                 },
                 motor,
-                Calibration.ELEVATOR_PID_PERIOD);
-        pid.setIntegralLimits(Calibration.ELEVATOR_MIN_SUM, Calibration.ELEVATOR_MAX_SUM);
-        pid.setOutputRange(Calibration.ELEVATOR_MIN_SPEED, Calibration.ELEVATOR_MAX_SPEED);
+                ElevatorFactors.ELEVATOR_PID_PERIOD);
+        pid.setIntegralLimits(ElevatorFactors.ELEVATOR_MIN_SUM, ElevatorFactors.ELEVATOR_MAX_SUM);
+        pid.setOutputRange(ElevatorFactors.ELEVATOR_MIN_SPEED, ElevatorFactors.ELEVATOR_MAX_SPEED);
         setpoint.target_clicks.set(getEncoderPos());
         setDefaultAction(setpoint);
     }
