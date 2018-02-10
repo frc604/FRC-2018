@@ -4,6 +4,7 @@ import com._604robotics.robot2018.Robot2018;
 import com._604robotics.robot2018.constants.Calibration;
 import com._604robotics.robot2018.modules.Drive;
 import com._604robotics.robot2018.modules.Elevator;
+import com._604robotics.robot2018.modules.Intake;
 import com._604robotics.robot2018.modules.SimpleVictor;
 import com._604robotics.robotnik.Coordinator;
 import com._604robotics.robotnik.prefabs.flow.Toggle;
@@ -18,7 +19,8 @@ public class TeleopMode extends Coordinator {
 
     private final DriveManager driveManager;
     private final ElevatorManager elevatorManager;
-    private final SimpleVictorManager simpleVictorManager;
+    //private final SimpleVictorManager simpleVictorManager;
+    private final IntakeManager intakeManager;
 
 
     public TeleopMode (Robot2018 robot) {
@@ -50,17 +52,20 @@ public class TeleopMode extends Coordinator {
 
         driveManager = new DriveManager();
         elevatorManager = new ElevatorManager();
-        simpleVictorManager = new SimpleVictorManager();
+        intakeManager = new IntakeManager();
+        //simpleVictorManager = new SimpleVictorManager();
     }
 
     @Override
     public boolean run () {
         driveManager.run();
         elevatorManager.run();
-        simpleVictorManager.run();
+        intakeManager.run();
+        //simpleVictorManager.run();
         return true;
     }
-
+    
+    /*
     private class SimpleVictorManager {
     	private final SimpleVictor.Move move;
     	private final SimpleVictor.Idle idle;
@@ -77,6 +82,31 @@ public class TeleopMode extends Coordinator {
     		} else {
     			move.power.set(leftY);
     			move.activate();
+    		}
+    	}
+    }
+    */
+    
+    private class IntakeManager {
+    	private final Intake.Idle idle;
+    	private final Intake.Spit spit;
+    	private final Intake.Suck suck;
+    	
+    	public IntakeManager() {
+    		idle = robot.intake.new Idle();
+    		spit = robot.intake.new Spit();
+    		suck = robot.intake.new Suck();
+    	}
+    	
+    	public void run() {
+    		double leftTrigger = driver.triggers.left.get();
+    		double rightTrigger = driver.triggers.right.get();
+    		if( leftTrigger == 0 && rightTrigger == 0 ) {
+    			idle.activate();
+    		} else if( leftTrigger != 0 ) {
+    			suck.suckPower.set(leftTrigger*leftTrigger);
+    		} else if( rightTrigger != 0 ) {
+    			spit.spitPower.set(rightTrigger*rightTrigger);
     		}
     	}
     }
@@ -137,7 +167,7 @@ public class TeleopMode extends Coordinator {
             }
         }
     }
-     
+    
     private enum CurrentDrive {
         IDLE, ARCADE, TANK
     }

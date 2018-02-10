@@ -32,5 +32,10 @@ public class Ports {
     
     public static final int ELEVATOR_MOTOR_A = 13;
     public static final int ELEVATOR_MOTOR_B = 15;
-    //public static final int ELEVATOR_MOTOR_B = 10;
+    
+    public static final int INTAKE_MOTOR_A = 10;
+    public static final int INTAKE_MOTOR_B = 11;
+    
+    public static final int ARM_MOTOR_A = 12;
+    public static final int ARM_MOTOR_B = 14;
 }
