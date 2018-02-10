@@ -7,6 +7,7 @@ import com._604robotics.robotnik.Input;
 import com._604robotics.robotnik.Module;
 import com._604robotics.robotnik.Output;
 import com._604robotics.robotnik.prefabs.controller.ClampedIntegralPIDController;
+import com._604robotics.robotnik.prefabs.controller.RotatingArmPIDController;
 import com._604robotics.robotnik.prefabs.devices.TalonPWMEncoder;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
@@ -23,7 +24,7 @@ public class Arm extends Module {
     public final Output<Double> encoderRate = addOutput("Arm Rate", encoder::getVelocity);
     public final Output<Double> encoderClicks = addOutput("Arm Clicks", encoder::getPosition);
 
-    private final ClampedIntegralPIDController pid;
+    private final RotatingArmPIDController pid;
     
     public final Output<Double> pidError;
     
@@ -81,12 +82,13 @@ public class Arm extends Module {
         motorA.setInverted(true);
         motorB.setInverted(true);
         motorB.set(ControlMode.Follower,Ports.ARM_MOTOR_A);
-        pid = new ClampedIntegralPIDController(Calibration.ARM_P,
+        pid = new RotatingArmPIDController(Calibration.ARM_P,
                 Calibration.ARM_I,
                 Calibration.ARM_D,
                 encoder,
                 motorA,
                 Calibration.ARM_PID_PERIOD);
+        pid.setInputRange(Calibration.ARM_ENCODER_ZERO, Calibration.ARM_ENCODER_FULL_ROT);
         pidError = addOutput("Arm PID Error", pid::getError);
         pid.setIntegralLimits(Calibration.ARM_MIN_SUM, Calibration.ARM_MAX_SUM);
         pid.setOutputRange(Calibration.ARM_MIN_SPEED, Calibration.ARM_MAX_SPEED);
