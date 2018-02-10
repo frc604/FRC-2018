@@ -42,6 +42,10 @@ public class Elevator extends Module {
     public double getPower() {
         return power;
     }
+    
+    public void resetIntegral(double sum) {
+        pid.setErrorSum(sum);
+    }
 
     public class Move extends Action {
         public final Input<Double> liftPower;
@@ -86,7 +90,7 @@ public class Elevator extends Module {
         }
         @Override
         public void end () {
-            pid.reset();
+            pid.disable();
         }
     }
 
