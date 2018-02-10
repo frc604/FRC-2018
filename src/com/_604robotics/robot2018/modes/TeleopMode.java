@@ -7,6 +7,7 @@ import com._604robotics.robot2018.modules.Elevator;
 import com._604robotics.robot2018.modules.Intake;
 import com._604robotics.robot2018.modules.SimpleVictor;
 import com._604robotics.robotnik.Coordinator;
+import com._604robotics.robotnik.prefabs.flow.Pulse;
 import com._604robotics.robotnik.prefabs.flow.Toggle;
 import com._604robotics.robotnik.prefabs.inputcontroller.xbox.XboxController;
 
@@ -115,11 +116,13 @@ public class TeleopMode extends Coordinator {
         private final Elevator.Move move;
         private final Elevator.Setpoint setpoint;
         private boolean isStationary=false;
+        private Pulse manualMove = new Pulse();
         private double holdClicks = 0;
 
         public ElevatorManager() {
             move = robot.elevator.new Move();
             setpoint = robot.elevator.new Setpoint();
+            manualMove.update(false);
         }
 
         public void run() {
@@ -139,18 +142,22 @@ public class TeleopMode extends Coordinator {
                 isStationary=false;
                 setpoint.target_clicks.set(Calibration.ELEVATOR_Y_TARGET);
                 setpoint.activate();
+                manualMove.update(false);
             } else if ( manip.buttons.x.get() ) {
                 isStationary=false;
                 setpoint.target_clicks.set(Calibration.ELEVATOR_X_TARGET);
                 setpoint.activate();
+                manualMove.update(false);
             } else if ( manip.buttons.b.get() ) {
                 isStationary=false;
                 setpoint.target_clicks.set(Calibration.ELEVATOR_B_TARGET);
                 setpoint.activate();
+                manualMove.update(false);
             } else if ( manip.buttons.a.get() ) {
                 isStationary=false;
                 setpoint.target_clicks.set(Calibration.ELEVATOR_A_TARGET);
                 setpoint.activate();
+                manualMove.update(false);
             } else {
                 if( leftY == 0 ) {
                     if (!isStationary) {
@@ -159,11 +166,16 @@ public class TeleopMode extends Coordinator {
                     }
                     setpoint.target_clicks.set(holdClicks);
                     setpoint.activate();
+                    manualMove.update(false);
                 } else {
                     isStationary=false;
                     move.liftPower.set(leftY);
                     move.activate();
+                    manualMove.update(true);
                 }
+            }
+            if (manualMove.isFallingEdge()) {
+                robot.elevator.resetIntegral(Calibration.ELEVATOR_INTEGRAL_RESET);
             }
         }
     }
