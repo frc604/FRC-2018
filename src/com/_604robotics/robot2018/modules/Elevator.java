@@ -11,9 +11,6 @@ import com._604robotics.robotnik.prefabs.devices.TalonPWMEncoder;
 import com._604robotics.robotnik.prefabs.devices.wrappers.InvertPIDSource;
 import com._604robotics.robotnik.prefabs.flow.SmartTimer;
 
-import edu.wpi.first.wpilibj.PIDSource;
-import edu.wpi.first.wpilibj.PIDSourceType;
-
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
