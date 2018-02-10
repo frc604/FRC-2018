@@ -65,7 +65,8 @@ public class Calibration {
 
     // Elevator steady-state power is ~0.1 without arm attached
     // Elevator steady-state power is ~0.2 with 15 lbs attached
-    public static final double ELEVATOR_P = 0.00008;//6,7
+    // Multiply above by 0.8 since gear ratio was increased from 16 to 20
+    public static final double ELEVATOR_P = 0.00008;
     public static final double ELEVATOR_I = 0.00002;
     public static final double ELEVATOR_D = 0.00000;
     
@@ -79,8 +80,6 @@ public class Calibration {
     public static final double ELEVATOR_MIN_SPEED = 0;
     @Unreal("Will need to be adjusted up once weight is attached")
     public static final double ELEVATOR_MAX_SPEED = 0.5;
-    @Unreal("Will change once the final weight characteristics are found")
-    public static final double ELEVATOR_INTEGRAL_RESET = 0.17;
     
     public static final double ELEVATOR_TARGET_SPEED = 0.5;
     public static final int ELEVATOR_CLICK_TOLERANCE = 100;//25
@@ -95,7 +94,7 @@ public class Calibration {
     public static final double ARM_P = 0.00007;
     public static final double ARM_I = 0.00004;
     public static final double ARM_D = 0.00002;
-    
+    public static final double ARM_F = 0.35;
     /* Arm */
     // Bound I term motor output to 1
     public static final double ARM_MAX_SUM = 1/ARM_I;
