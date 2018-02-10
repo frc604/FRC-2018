@@ -320,7 +320,7 @@ public class ExtendablePIDController extends SendableBase implements PIDInterfac
           totalError=modifyTotalError(error);
         }
 
-        result = calculateProportional(P, totalError) + calculateIntegral(D, error) + feedForward;
+        result = calculateProportional(P, totalError) + calculateDerivative(D, error) + feedForward;
       } else {
         if (I != 0) {
           totalError = clamp(totalError + error, minimumOutput / I,
