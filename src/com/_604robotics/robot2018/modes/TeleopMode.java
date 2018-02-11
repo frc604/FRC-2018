@@ -3,11 +3,11 @@ package com._604robotics.robot2018.modes;
 import com._604robotics.robot2018.Robot2018;
 import com._604robotics.robot2018.constants.Calibration;
 import com._604robotics.robot2018.modules.Arm;
+import com._604robotics.robot2018.modules.Clamp;
 import com._604robotics.robot2018.modules.Drive;
 import com._604robotics.robot2018.modules.Elevator;
 import com._604robotics.robot2018.modules.Intake;
 import com._604robotics.robotnik.Coordinator;
-import com._604robotics.robotnik.prefabs.flow.Pulse;
 import com._604robotics.robotnik.prefabs.flow.Toggle;
 import com._604robotics.robotnik.prefabs.inputcontroller.xbox.XboxController;
 
@@ -22,6 +22,7 @@ public class TeleopMode extends Coordinator {
     private final ElevatorManager elevatorManager;
     private final IntakeManager intakeManager;
     private final ArmManager armManager;
+    private final ClampManager clampManager;
 
     public TeleopMode (Robot2018 robot) {
         driver.leftStick.x.setDeadband(Calibration.TELEOP_DRIVE_DEADBAND);
@@ -54,6 +55,7 @@ public class TeleopMode extends Coordinator {
         elevatorManager = new ElevatorManager();
         intakeManager = new IntakeManager();
         armManager = new ArmManager();
+        clampManager = new ClampManager();
     }
     
     public boolean defaultHoldElevator = true;
@@ -165,6 +167,28 @@ public class TeleopMode extends Coordinator {
         elevatorManager.run();
         intakeManager.run();
         armManager.run();
+        clampManager.run();
+    }
+    
+    private class ClampManager {
+    	private final Clamp.Extend extend;
+    	private final Clamp.Retract retract;
+    	private final Toggle clamping;
+    	
+    	public ClampManager() {
+    		extend = robot.clamp.new Extend();
+    		retract = robot.clamp.new Retract();
+    		clamping = new Toggle(false);
+    	}
+    	
+    	public void run() {
+    		clamping.update(driver.buttons.x.get() || manip.buttons.x.get());
+            if (clamping.isInOnState()) {
+                retract.activate();
+            } else if (clamping.isInOffState()) {
+                extend.activate();
+            }
+    	}
     }
     
     private class ArmManager {
@@ -308,20 +332,23 @@ public class TeleopMode extends Coordinator {
         }
 
         public void run() {
+        	double leftY = driver.leftStick.y.get();
+        	double rightY = driver.rightStick.y.get();
+        	double rightX = driver.rightStick.x.get();
             // Set gears
             gearState.update(driver.buttons.lb.get());
             // Will probably be double solenoid but waiting
-            /*if (gearState.isInOnState()) {
+            if (gearState.isInOnState()) {
                 robot.shifter.highGear.activate();
             } else if (gearState.isInOffState()) {
                 robot.shifter.lowGear.activate();
-            }*/
+            }
             // Flip values if xbox inverted
             inverted.update(driver.buttons.rb.get());
             robot.dashboard.XboxFlipped.set(inverted.isInOnState());
             if (inverted.isInOnState()) {
-                driverLeftJoystickY*=-1;
-                driverRightJoystickY*=-1;
+                leftY*=-1;
+                rightY*=-1;
             }
             // Get Dashboard option for drive
             switch (robot.dashboard.driveMode.get()){
@@ -337,11 +364,11 @@ public class TeleopMode extends Coordinator {
                 case DYNAMIC:
                     // Dynamic Drive mode detection logic
                     if (currentDrive == CurrentDrive.TANK) {
-                        if (Math.abs(driverRightJoystickY) <= 0.2 && Math.abs(driverRightJoystickX) > 0.3) {
+                        if (Math.abs(rightY) <= 0.2 && Math.abs(rightX) > 0.3) {
                             currentDrive = CurrentDrive.ARCADE;
                         }
                     } else { // currentDrive == CurrentDrive.ARCADE
-                        if (Math.abs(driverRightJoystickX) <= 0.2 && Math.abs(driverRightJoystickY) > 0.3) {
+                        if (Math.abs(rightX) <= 0.2 && Math.abs(rightY) > 0.3) {
                             currentDrive = CurrentDrive.TANK;
                         }
                     }
@@ -357,13 +384,13 @@ public class TeleopMode extends Coordinator {
                     idle.activate();
                     break;
                 case ARCADE:
-                    arcade.movePower.set(driverLeftJoystickY);
-                    arcade.rotatePower.set(driverRightJoystickX);
+                    arcade.movePower.set(leftY);
+                    arcade.rotatePower.set(rightX);
                     arcade.activate();
                     break;
                 case TANK:
-                    tank.leftPower.set(driverLeftJoystickY);
-                    tank.rightPower.set(driverRightJoystickY);
+                    tank.leftPower.set(leftY);
+                    tank.rightPower.set(rightY);
                     tank.activate();
                     break;
             }

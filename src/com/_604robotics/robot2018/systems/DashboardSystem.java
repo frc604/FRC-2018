@@ -2,7 +2,6 @@ package com._604robotics.robot2018.systems;
 
 import com._604robotics.robot2018.Robot2018;
 import com._604robotics.robotnik.Coordinator;
-import com._604robotics.robotnik.prefabs.modules.PowerMonitor;
 
 public class DashboardSystem extends Coordinator {
     private final Robot2018 robot;
@@ -35,6 +34,8 @@ public class DashboardSystem extends Coordinator {
         
         robot.dashboard.armRate.set(robot.arm.encoderRate.get());
         robot.dashboard.armClicks.set(robot.arm.encoderClicks.get());
+        
+        robot.dashboard.isClamped.set(robot.clamp.isClamped.get());
         return true;
     }
 }

@@ -34,6 +34,8 @@ public class Dashboard extends DashboardModule {
     public final Input<Double> armRate = addDashboardInput("Arm Rate", 0.0);
     public final Input<Double> armClicks = addDashboardInput("Arm Clicks", 0.0);
     
+    public final Input<Boolean> isClamped = addDashboardInput("Is Clamped", false);
+    
     public enum AutonMode {
         OFF,
         ROTATE_LEFT_360,

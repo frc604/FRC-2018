@@ -8,7 +8,6 @@ import com._604robotics.robotnik.Output;
 
 import edu.wpi.first.wpilibj.CounterBase;
 import edu.wpi.first.wpilibj.Encoder;
-import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.Victor;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;

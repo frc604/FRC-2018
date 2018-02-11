@@ -5,6 +5,13 @@ import com._604robotics.robotnik.utils.annotations.Unreal;
 public class Ports {
     private Ports () {}
     
+    // Solenoids
+    public static final int SHIFTER_A = 0;
+    public static final int SHIFTER_B = 1;
+    
+    public static final int CLAMP_A = 0;
+    public static final int CLAMP_B = 0;
+    
     // Motors
     // Remember to take note of PDP ports for these too once they are determined
     @Unreal("Wiring yet to be determined. Use practice bot wiring for now")
