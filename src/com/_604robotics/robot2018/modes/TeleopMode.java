@@ -23,7 +23,6 @@ public class TeleopMode extends Coordinator {
     private final IntakeManager intakeManager;
     private final ArmManager armManager;
 
-
     public TeleopMode (Robot2018 robot) {
         driver.leftStick.x.setDeadband(Calibration.TELEOP_DRIVE_DEADBAND);
         driver.leftStick.y.setDeadband(Calibration.TELEOP_DRIVE_DEADBAND);
@@ -56,6 +55,9 @@ public class TeleopMode extends Coordinator {
         intakeManager = new IntakeManager();
         armManager = new ArmManager();
     }
+    
+    public boolean defaultHoldElevator = true;
+    public boolean defaultHoldArm = true;
     
     public double driverLeftJoystickY;
     public double driverLeftJoystickX;
@@ -105,7 +107,12 @@ public class TeleopMode extends Coordinator {
     
     @Override
     public boolean run () {
-    	
+    	updateControls();
+        process();
+        return true;
+    }
+   
+    private void updateControls() {
     	driverLeftJoystickY = driver.leftStick.y.get();
         driverLeftJoystickX = driver.leftStick.x.get();
         driverLeftTrigger = driver.triggers.left.get();
@@ -151,14 +158,15 @@ public class TeleopMode extends Coordinator {
         manipB = manip.buttons.b.get();
         manipX = manip.buttons.x.get();
         manipY = manip.buttons.y.get();
-    	
-        driveManager.run();
+    }
+    
+    private void process() {
+    	driveManager.run();
         elevatorManager.run();
         intakeManager.run();
         armManager.run();
-        return true;
     }
-   
+    
     private class ArmManager {
     	private final Arm.Move move;
     	private final Arm.Setpoint setpoint;
@@ -169,7 +177,38 @@ public class TeleopMode extends Coordinator {
     	}
     	
     	public void run() {
-    		
+    		if( manipRightJoystickY != 0 ) {
+    			move.liftPower.set(manipRightJoystickY);
+    			move.activate();
+    			defaultHoldArm = true;
+    		} else if( driverA ) {
+    			setpoint.target_clicks.set(Calibration.ARM_LOW_TARGET);
+    			setpoint.activate();
+    			defaultHoldArm = false;
+    		} else if( driverB ) {
+    			setpoint.target_clicks.set(Calibration.ARM_MID_TARGET);
+    			setpoint.activate();
+    			defaultHoldArm = false;
+    		} else if( driverY ) {
+    			setpoint.target_clicks.set(Calibration.ARM_HIGH_TARGET);
+    			setpoint.activate();
+    			defaultHoldArm = false;
+    		} else if( manipA ) {
+    			setpoint.target_clicks.set(Calibration.ARM_LOW_TARGET);
+    			defaultHoldArm = false;
+    		} else if( manipB ) {
+    			setpoint.target_clicks.set(Calibration.ARM_MID_TARGET);
+    			defaultHoldArm = false;
+    		} else if( manipY ) {
+    			setpoint.target_clicks.set(Calibration.ARM_HIGH_TARGET);
+    			setpoint.activate();
+    			defaultHoldArm = false;
+    		} else {
+    			if( defaultHoldArm ) {
+    				setpoint.target_clicks.set(robot.arm.encoderClicks.get());
+    			}
+    			setpoint.activate();
+    		}
     	}
     }
     
@@ -197,65 +236,51 @@ public class TeleopMode extends Coordinator {
     private class ElevatorManager {
         private final Elevator.Move move;
         private final Elevator.Setpoint setpoint;
-        private boolean isStationary=false;
-        private Pulse manualMove = new Pulse();
-        private double holdClicks = 0;
 
         public ElevatorManager() {
             move = robot.elevator.new Move();
             setpoint = robot.elevator.new Setpoint();
-            manualMove.update(false);
         }
 
         public void run() {
-            double leftY = manip.leftStick.y.get();
-            boolean start = manip.buttons.start.get();
-            //System.out.println("LeftY is "+leftY);
-            //System.out.println("Error is "+robot.elevator.pidError.get());
-            if (start) {
-                robot.elevator.encoder.zero();
-                holdClicks = robot.elevator.encoderClicks.get();
-                setpoint.target_clicks.set(holdClicks);
-                setpoint.activate();
-                // TODO: Restructure into else later
-                return;
-            }
-            if( manip.buttons.y.get() ) {
-                isStationary=false;
-                setpoint.target_clicks.set(Calibration.ELEVATOR_Y_TARGET);
-                setpoint.activate();
-                manualMove.update(false);
-            } else if ( manip.buttons.x.get() ) {
-                isStationary=false;
-                setpoint.target_clicks.set(Calibration.ELEVATOR_X_TARGET);
-                setpoint.activate();
-                manualMove.update(false);
-            } else if ( manip.buttons.b.get() ) {
-                isStationary=false;
-                setpoint.target_clicks.set(Calibration.ELEVATOR_B_TARGET);
-                setpoint.activate();
-                manualMove.update(false);
-            } else if ( manip.buttons.a.get() ) {
-                isStationary=false;
-                setpoint.target_clicks.set(Calibration.ELEVATOR_A_TARGET);
-                setpoint.activate();
-                manualMove.update(false);
-            } else {
-                if( leftY == 0 ) {
-                    if (!isStationary) {
-                        isStationary=true;
-                        holdClicks=robot.elevator.encoderClicks.get();
-                    }
-                    setpoint.target_clicks.set(holdClicks);
-                    setpoint.activate();
-                    manualMove.update(false);
-                } else {
-                    isStationary=false;
-                    move.liftPower.set(leftY);
-                    move.activate();
-                    manualMove.update(true);
-                }
-            }
+        	if( driverStart || manipStart ) {
+        		 robot.elevator.encoder.zero();
+                 setpoint.target_clicks.set(robot.elevator.encoderClicks.get());
+                 setpoint.activate();
+        	} else if( manipLeftJoystickY != 0 && !manipLeftJoystickButton ) {
+        		move.liftPower.set(manipLeftJoystickY);
+        		move.activate();
+        		defaultHoldElevator = true;
+        	} else if( driverA ) {
+        		setpoint.target_clicks.set(Calibration.ELEVATOR_LOW_TARGET);
+        		setpoint.activate();
+        		defaultHoldElevator = false;
+        	} else if( driverB && driverLeftJoystickButton ) {
+        		setpoint.target_clicks.set(Calibration.ELEVATOR_MID_TARGET);
+        		setpoint.activate();
+        		defaultHoldElevator = false;
+        	} else if( driverY && driverLeftJoystickButton ) {
+        		setpoint.target_clicks.set(Calibration.ELEVATOR_HIGH_TARGET);
+        		setpoint.activate();
+        		defaultHoldElevator = false;
+        	} else if( manipA ) {
+        		setpoint.target_clicks.set(Calibration.ELEVATOR_LOW_TARGET);
+        		setpoint.activate();
+        		defaultHoldElevator = false;
+        	} else if( manipB && manipLeftJoystickButton ) {
+        		setpoint.target_clicks.set(Calibration.ELEVATOR_MID_TARGET);
+        		setpoint.activate();
+        		defaultHoldElevator = false;
+        	} else if( manipY && manipLeftJoystickButton ) {
+        		setpoint.target_clicks.set(Calibration.ELEVATOR_HIGH_TARGET);
+        		setpoint.activate();
+        		defaultHoldElevator = false;
+        	} else {
+        		if( defaultHoldElevator ) {
+        			setpoint.target_clicks.set(robot.arm.encoderClicks.get());
+        		}
+        		setpoint.activate();
+        	}
         }
     }
     

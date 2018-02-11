@@ -84,10 +84,9 @@ public class Calibration {
     public static final double ELEVATOR_TARGET_SPEED = 0.5;
     public static final int ELEVATOR_CLICK_TOLERANCE = 100;//25
     
-    public static final double ELEVATOR_Y_TARGET = 16000;
-    public static final double ELEVATOR_B_TARGET = 12000;
-    public static final double ELEVATOR_X_TARGET = 8000;
-    public static final double ELEVATOR_A_TARGET = 4000;
+    public static final double ELEVATOR_LOW_TARGET = 0;
+    public static final double ELEVATOR_MID_TARGET = 8000;
+    public static final double ELEVATOR_HIGH_TARGET = 16000;
     //@Unreal("Find more reasonable time or eliminate hold part altogether")
     //public static final double ELEVATOR_PID_CONTINUE = 10;
     
@@ -112,6 +111,10 @@ public class Calibration {
     public static final double ARM_MIN_SPEED = -0.1;
     @Unreal("Will need to be adjusted up once weight is attached")
     public static final double ARM_MAX_SPEED = 0.4;
+    
+    public static final double ARM_LOW_TARGET = 0;
+    public static final double ARM_MID_TARGET = 100;
+    public static final double ARM_HIGH_TARGET = 200;
     
     /* Intake */
     public static final double INTAKE_PASSIVE_POWER = 0;
