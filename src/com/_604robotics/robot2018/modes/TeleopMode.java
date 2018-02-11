@@ -60,52 +60,52 @@ public class TeleopMode extends Coordinator {
     
     public boolean defaultHoldElevator = true;
     public boolean defaultHoldArm = true;
+
+    private double driverLeftJoystickY;
+    private double driverLeftJoystickX;
+    private double driverLeftTrigger;
     
-    public double driverLeftJoystickY;
-    public double driverLeftJoystickX;
-    public double driverLeftTrigger;
+    private boolean driverLeftJoystickButton;
+    private boolean driverLeftTriggerButton;
+    private boolean driverLeftBumper;
     
-    public boolean driverLeftJoystickButton;
-    public boolean driverLeftTriggerButton;
-    public boolean driverLeftBumper;
+    private double driverRightJoystickY;
+    private double driverRightJoystickX;
+    private double driverRightTrigger;
     
-    public double driverRightJoystickY;
-    public double driverRightJoystickX;
-    public double driverRightTrigger;
+    private boolean driverRightJoystickButton;
+    private boolean driverRightTriggerButton;
+    private boolean driverRightBumper;
     
-    public boolean driverRightJoystickButton;
-    public boolean driverRightTriggerButton;
-    public boolean driverRightBumper;
+    private boolean driverBack;
+    private boolean driverStart;
+    private boolean driverA;
+    private boolean driverB;
+    private boolean driverX;
+    private boolean driverY;
     
-    public boolean driverBack;
-    public boolean driverStart;
-    public boolean driverA;
-    public boolean driverB;
-    public boolean driverX;
-    public boolean driverY;
+    private double manipLeftJoystickY;
+    private double manipLeftJoystickX;
+    private double manipLeftTrigger;
     
-    public double manipLeftJoystickY;
-    public double manipLeftJoystickX;
-    public double manipLeftTrigger;
+    private boolean manipLeftJoystickButton;
+    private boolean manipLeftTriggerButton;
+    private boolean manipLeftBumper;
     
-    public boolean manipLeftJoystickButton;
-    public boolean manipLeftTriggerButton;
-    public boolean manipLeftBumper;
+    private double manipRightJoystickY;
+    private double manipRightJoystickX;
+    private double manipRightTrigger;
     
-    public double manipRightJoystickY;
-    public double manipRightJoystickX;
-    public double manipRightTrigger;
+    private boolean manipRightJoystickButton;
+    private boolean manipRightTriggerButton;
+    private boolean manipRightBumper;
     
-    public boolean manipRightJoystickButton;
-    public boolean manipRightTriggerButton;
-    public boolean manipRightBumper;
-    
-    public boolean manipBack;
-    public boolean manipStart;
-    public boolean manipA;
-    public boolean manipB;
-    public boolean manipX;
-    public boolean manipY;
+    private boolean manipBack;
+    private boolean manipStart;
+    private boolean manipA;
+    private boolean manipB;
+    private boolean manipX;
+    private boolean manipY;
     
     @Override
     public boolean run () {
