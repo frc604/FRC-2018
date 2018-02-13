@@ -85,10 +85,12 @@ public class Arm extends Module {
         pid = new RotatingArmPIDController(Calibration.ARM_P,
                 Calibration.ARM_I,
                 Calibration.ARM_D,
+                Calibration.ARM_F,
                 encoder,
                 motorA,
                 Calibration.ARM_PID_PERIOD);
-        pid.setInputRange(Calibration.ARM_ENCODER_ZERO, Calibration.ARM_ENCODER_FULL_ROT);
+        pid.setInputRange(Calibration.ARM_ENCODER_ZERO,
+                Calibration.ARM_ENCODER_ZERO+Calibration.ARM_ENCODER_FULL_ROT);
         pidError = addOutput("Arm PID Error", pid::getError);
         pid.setIntegralLimits(Calibration.ARM_MIN_SUM, Calibration.ARM_MAX_SUM);
         pid.setOutputRange(Calibration.ARM_MIN_SPEED, Calibration.ARM_MAX_SPEED);
