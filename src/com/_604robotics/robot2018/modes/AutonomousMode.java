@@ -179,11 +179,11 @@ public class AutonomousMode extends Coordinator {
         }
 
         public double getMoveError() {
-            return moveController.getAvgError();
+            return moveController.getError();
         }
 
         public double getRotError() {
-            return rotController.getAvgError();
+            return rotController.getError();
         }
 
         @Override
@@ -259,8 +259,8 @@ public class AutonomousMode extends Coordinator {
 
         @Override
         protected void end() {
-            arcadePIDLog.log("INFO","Final Rotate error is "+rotController.getAvgError());
-            arcadePIDLog.log("INFO","Final Move error is "+moveController.getAvgError());
+            arcadePIDLog.log("INFO","Final Rotate error is "+rotController.getError());
+            arcadePIDLog.log("INFO","Final Move error is "+moveController.getError());
             rotController.disable();
             moveController.disable();
             timeElapsed.stopAndReset();
