@@ -61,51 +61,51 @@ public class TeleopMode extends Coordinator {
     public boolean defaultHoldElevator = true;
     public boolean defaultHoldArm = true;
     
-    public double driverLeftJoystickY;
-    public double driverLeftJoystickX;
-    public double driverLeftTrigger;
+    public double driverLeftJoystickY = 0.0;
+    public double driverLeftJoystickX = 0.0;
+    public double driverLeftTrigger = 0.0;
     
-    public boolean driverLeftJoystickButton;
-    public boolean driverLeftTriggerButton;
-    public boolean driverLeftBumper;
+    public boolean driverLeftJoystickButton = false;
+    public boolean driverLeftTriggerButton = false;
+    public boolean driverLeftBumper = false;
     
-    public double driverRightJoystickY;
-    public double driverRightJoystickX;
-    public double driverRightTrigger;
+    public double driverRightJoystickY = 0.0;
+    public double driverRightJoystickX = 0.0;
+    public double driverRightTrigger = 0.0;
     
-    public boolean driverRightJoystickButton;
-    public boolean driverRightTriggerButton;
-    public boolean driverRightBumper;
+    public boolean driverRightJoystickButton = false;
+    public boolean driverRightTriggerButton = false;
+    public boolean driverRightBumper = false;
     
-    public boolean driverBack;
-    public boolean driverStart;
-    public boolean driverA;
-    public boolean driverB;
-    public boolean driverX;
-    public boolean driverY;
+    public boolean driverBack = false;
+    public boolean driverStart = false;
+    public boolean driverA = false;
+    public boolean driverB = false;
+    public boolean driverX = false;
+    public boolean driverY = false;
     
-    public double manipLeftJoystickY;
-    public double manipLeftJoystickX;
-    public double manipLeftTrigger;
+    public double manipLeftJoystickY = 0.0;
+    public double manipLeftJoystickX = 0.0;
+    public double manipLeftTrigger = 0.0;
     
-    public boolean manipLeftJoystickButton;
-    public boolean manipLeftTriggerButton;
-    public boolean manipLeftBumper;
+    public boolean manipLeftJoystickButton = false;
+    public boolean manipLeftTriggerButton = false;
+    public boolean manipLeftBumper = false;
     
-    public double manipRightJoystickY;
-    public double manipRightJoystickX;
-    public double manipRightTrigger;
+    public double manipRightJoystickY = 0.0;
+    public double manipRightJoystickX = 0.0;
+    public double manipRightTrigger = 0.0;
     
-    public boolean manipRightJoystickButton;
-    public boolean manipRightTriggerButton;
-    public boolean manipRightBumper;
+    public boolean manipRightJoystickButton= false;
+    public boolean manipRightTriggerButton= false;
+    public boolean manipRightBumper= false;
     
-    public boolean manipBack;
-    public boolean manipStart;
-    public boolean manipA;
-    public boolean manipB;
-    public boolean manipX;
-    public boolean manipY;
+    public boolean manipBack= false;
+    public boolean manipStart= false;
+    public boolean manipA= false;
+    public boolean manipB= false;
+    public boolean manipX= false;
+    public boolean manipY= false;
     
     @Override
     public boolean run () {
@@ -133,10 +133,10 @@ public class TeleopMode extends Coordinator {
         
         driverBack = driver.buttons.back.get();
         driverStart = driver.buttons.start.get();
-        driverA = driver.buttons.a.get();
-        driverB = driver.buttons.b.get();
-        driverX = driver.buttons.x.get();
-        driverY = driver.buttons.y.get();
+//        driverA = driver.buttons.a.get();
+//        driverB = driver.buttons.b.get();
+//        driverX = driver.buttons.x.get();
+//        driverY = driver.buttons.y.get();
         
         manipLeftJoystickY = manip.leftStick.y.get();
         manipLeftJoystickX = manip.leftStick.x.get();
@@ -156,10 +156,10 @@ public class TeleopMode extends Coordinator {
         
         manipBack = manip.buttons.back.get();
         manipStart = manip.buttons.start.get();
-        manipA = manip.buttons.a.get();
-        manipB = manip.buttons.b.get();
-        manipX = manip.buttons.x.get();
-        manipY = manip.buttons.y.get();
+//        manipA = manip.buttons.a.get();
+//        manipB = manip.buttons.b.get();
+//        manipX = manip.buttons.x.get();
+//        manipY = manip.buttons.y.get();
     }
     
     private void process() {
@@ -182,7 +182,7 @@ public class TeleopMode extends Coordinator {
     	}
     	
     	public void run() {
-    		clamping.update(driver.buttons.x.get() || manip.buttons.x.get());
+    		clamping.update(driverX || manipX);
             if (clamping.isInOnState()) {
                 retract.activate();
             } else if (clamping.isInOffState()) {

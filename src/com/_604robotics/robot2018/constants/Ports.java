@@ -7,21 +7,21 @@ public class Ports {
     
     // Solenoids
     public static final int SHIFTER_A = 0;
-    public static final int SHIFTER_B = 1;
+    public static final int SHIFTER_B = 2;
     
-    public static final int CLAMP_A = 0;
-    public static final int CLAMP_B = 0;
+    public static final int CLAMP_A = 1;
+    public static final int CLAMP_B = 3;
     
     // Motors
     // Remember to take note of PDP ports for these too once they are determined
     @Unreal("Wiring yet to be determined. Use practice bot wiring for now")
-    public static final int DRIVE_FRONT_LEFT_MOTOR = 0;
+    public static final int DRIVE_FRONT_LEFT_MOTOR = 2;
     @Unreal("Wiring yet to be determined. Use practice bot wiring for now")
-    public static final int DRIVE_REAR_LEFT_MOTOR = 1;
+    public static final int DRIVE_REAR_LEFT_MOTOR = 3;
     @Unreal("Wiring yet to be determined. Use practice bot wiring for now")
-    public static final int DRIVE_FRONT_RIGHT_MOTOR = 2;
+    public static final int DRIVE_FRONT_RIGHT_MOTOR = 0;
     @Unreal("Wiring yet to be determined. Use practice bot wiring for now")
-    public static final int DRIVE_REAR_RIGHT_MOTOR = 3;
+    public static final int DRIVE_REAR_RIGHT_MOTOR = 1;
 
     // Digital Inputs
     @Unreal("Wiring yet to be determined")
