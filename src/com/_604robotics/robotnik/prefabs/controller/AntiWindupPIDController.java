@@ -25,9 +25,9 @@ import edu.wpi.first.wpilibj.Timer;
  * This prevents the integral term from becoming too large.
  */
 @Deprecated @Untested("Incomplete port from 2014 codebase")
-public class AntiWindupPIDController extends PIDController {
+public class AntiWindupPIDController extends ClampedIntegralPIDController {
     private double m_A = 1;
-    private double m_C = 1000;
+    private double m_C = 10;
 
     // Pass through constructors
     /**
@@ -76,6 +76,7 @@ public class AntiWindupPIDController extends PIDController {
         }
         m_A = Ka;
         m_C = Kc;
+        setIntegralLimits(-m_C,m_C);
     }
 
     @Untested("Incomplete port from 2014 codebase")
@@ -90,6 +91,7 @@ public class AntiWindupPIDController extends PIDController {
         }
         m_A = Ka;
         m_C = Kc;
+        setIntegralLimits(-m_C,m_C);
     }
 
     @Untested("Incomplete port from 2014 codebase")
@@ -104,6 +106,7 @@ public class AntiWindupPIDController extends PIDController {
         }
         m_A = Ka;
         m_C = Kc;
+        setIntegralLimits(-m_C,m_C);
     }
 
     @Untested("Incomplete port from 2014 codebase")
@@ -118,6 +121,7 @@ public class AntiWindupPIDController extends PIDController {
         }
         m_A = Ka;
         m_C = Kc;
+        setIntegralLimits(-m_C,m_C);
     }
 
     public synchronized void setPID(double kP, double kI, double kA, double kC, double kD) {
@@ -131,118 +135,37 @@ public class AntiWindupPIDController extends PIDController {
     }
     
     public synchronized void setAC(double kA, double kC) {
-        m_A = kA;
-        m_C = kC;
+        m_thisMutex.lock();
+        try {
+            m_A = kA;
+            m_C = kC;
+            setIntegralLimits(-m_C,m_C);
+        } finally {
+            m_thisMutex.unlock();
+        }
     }
     
     public synchronized double getA() {
-        return m_A;
+        m_thisMutex.lock();
+        try {
+            return m_A;
+        } finally {
+            m_thisMutex.unlock();
+        }
     }
     
     public synchronized double getC() {
-        return m_C;
+        m_thisMutex.lock();
+        try {
+            return m_C;
+        } finally {
+            m_thisMutex.unlock();
+        }
     }
 
     @Override
-    protected void calculate() {
-        // TODO Auto-generated method stub
-        if (m_pidInput.getPIDSourceType().equals(PIDSourceType.kRate)) {
-            super.calculate();
-        } else {
-            /*if (m_I != 0) {
-                double newError = m_totalError + m_error;
-                newError = newError * m_A;
-                newError = Math.min(m_C, Math.max(-m_C, newError));
-
-                double potentialIGain = newError * m_I;
-                if (potentialIGain < m_maximumOutput) {
-                    if (potentialIGain > m_minimumOutput) {
-                        m_totalError = newError;
-                    } else {
-                        m_totalError = m_minimumOutput / m_I;
-                    }
-                } else {
-                    m_totalError = m_maximumOutput / m_I;
-                }
-            }*/
-            
-            boolean enabled = isEnabled();
-            PIDSource pidInput;
-
-            synchronized (this) {
-                if (m_pidInput == null) {
-                    return;
-                }
-                if (m_pidOutput == null) {
-                    return;
-                }
-                pidInput = m_pidInput; // take snapshot of these values...
-            }
-            if (enabled) {
-                double input;
-                double result;
-                final PIDOutput pidOutput;
-                synchronized (this) {
-                    input = pidInput.pidGet();
-                }
-      /*
-      synchronized (this) {
-        m_error = getContinuousError(m_setpoint - input);
-
-        if (m_pidInput.getPIDSourceType().equals(PIDSourceType.kRate)) {
-          if (m_P != 0) {
-            double potentialPGain = (m_totalError + m_error) * m_P;
-            if (potentialPGain < m_maximumOutput) {
-              if (potentialPGain > m_minimumOutput) {
-                m_totalError += m_error;
-              } else {
-                m_totalError = m_minimumOutput / m_P;
-              }
-            } else {
-              m_totalError = m_maximumOutput / m_P;
-            }
-
-            m_result = m_P * m_totalError + m_D * m_error
-                + calculateFeedForward();
-          }
-        } else {
-          if (m_I != 0) {
-            double potentialIGain = (m_totalError + m_error) * m_I;
-            if (potentialIGain < m_maximumOutput) {
-              if (potentialIGain > m_minimumOutput) {
-                m_totalError += m_error;
-              } else {
-                m_totalError = m_minimumOutput / m_I;
-              }
-            } else {
-              m_totalError = m_maximumOutput / m_I;
-            }
-          }
-
-          m_result = m_P * m_error + m_I * m_totalError
-              + m_D * (m_error - m_prevError) + calculateFeedForward();
-        }
-        m_prevError = m_error;
-
-        if (m_result > m_maximumOutput) {
-          m_result = m_maximumOutput;
-        } else if (m_result < m_minimumOutput) {
-          m_result = m_minimumOutput;
-        }
-        pidOutput = m_pidOutput;
-        result = m_result;
-
-        // Update the buffer.
-        m_buf.add(m_error);
-        m_bufTotal += m_error;
-        // Remove old elements when the buffer is full.
-        if (m_buf.size() > m_bufLength) {
-          m_bufTotal -= m_buf.remove();
-        }
-      }
-*/
-                //m_pidOutput.pidWrite(result);
-            }
-        }
+    protected synchronized double modifyTotalError(double totalError) {
+        // TODO: Use proper timer mechanisms
+        return super.modifyTotalError(totalError)*m_A;
     }
 }
