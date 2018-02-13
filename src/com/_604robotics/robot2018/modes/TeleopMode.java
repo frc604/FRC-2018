@@ -272,7 +272,12 @@ public class TeleopMode extends Coordinator {
                  setpoint.target_clicks.set(robot.elevator.encoderClicks.get());
                  setpoint.activate();
         	} else if( manipLeftJoystickY != 0 && !manipLeftJoystickButton ) {
-        		move.liftPower.set(manipLeftJoystickY);
+        	    // Scale negative power for safety
+        	    double elevPower = manipLeftJoystickY;
+        	    if (elevPower<0) {
+        	        elevPower*=0.5;
+        	    }
+        		move.liftPower.set(elevPower);
         		move.activate();
         		defaultHoldElevator = true;
         	} else if( driverA ) {
