@@ -13,8 +13,6 @@ public class Dashboard extends DashboardModule {
 
     //public final Input<Double> totalCurrent = addDashboardInput("Current Drawn",0.0);
 
-    public final Output<Boolean> driveOn = addDashboardOutput("driveOn", true);
-
     public final Output<Double> PIDMoveError = addDashboardOutput("PID Move Error",0.0);
     public final Output<Double> PIDRotateError = addDashboardOutput("PID Rotate Error",0.0);
     
