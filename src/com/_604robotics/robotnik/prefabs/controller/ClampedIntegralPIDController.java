@@ -28,8 +28,13 @@ public class ClampedIntegralPIDController extends ExtendablePIDController {
     }
 
     public void setIntegralLimits(double limitmin, double limitmax) {
-        minIntegral = limitmin;
-        maxIntegral = limitmax;
+        m_thisMutex.lock();
+        try {
+            minIntegral = limitmin;
+            maxIntegral = limitmax;
+        } finally {
+            m_thisMutex.unlock();
+        }
     }
 
     @Override
