@@ -97,24 +97,27 @@ public class Calibration {
     @Unreal("Calibration necessary")
     public static final double ARM_D = 0.00002;
     @Unreal("Calibration necessary")
-    public static final double ARM_F = 0.35;
+    // This is multiplication by a cosine factor
+    public static final double ARM_F = 0.2;
     @Unreal("Work out absolute offset after assembly complete")
     public static final double ARM_ENCODER_ZERO = 0;
     public static final double ARM_ENCODER_FULL_ROT=4096*54/30;
     /* Arm */
-    // Bound I term motor output to 1
-    public static final double ARM_MAX_SUM = 1/ARM_I;
-    // I term which props up ARM should never be negative
-    public static final double ARM_MIN_SUM = 0;
+    // Bound I term motor output to 0.15
+    public static final double ARM_MAX_SUM = 0.15/ARM_I;
+    public static final double ARM_MIN_SUM = -0.15;
     public static final double ARM_PID_PERIOD = 0.02;
     // Lower speed going down due to weight
     public static final double ARM_MIN_SPEED = -0.1;
-    @Unreal("Will need to be adjusted up once weight is attached")
+    @Unreal("Will need to be adjusted once arm is tested")
     public static final double ARM_MAX_SPEED = 0.4;
     
-    public static final double ARM_LOW_TARGET = 0;
-    public static final double ARM_MID_TARGET = 100;
-    public static final double ARM_HIGH_TARGET = 200;
+    // Low will be negative, high will be positive, zero is horizontal
+    // 4096 clicks/rot * 54/30 is 7372.8
+    // Assuming 60 degree increments for now
+    public static final double ARM_LOW_TARGET = -1228;
+    public static final double ARM_MID_TARGET = 0;
+    public static final double ARM_HIGH_TARGET = 1228;
     
     /* Intake */
     public static final double INTAKE_PASSIVE_POWER = 0;

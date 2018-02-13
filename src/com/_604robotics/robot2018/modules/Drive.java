@@ -8,18 +8,19 @@ import com._604robotics.robotnik.Output;
 
 import edu.wpi.first.wpilibj.CounterBase;
 import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.PWMVictorSPX;
+import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
-import edu.wpi.first.wpilibj.Victor;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Drive extends Module {
-    Victor m_frontLeft = new Victor(Ports.DRIVE_FRONT_LEFT_MOTOR);
-    Victor m_rearLeft = new Victor(Ports.DRIVE_REAR_LEFT_MOTOR);
+    private final PWMVictorSPX m_frontLeft = new PWMVictorSPX(Ports.DRIVE_FRONT_LEFT_MOTOR);
+    private final PWMVictorSPX m_rearLeft = new PWMVictorSPX(Ports.DRIVE_REAR_LEFT_MOTOR);
     SpeedControllerGroup m_left = new SpeedControllerGroup(m_frontLeft, m_rearLeft);
 
-    Victor m_frontRight = new Victor(Ports.DRIVE_FRONT_RIGHT_MOTOR);
-    Victor m_rearRight = new Victor(Ports.DRIVE_REAR_RIGHT_MOTOR);
+    private final PWMVictorSPX m_frontRight = new PWMVictorSPX(Ports.DRIVE_FRONT_RIGHT_MOTOR);
+    private final PWMVictorSPX m_rearRight = new PWMVictorSPX(Ports.DRIVE_REAR_RIGHT_MOTOR);
     SpeedControllerGroup m_right = new SpeedControllerGroup(m_frontRight, m_rearRight);
 
     DifferentialDrive robotDrive = new DifferentialDrive(m_left, m_right);

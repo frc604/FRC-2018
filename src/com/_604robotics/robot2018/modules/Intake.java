@@ -8,6 +8,7 @@ import com._604robotics.robotnik.Module;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
+// TODO: Use current mode?
 public class Intake extends Module {
 	
     public WPI_TalonSRX motorA = new WPI_TalonSRX(Ports.INTAKE_MOTOR_A);
