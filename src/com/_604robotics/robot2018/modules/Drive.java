@@ -17,11 +17,11 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class Drive extends Module {
     private final PWMVictorSPX m_frontLeft = new PWMVictorSPX(Ports.DRIVE_FRONT_LEFT_MOTOR);
     private final PWMVictorSPX m_rearLeft = new PWMVictorSPX(Ports.DRIVE_REAR_LEFT_MOTOR);
-    SpeedControllerGroup m_left = new SpeedControllerGroup(m_frontLeft, m_rearLeft);
+    private final SpeedControllerGroup m_left = new SpeedControllerGroup(m_frontLeft, m_rearLeft);
 
     private final PWMVictorSPX m_frontRight = new PWMVictorSPX(Ports.DRIVE_FRONT_RIGHT_MOTOR);
     private final PWMVictorSPX m_rearRight = new PWMVictorSPX(Ports.DRIVE_REAR_RIGHT_MOTOR);
-    SpeedControllerGroup m_right = new SpeedControllerGroup(m_frontRight, m_rearRight);
+    private final SpeedControllerGroup m_right = new SpeedControllerGroup(m_frontRight, m_rearRight);
 
     DifferentialDrive robotDrive = new DifferentialDrive(m_left, m_right);
 
