@@ -58,54 +58,54 @@ public class TeleopMode extends Coordinator {
         clampManager = new ClampManager();
     }
     
-    public boolean defaultHoldElevator = true;
-    public boolean defaultHoldArm = true;
+    private boolean defaultHoldElevator = true;
+    private boolean defaultHoldArm = true;
     
-    public double driverLeftJoystickY = 0.0;
-    public double driverLeftJoystickX = 0.0;
-    public double driverLeftTrigger = 0.0;
+    private double driverLeftJoystickY = 0.0;
+    private double driverLeftJoystickX = 0.0;
+    private double driverLeftTrigger = 0.0;
     
-    public boolean driverLeftJoystickButton = false;
-    public boolean driverLeftTriggerButton = false;
-    public boolean driverLeftBumper = false;
+    private boolean driverLeftJoystickButton = false;
+    private boolean driverLeftTriggerButton = false;
+    private boolean driverLeftBumper = false;
     
-    public double driverRightJoystickY = 0.0;
-    public double driverRightJoystickX = 0.0;
-    public double driverRightTrigger = 0.0;
+    private double driverRightJoystickY = 0.0;
+    private double driverRightJoystickX = 0.0;
+    private double driverRightTrigger = 0.0;
     
-    public boolean driverRightJoystickButton = false;
-    public boolean driverRightTriggerButton = false;
-    public boolean driverRightBumper = false;
+    private boolean driverRightJoystickButton = false;
+    private boolean driverRightTriggerButton = false;
+    private boolean driverRightBumper = false;
     
-    public boolean driverBack = false;
-    public boolean driverStart = false;
-    public boolean driverA = false;
-    public boolean driverB = false;
-    public boolean driverX = false;
-    public boolean driverY = false;
+    private boolean driverBack = false;
+    private boolean driverStart = false;
+    private boolean driverA = false;
+    private boolean driverB = false;
+    private boolean driverX = false;
+    private boolean driverY = false;
     
-    public double manipLeftJoystickY = 0.0;
-    public double manipLeftJoystickX = 0.0;
-    public double manipLeftTrigger = 0.0;
+    private double manipLeftJoystickY = 0.0;
+    private double manipLeftJoystickX = 0.0;
+    private double manipLeftTrigger = 0.0;
     
-    public boolean manipLeftJoystickButton = false;
-    public boolean manipLeftTriggerButton = false;
-    public boolean manipLeftBumper = false;
+    private boolean manipLeftJoystickButton = false;
+    private boolean manipLeftTriggerButton = false;
+    private boolean manipLeftBumper = false;
     
-    public double manipRightJoystickY = 0.0;
-    public double manipRightJoystickX = 0.0;
-    public double manipRightTrigger = 0.0;
+    private double manipRightJoystickY = 0.0;
+    private double manipRightJoystickX = 0.0;
+    private double manipRightTrigger = 0.0;
     
-    public boolean manipRightJoystickButton= false;
-    public boolean manipRightTriggerButton= false;
-    public boolean manipRightBumper= false;
+    private boolean manipRightJoystickButton= false;
+    private boolean manipRightTriggerButton= false;
+    private boolean manipRightBumper= false;
     
-    public boolean manipBack= false;
-    public boolean manipStart= false;
-    public boolean manipA= false;
-    public boolean manipB= false;
-    public boolean manipX= false;
-    public boolean manipY= false;
+    private boolean manipBack= false;
+    private boolean manipStart= false;
+    private boolean manipA= false;
+    private boolean manipB= false;
+    private boolean manipX= false;
+    private boolean manipY= false;
     
     @Override
     public boolean run () {
