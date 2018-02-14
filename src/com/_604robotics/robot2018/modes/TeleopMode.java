@@ -228,8 +228,10 @@ public class TeleopMode extends Coordinator {
     			setpoint.activate();
     			defaultHoldArm = false;
     		} else {
+    		    // This should only be called once
     			if( defaultHoldArm ) {
     				setpoint.target_clicks.set(robot.arm.encoderClicks.get());
+    				defaultHoldArm = false;
     			}
     			setpoint.activate();
     		}
@@ -306,9 +308,10 @@ public class TeleopMode extends Coordinator {
         		setpoint.activate();
         		defaultHoldElevator = false;
         	} else {
+        	    // This should only be called once
         		if( defaultHoldElevator ) {
         			setpoint.target_clicks.set(robot.elevator.encoderClicks.get());
-        			defaultHoldElevator = false; // Run only once
+        			defaultHoldElevator = false;
         		}
         		setpoint.activate();
         	}
