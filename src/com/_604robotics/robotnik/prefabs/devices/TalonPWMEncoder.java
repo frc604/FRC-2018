@@ -79,15 +79,18 @@ public class TalonPWMEncoder implements PIDSource {
     public void setPIDSourceType (PIDSourceType sourceType) {
         this.sourceType = sourceType;
     }
-    
-    public void zero() {
-        zero(0);
-    }
 
-    public void zero(double zeroParam) {
+    public void zero() {
         if (encoderType==EncoderType.ABSOLUTE) {
             int multfactor = inverted ? -1 : 1;
-            offset=multfactor*(talon.getSensorCollection().getPulseWidthPosition()-zeroParam);
+            offset=multfactor*(talon.getSensorCollection().getPulseWidthPosition());
+        }
+    }
+    
+    public void setOffset(double offset) {
+        if (encoderType==EncoderType.ABSOLUTE) {
+            int multfactor = inverted ? -1 : 1;
+            this.offset = multfactor * offset;
         }
     }
 }
