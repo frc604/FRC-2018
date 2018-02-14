@@ -45,21 +45,21 @@ public class ClampedIntegralPIDController extends ExtendablePIDController {
     @Override
     protected synchronized double calculateProportional(double p, double error) {
         double val = super.calculateProportional(p, error);
-        // System.out.println("p is "+p+", error is "+error+", term is "+val);
+        System.out.println("p is "+p+", error is "+error+", term is "+val);
         return val;
     };
 
     @Override
     protected double calculateIntegral(double i, double totalError) {
         double val = super.calculateIntegral(i, totalError);
-        // System.out.println("i is "+i+", totalError is "+totalError+", term is "+val);
+        System.out.println("i is "+i+", totalError is "+totalError+", term is "+val);
         return val;
     }
 
     @Override
     protected synchronized double calculateDerivative(double d, double derror) {
         double val = super.calculateDerivative(d, derror);
-        // System.out.println("d is "+d+", delta is "+derror+", term is "+val);
+        System.out.println("d is "+d+", delta is "+derror+", term is "+val);
         return val;
     }
 

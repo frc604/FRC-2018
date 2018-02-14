@@ -94,6 +94,7 @@ public class Elevator extends Module {
     public Elevator() {
         super(Elevator.class);
         encoder.setInverted(false);
+        encoder.zero(0);
         motorA.setInverted(true);
         motorB.setInverted(true);
         motorB.set(ControlMode.Follower,Ports.ELEVATOR_MOTOR_A);

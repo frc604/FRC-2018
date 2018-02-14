@@ -297,6 +297,7 @@ public class TeleopMode extends Coordinator {
         		setpoint.activate();
         		defaultHoldElevator = false;
         	} else if( manipB && manipLeftJoystickButton ) {
+        	    System.out.println("lifawehfhsuifhsrofhweoifjseiof");
         		setpoint.target_clicks.set(Calibration.ELEVATOR_MID_TARGET);
         		setpoint.activate();
         		defaultHoldElevator = false;
@@ -306,7 +307,8 @@ public class TeleopMode extends Coordinator {
         		defaultHoldElevator = false;
         	} else {
         		if( defaultHoldElevator ) {
-        			setpoint.target_clicks.set(robot.arm.encoderClicks.get());
+        			setpoint.target_clicks.set(robot.elevator.encoderClicks.get());
+        			defaultHoldElevator = false; // Run only once
         		}
         		setpoint.activate();
         	}

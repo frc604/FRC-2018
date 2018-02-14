@@ -33,12 +33,18 @@ public class Ports {
     public static final int COMPRESSOR = 0;
     public static final int PDP_MODULE = 1;
     
+    //left front intake is 12
+    // right front intake is 14
+    //
+    // arm left is 10
+    // right arm integrated is 11
+    // 
     public static final int ELEVATOR_MOTOR_A = 13;
     public static final int ELEVATOR_MOTOR_B = 15;
     
-    public static final int INTAKE_MOTOR_A = 10;
-    public static final int INTAKE_MOTOR_B = 11;
+    public static final int INTAKE_MOTOR_A = 12;
+    public static final int INTAKE_MOTOR_B = 14;
     
-    public static final int ARM_MOTOR_A = 12;
-    public static final int ARM_MOTOR_B = 14;
+    public static final int ARM_MOTOR_A = 10;
+    public static final int ARM_MOTOR_B = 11;
 }
