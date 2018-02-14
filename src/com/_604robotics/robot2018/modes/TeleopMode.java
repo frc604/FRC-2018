@@ -133,10 +133,10 @@ public class TeleopMode extends Coordinator {
         
         driverBack = driver.buttons.back.get();
         driverStart = driver.buttons.start.get();
-//        driverA = driver.buttons.a.get();
-//        driverB = driver.buttons.b.get();
-//        driverX = driver.buttons.x.get();
-//        driverY = driver.buttons.y.get();
+        driverA = driver.buttons.a.get();
+        driverB = driver.buttons.b.get();
+        driverX = driver.buttons.x.get();
+        driverY = driver.buttons.y.get();
         
         manipLeftJoystickY = manip.leftStick.y.get();
         manipLeftJoystickX = manip.leftStick.x.get();
@@ -156,10 +156,10 @@ public class TeleopMode extends Coordinator {
         
         manipBack = manip.buttons.back.get();
         manipStart = manip.buttons.start.get();
-//        manipA = manip.buttons.a.get();
-//        manipB = manip.buttons.b.get();
-//        manipX = manip.buttons.x.get();
-//        manipY = manip.buttons.y.get();
+        manipA = manip.buttons.a.get();
+        manipB = manip.buttons.b.get();
+        manipX = manip.buttons.x.get();
+        manipY = manip.buttons.y.get();
     }
     
     private void process() {
