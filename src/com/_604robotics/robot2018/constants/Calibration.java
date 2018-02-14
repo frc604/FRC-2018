@@ -84,6 +84,8 @@ public class Calibration {
     public static final double ELEVATOR_TARGET_SPEED = 0.5;
     public static final int ELEVATOR_CLICK_TOLERANCE = 100;//25
     
+    @Unreal("Work out absolute offset with robot")
+    public static final double ELEVATOR_ENCODER_ZERO = 0;
     public static final double ELEVATOR_LOW_TARGET = 0;
     public static final double ELEVATOR_MID_TARGET = 8000;
     public static final double ELEVATOR_HIGH_TARGET = 16000;
@@ -99,7 +101,7 @@ public class Calibration {
     @Unreal("Calibration necessary")
     // This is multiplication by a cosine factor
     public static final double ARM_F = 0.2;
-    @Unreal("Work out absolute offset after assembly complete")
+    @Unreal("Work out absolute offset with robot")
     public static final double ARM_ENCODER_ZERO = 0;
     public static final double ARM_ENCODER_FULL_ROT=4096*54/30;
     /* Arm */
