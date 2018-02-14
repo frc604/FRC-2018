@@ -71,7 +71,7 @@ public class Calibration {
     public static final double ELEVATOR_D = 0.00000;
     
     // Bound I term motor output to 1
-    public static final double ELEVATOR_MAX_SUM = 0.35/ELEVATOR_I;
+    public static final double ELEVATOR_MAX_SUM = 0.4/ELEVATOR_I;
     // I term which props up elevator should never be negative
     // Needs to be positive as well to counter the weight
     public static final double ELEVATOR_MIN_SUM = 0.14/ELEVATOR_I;
