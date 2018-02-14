@@ -128,8 +128,8 @@ public class TeleopMode extends Coordinator {
         driverRightTrigger = driver.triggers.right.get();
         
         driverRightJoystickButton = driver.buttons.rightStick.get();
-        driverRightTriggerButton = driver.buttons.lt.get();
-        driverRightBumper = driver.buttons.lb.get();
+        driverRightTriggerButton = driver.buttons.rt.get();
+        driverRightBumper = driver.buttons.rb.get();
         
         driverBack = driver.buttons.back.get();
         driverStart = driver.buttons.start.get();
@@ -151,8 +151,8 @@ public class TeleopMode extends Coordinator {
         manipRightTrigger = manip.triggers.right.get();
         
         manipRightJoystickButton = manip.buttons.rightStick.get();
-        manipRightTriggerButton = manip.buttons.lt.get();
-        manipRightBumper = manip.buttons.lb.get();
+        manipRightTriggerButton = manip.buttons.rt.get();
+        manipRightBumper = manip.buttons.rb.get();
         
         manipBack = manip.buttons.back.get();
         manipStart = manip.buttons.start.get();
