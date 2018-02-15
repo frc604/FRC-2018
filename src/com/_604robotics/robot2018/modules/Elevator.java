@@ -73,7 +73,7 @@ public class Elevator extends Module {
 
         public Setpoint(double clicks) {
             super(Elevator.this, Setpoint.class);
-            target_clicks = addInput("Target Clicks", clicks, true);
+            target_clicks = addInput("Target Elevator Clicks", clicks, true);
         }
 
         @Override
@@ -94,7 +94,7 @@ public class Elevator extends Module {
     public Elevator() {
         super(Elevator.class);
         encoder.setInverted(false);
-        encoder.setOffset(Calibration.ARM_ENCODER_ZERO);
+        encoder.setOffset(Calibration.ELEVATOR_ENCODER_ZERO);
         motorA.setInverted(true);
         motorB.setInverted(true);
         motorB.set(ControlMode.Follower,Ports.ELEVATOR_MOTOR_A);

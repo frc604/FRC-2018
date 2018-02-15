@@ -58,7 +58,7 @@ public class Arm extends Module {
 
         public Setpoint(double clicks) {
             super(Arm.this, Setpoint.class);
-            target_clicks = addInput("Target Clicks", clicks, true);
+            target_clicks = addInput("Target Arm Clicks", clicks, true);
         }
 
         @Override
@@ -77,7 +77,8 @@ public class Arm extends Module {
 
     public Arm() {
         super(Arm.class);
-        encoder.setInverted(false);
+        encoder.setInverted(true);
+        encoder.setOffset(Calibration.ARM_ENCODER_ZERO);
         motorA.setInverted(true);
         motorB.setInverted(false);
         motorB.set(ControlMode.Follower,Ports.ARM_MOTOR_A);
@@ -88,8 +89,7 @@ public class Arm extends Module {
                 encoder,
                 motorA,
                 Calibration.ARM_PID_PERIOD);
-        pid.setInputRange(Calibration.ARM_ENCODER_ZERO,
-                Calibration.ARM_ENCODER_ZERO+Calibration.ARM_ENCODER_FULL_ROT);
+        pid.setInputRange(0,Calibration.ARM_ENCODER_FULL_ROT);
         pidError = addOutput("Arm PID Error", pid::getError);
         pid.setIntegralLimits(Calibration.ARM_MIN_SUM, Calibration.ARM_MAX_SUM);
         pid.setOutputRange(Calibration.ARM_MIN_SPEED, Calibration.ARM_MAX_SPEED);
