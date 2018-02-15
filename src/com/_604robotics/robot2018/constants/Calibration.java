@@ -71,21 +71,22 @@ public class Calibration {
     public static final double ELEVATOR_D = 0.00000;
     
     // Bound I term motor output to 1
-    public static final double ELEVATOR_MAX_SUM = 0.4/ELEVATOR_I;
+    public static final double ELEVATOR_MAX_SUM = 0.3/ELEVATOR_I;
     // I term which props up elevator should never be negative
     // Needs to be positive as well to counter the weight
-    public static final double ELEVATOR_MIN_SUM = 0.14/ELEVATOR_I;
+    public static final double ELEVATOR_RESET_SUM = 0.25/ELEVATOR_I;
+    public static final double ELEVATOR_MIN_SUM = 0.16/ELEVATOR_I;
     public static final double ELEVATOR_PID_PERIOD = 0.02;
     // Lower speed going down due to weight
-    public static final double ELEVATOR_MIN_SPEED = 0;
-    @Unreal("Will need to be adjusted up once weight is attached")
+    public static final double ELEVATOR_MIN_SPEED = -0.1;
+    //@Unreal("Will need to be adjusted up once weight is attached")
     public static final double ELEVATOR_MAX_SPEED = 0.5;
     
     public static final double ELEVATOR_TARGET_SPEED = 0.5;
     public static final int ELEVATOR_CLICK_TOLERANCE = 100;//25
     
-    @Unreal("Work out absolute offset with robot")
-    public static final double ELEVATOR_ENCODER_ZERO = 0;
+    // Prefer to be at the bottom so push into hard stop
+    public static final double ELEVATOR_ENCODER_ZERO = 720;
     public static final double ELEVATOR_LOW_TARGET = 0;
     public static final double ELEVATOR_MID_TARGET = 8000;
     public static final double ELEVATOR_HIGH_TARGET = 16000;
