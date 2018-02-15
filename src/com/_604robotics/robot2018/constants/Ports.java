@@ -7,9 +7,9 @@ public class Ports {
     
     // Solenoids
     public static final int SHIFTER_A = 0;
-    public static final int SHIFTER_B = 2;
+    public static final int SHIFTER_B = 1;
     
-    public static final int CLAMP_A = 1;
+    public static final int CLAMP_A = 2;
     public static final int CLAMP_B = 3;
     
     // Motors
