@@ -71,15 +71,14 @@ public class Calibration {
     public static final double ELEVATOR_D = 0.00000;
     
     // Bound I term motor output to 1
-    public static final double ELEVATOR_MAX_SUM = 0.3/ELEVATOR_I;
+    public static final double ELEVATOR_MAX_SUM = 0.25/ELEVATOR_I;
     // I term which props up elevator should never be negative
     // Needs to be positive as well to counter the weight
-    public static final double ELEVATOR_RESET_SUM = 0.25/ELEVATOR_I;
-    public static final double ELEVATOR_MIN_SUM = 0.16/ELEVATOR_I;
+    public static final double ELEVATOR_RESET_SUM = 0.2/ELEVATOR_I;
+    public static final double ELEVATOR_MIN_SUM = 0.12/ELEVATOR_I;
     public static final double ELEVATOR_PID_PERIOD = 0.02;
     // Lower speed going down due to weight
     public static final double ELEVATOR_MIN_SPEED = -0.1;
-    //@Unreal("Will need to be adjusted up once weight is attached")
     public static final double ELEVATOR_MAX_SPEED = 0.5;
     
     public static final double ELEVATOR_TARGET_SPEED = 0.5;
@@ -102,8 +101,7 @@ public class Calibration {
     @Unreal("Calibration necessary")
     // This is multiplication by a cosine factor
     public static final double ARM_F = 0.2;
-    @Unreal("Work out absolute offset with robot")
-    public static final double ARM_ENCODER_ZERO = 0;
+    public static final double ARM_ENCODER_ZERO = -1150;
     public static final double ARM_ENCODER_FULL_ROT=4096*54/30;
     /* Arm */
     // Bound I term motor output to 0.15
