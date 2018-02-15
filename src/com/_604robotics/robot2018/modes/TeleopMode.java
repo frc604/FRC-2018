@@ -340,6 +340,8 @@ public class TeleopMode extends Coordinator {
         private CurrentDrive currentDrive;
         private Toggle inverted;
         private Toggle gearState;
+        private boolean previousState;
+        private boolean invertOn;
 
         public DriveManager () {
             idle=robot.drive.new Idle();
@@ -350,6 +352,8 @@ public class TeleopMode extends Coordinator {
             // TODO: Expose on dashboard
             inverted=new Toggle(false);
             gearState=new Toggle(false);
+            previousState = false;
+            invertOn = false;
         }
 
         public void run() {
@@ -365,12 +369,22 @@ public class TeleopMode extends Coordinator {
                 robot.shifter.lowGear.activate();
             }
             // Flip values if xbox inverted
-            inverted.update(driver.buttons.rb.get());
-            robot.dashboard.XboxFlipped.set(inverted.isInOnState());
-            if (inverted.isInOnState()) {
-                leftY*=-1;
-                rightY*=-1;
+            if( driver.buttons.rb.get() ) {
+                if( !previousState ) {
+                    invertOn = !invertOn;
+                }
+                previousState = driver.buttons.rb.get();
             }
+            if( invertOn ) {
+                rightY *= -1;
+                leftY *= -1;
+            }
+//            inverted.update(driver.buttons.rb.get());
+//            robot.dashboard.XboxFlipped.set(inverted.isInOnState());
+//            if (inverted.isInOnState()) {
+//                leftY*=-1;
+//                rightY*=-1;
+//            }
             // Get Dashboard option for drive
             switch (robot.dashboard.driveMode.get()){
                 case OFF:
