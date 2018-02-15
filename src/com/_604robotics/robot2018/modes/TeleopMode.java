@@ -168,7 +168,7 @@ public class TeleopMode extends Coordinator {
     	driveManager.run();
         elevatorManager.run();
         intakeManager.run();
-        //armManager.run();
+        armManager.run();
         clampManager.run();
     }
     
