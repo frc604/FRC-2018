@@ -8,6 +8,7 @@ import com._604robotics.robot2018.modules.Drive;
 import com._604robotics.robot2018.modules.Elevator;
 import com._604robotics.robot2018.modules.Intake;
 import com._604robotics.robotnik.Coordinator;
+import com._604robotics.robotnik.Logger;
 import com._604robotics.robotnik.prefabs.flow.Toggle;
 import com._604robotics.robotnik.prefabs.inputcontroller.xbox.XboxController;
 
@@ -23,6 +24,7 @@ public class TeleopMode extends Coordinator {
     private final IntakeManager intakeManager;
     private final ArmManager armManager;
     private final ClampManager clampManager;
+    private final Logger test = new Logger("Teleop");
 
     public TeleopMode (Robot2018 robot) {
         driver.leftStick.x.setDeadband(Calibration.TELEOP_DRIVE_DEADBAND);
@@ -58,8 +60,8 @@ public class TeleopMode extends Coordinator {
         clampManager = new ClampManager();
     }
     
-    private boolean defaultHoldElevator = true;
-    private boolean defaultHoldArm = true;
+    private boolean getHoldElevatorClicks = false;
+    private boolean getHoldArmClicks = false;
     
     private double driverLeftJoystickY = 0.0;
     private double driverLeftJoystickX = 0.0;
@@ -166,7 +168,7 @@ public class TeleopMode extends Coordinator {
     	driveManager.run();
         elevatorManager.run();
         intakeManager.run();
-        armManager.run();
+        //armManager.run();
         clampManager.run();
     }
     
@@ -194,46 +196,51 @@ public class TeleopMode extends Coordinator {
     private class ArmManager {
     	private final Arm.Move move;
     	private final Arm.Setpoint setpoint;
+    	private double holdSetpoint;
     	
     	public ArmManager() {
     		move = robot.arm.new Move();
     		setpoint = robot.arm.new Setpoint();
+    		//setpoint.target_clicks.set(Calibration.ARM_LOW_TARGET);
     	}
     	
     	public void run() {
     		if( manipRightJoystickY != 0 ) {
     			move.liftPower.set(manipRightJoystickY);
     			move.activate();
-    			defaultHoldArm = true;
+    			getHoldArmClicks = true;
     		} else if( driverA ) {
     			setpoint.target_clicks.set(Calibration.ARM_LOW_TARGET);
     			setpoint.activate();
-    			defaultHoldArm = false;
+    			getHoldArmClicks = true;
     		} else if( driverB ) {
     			setpoint.target_clicks.set(Calibration.ARM_MID_TARGET);
     			setpoint.activate();
-    			defaultHoldArm = false;
+    			getHoldArmClicks = true;
     		} else if( driverY ) {
     			setpoint.target_clicks.set(Calibration.ARM_HIGH_TARGET);
     			setpoint.activate();
-    			defaultHoldArm = false;
+    			getHoldArmClicks = true;
     		} else if( manipA ) {
     			setpoint.target_clicks.set(Calibration.ARM_LOW_TARGET);
-    			defaultHoldArm = false;
+    			getHoldArmClicks = true;
     		} else if( manipB ) {
     			setpoint.target_clicks.set(Calibration.ARM_MID_TARGET);
-    			defaultHoldArm = false;
+    			getHoldArmClicks = true;
     		} else if( manipY ) {
     			setpoint.target_clicks.set(Calibration.ARM_HIGH_TARGET);
     			setpoint.activate();
-    			defaultHoldArm = false;
+    			getHoldArmClicks = true;
     		} else {
     		    // This should only be called once
-    			if( defaultHoldArm ) {
-    				setpoint.target_clicks.set(robot.arm.encoderClicks.get());
-    				defaultHoldArm = false;
-    			}
-    			setpoint.activate();
+                if( getHoldArmClicks ) {
+                    test.error("Activate hold with setpoint "+robot.arm.encoderClicks.get(), new Throwable());
+                    holdSetpoint=robot.arm.encoderClicks.get();
+                    robot.elevator.resetIntegral(0);
+                    getHoldArmClicks = false;
+                }
+                setpoint.target_clicks.set(holdSetpoint);
+                setpoint.activate();
     		}
     	}
     }
@@ -262,6 +269,7 @@ public class TeleopMode extends Coordinator {
     private class ElevatorManager {
         private final Elevator.Move move;
         private final Elevator.Setpoint setpoint;
+        private double holdSetpoint;
 
         public ElevatorManager() {
             move = robot.elevator.new Move();
@@ -269,11 +277,12 @@ public class TeleopMode extends Coordinator {
         }
 
         public void run() {
-        	if( driverStart || manipStart ) {
+            // Only use when absolutely necessary
+        	/*if( driverStart || manipStart ) {
         		 robot.elevator.encoder.zero();
                  setpoint.target_clicks.set(robot.elevator.encoderClicks.get());
                  setpoint.activate();
-        	} else if( manipLeftJoystickY != 0 && !manipLeftJoystickButton ) {
+        	} else */if( manipLeftJoystickY != 0 && !manipLeftJoystickButton ) {
         	    // Scale negative power for safety
         	    double elevPower = manipLeftJoystickY;
         	    if (elevPower<0) {
@@ -281,38 +290,40 @@ public class TeleopMode extends Coordinator {
         	    }
         		move.liftPower.set(elevPower);
         		move.activate();
-        		defaultHoldElevator = true;
+        		getHoldElevatorClicks = true;
         	} else if( driverA ) {
         		setpoint.target_clicks.set(Calibration.ELEVATOR_LOW_TARGET);
         		setpoint.activate();
-        		defaultHoldElevator = false;
+        		getHoldElevatorClicks = true;
         	} else if( driverB && driverLeftJoystickButton ) {
         		setpoint.target_clicks.set(Calibration.ELEVATOR_MID_TARGET);
         		setpoint.activate();
-        		defaultHoldElevator = false;
+        		getHoldElevatorClicks = true;
         	} else if( driverY && driverLeftJoystickButton ) {
         		setpoint.target_clicks.set(Calibration.ELEVATOR_HIGH_TARGET);
         		setpoint.activate();
-        		defaultHoldElevator = false;
+        		getHoldElevatorClicks = true;
         	} else if( manipA ) {
         		setpoint.target_clicks.set(Calibration.ELEVATOR_LOW_TARGET);
         		setpoint.activate();
-        		defaultHoldElevator = false;
+        		getHoldElevatorClicks = true;
         	} else if( manipB && manipLeftJoystickButton ) {
-        	    System.out.println("lifawehfhsuifhsrofhweoifjseiof");
         		setpoint.target_clicks.set(Calibration.ELEVATOR_MID_TARGET);
         		setpoint.activate();
-        		defaultHoldElevator = false;
+        		getHoldElevatorClicks = true;
         	} else if( manipY && manipLeftJoystickButton ) {
         		setpoint.target_clicks.set(Calibration.ELEVATOR_HIGH_TARGET);
         		setpoint.activate();
-        		defaultHoldElevator = false;
+        		getHoldElevatorClicks = true;
         	} else {
         	    // This should only be called once
-        		if( defaultHoldElevator ) {
-        			setpoint.target_clicks.set(robot.elevator.encoderClicks.get());
-        			defaultHoldElevator = false;
+        		if( getHoldElevatorClicks ) {
+        		    test.error("Activate hold with setpoint "+robot.elevator.encoderClicks.get(), new Throwable());
+        			holdSetpoint=robot.elevator.encoderClicks.get();
+        			robot.elevator.resetIntegral(Calibration.ELEVATOR_RESET_SUM);
+        			getHoldElevatorClicks = false;
         		}
+        		setpoint.target_clicks.set(holdSetpoint);
         		setpoint.activate();
         	}
         }
