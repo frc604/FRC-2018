@@ -16,7 +16,7 @@ public class Arm extends Module {
 
     private WPI_TalonSRX motorA = new WPI_TalonSRX(Ports.ARM_MOTOR_A);
     private WPI_TalonSRX motorB = new WPI_TalonSRX(Ports.ARM_MOTOR_B);
-    public TalonPWMEncoder encoder = new TalonPWMEncoder(motorA);
+    public TalonPWMEncoder encoder = new TalonPWMEncoder(motorB);
 
     public final Setpoint setpoint = new Setpoint();
 

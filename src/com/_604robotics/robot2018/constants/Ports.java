@@ -45,6 +45,6 @@ public class Ports {
     public static final int INTAKE_MOTOR_A = 12;
     public static final int INTAKE_MOTOR_B = 14;
     
-    public static final int ARM_MOTOR_A = 10;
-    public static final int ARM_MOTOR_B = 11;
+    public static final int ARM_MOTOR_A = 11;
+    public static final int ARM_MOTOR_B = 10;
 }
