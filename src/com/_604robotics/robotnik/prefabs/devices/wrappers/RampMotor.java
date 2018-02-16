@@ -1,6 +1,7 @@
 package com._604robotics.robotnik.prefabs.devices.wrappers;
 
 import com._604robotics.robotnik.prefabs.flow.SmartTimer;
+import com._604robotics.robotnik.utils.annotations.Untested;
 
 import edu.wpi.first.wpilibj.PIDOutput;
 import edu.wpi.first.wpilibj.SpeedController;
@@ -8,6 +9,7 @@ import edu.wpi.first.wpilibj.SpeedController;
 /**
  * A motor class that ramps changes in input and output.
  */
+@Deprecated @Untested("Test wrapper with lone motor controller")
 public class RampMotor implements SpeedController, PIDOutput {
     private SpeedController control;
     private SmartTimer timerObj;
