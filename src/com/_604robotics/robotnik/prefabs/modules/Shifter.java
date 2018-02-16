@@ -22,7 +22,7 @@ public class Shifter extends Module {
 		}
 		@Override
         public void begin() {
-			solenoid.set(Value.kOff);
+			solenoid.set(Value.kReverse);
 		}
 	}
 	private class SetGear extends Action {
