@@ -48,6 +48,7 @@ public class Intake extends Module {
 	
 	public Intake () {
         super(Intake.class);
+        motorB.setInverted(true);
         motorB.set(ControlMode.Follower, Ports.INTAKE_MOTOR_A);
         setDefaultAction(idle);
     }
