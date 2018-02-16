@@ -1,9 +1,5 @@
 package com._604robotics.robotnik;
 
-import edu.wpi.first.wpilibj.SampleRobot;
-import edu.wpi.first.wpilibj.networktables.NetworkTable;
-import edu.wpi.first.wpilibj.tables.ITable;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -17,13 +13,18 @@ import java.util.zip.InflaterInputStream;
 
 import com._604robotics.robotnik.utils.Pair;
 
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.SampleRobot;
+
 @SuppressWarnings("deprecation")
 public abstract class Robot extends SampleRobot {
     public static double DEFAULT_REPORT_INTERVAL = 5;
 
     private static final Logger logger = new Logger(Robot.class);
-
-    private final ITable table = NetworkTable.getTable("robotnik");
+    
+    private final NetworkTableInstance network = NetworkTableInstance.getDefault();
+    private final NetworkTable table = network.getTable("robotnik");
 
     private final List<Module> modules = new ArrayList<>();
     private final IterationTimer iterationTimer;
@@ -50,9 +51,7 @@ public abstract class Robot extends SampleRobot {
     }
 
     private void updateModuleList () {
-        table.putString("moduleList", modules.stream()
-                .map(Module::getName)
-                .collect(Collectors.joining(",")));
+    	table.getEntry("moduleList").setString( modules.stream().map( Module::getName ).collect( Collectors.joining(",") ) );
     }
 
     protected void addSystem (String name, Coordinator system) {
