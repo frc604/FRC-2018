@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class Module {
-	private final NetworkTableInstance network = NetworkTableInstance.create();
+	private final NetworkTableInstance network = NetworkTableInstance.getDefault();
 	
     private final NetworkTable table;
 
