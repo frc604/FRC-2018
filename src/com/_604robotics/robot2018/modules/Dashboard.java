@@ -13,9 +13,6 @@ public class Dashboard extends DashboardModule {
 
     //public final Input<Double> totalCurrent = addDashboardInput("Current Drawn",0.0);
 
-    public final Output<Double> PIDMoveError = addDashboardOutput("PID Move Error",0.0);
-    public final Output<Double> PIDRotateError = addDashboardOutput("PID Rotate Error",0.0);
-    
     public final Input<Boolean> XboxFlipped = addDashboardInput("XboxFlipped", false);
     
     //public final Input<Double> elevatorOffset = addDashboardInput("Elevator Offset", 0.0);
