@@ -11,6 +11,7 @@ import com._604robotics.robot2018.modules.Elevator;
 import com._604robotics.robot2018.modules.Intake;
 import com._604robotics.robot2018.systems.DashboardSystem;
 import com._604robotics.robotnik.Robot;
+import com._604robotics.robotnik.prefabs.modules.PowerMonitor;
 import com._604robotics.robotnik.prefabs.modules.Shifter;
 
 public class Robot2018 extends Robot {
@@ -21,6 +22,7 @@ public class Robot2018 extends Robot {
     public final Shifter shifter = addModule(new Shifter(Ports.SHIFTER_A, Ports.SHIFTER_B));
     public final Clamp clamp = addModule(new Clamp());
     public final Arm arm = addModule(new Arm());
+    public final PowerMonitor powermonitor = addModule(new PowerMonitor(Ports.PDP_MODULE, Ports.COMPRESSOR));
     
     public Robot2018() {
         setAutonomousMode(new AutonomousMode(this));
