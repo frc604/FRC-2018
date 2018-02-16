@@ -2,11 +2,11 @@ package com._604robotics.robotnik.prefabs.devices;
 
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.PIDOutput;
-import edu.wpi.first.wpilibj.PWMSpeedController;
+import edu.wpi.first.wpilibj.SpeedController;
 
 public class HoldMotor implements PIDOutput {
 	
-	public PWMSpeedController motor;
+	public SpeedController motor;
 	public Encoder encoder;
 	public double offset;
 	public double increment;
@@ -25,17 +25,17 @@ public class HoldMotor implements PIDOutput {
 	public double target_speed;
 	
 	public boolean at_speed;
-	public boolean at_position;
+	private boolean at_position;
 	
 	public double elevatorRateOffset() {
 		return offset;
 	}	
 	
-	public HoldMotor(PWMSpeedController motor, Encoder encoder) {
+	public HoldMotor(SpeedController motor, Encoder encoder) {
 		this.motor = motor;
 		this.encoder = encoder;
 		offset = 0;
-		increment = 0.001;
+		increment = 0.0001;
 		
 		upwardsRange = 1;
 		downwardsRange = 1;
@@ -43,7 +43,7 @@ public class HoldMotor implements PIDOutput {
 		failsafed = false;
 		
 		setpoint_offset = 0;
-		setpoint_increment = 0.001;
+		setpoint_increment = 0.0001;
 		click_tolerance = 0;
 		
 		moving_offset = 0;
@@ -54,11 +54,11 @@ public class HoldMotor implements PIDOutput {
 		at_position = true;
 	}
 	
-	public HoldMotor(PWMSpeedController motor, Encoder encoder, double target_speed, int click_tolerance) {
+	public HoldMotor(SpeedController motor, Encoder encoder, double target_speed, int click_tolerance) {
 		this.motor = motor;
 		this.encoder = encoder;
 		offset = 0;
-		increment = 0.001;
+		increment = 0.0001;
 		
 		upwardsRange = 1;
 		downwardsRange = 1;
@@ -66,7 +66,7 @@ public class HoldMotor implements PIDOutput {
 		failsafed = false;
 		
 		setpoint_offset = 0;
-		setpoint_increment = 0.001;
+		setpoint_increment = 0.0001;
 		this.target_speed = target_speed;
 		this.click_tolerance = click_tolerance;
 		
@@ -105,7 +105,7 @@ public class HoldMotor implements PIDOutput {
 		downwardsRange = 1+offset;
 		set(0);
 	}
-	
+
 	public void setpointMove(int click_target) {
 		double speed = 0;
 		
@@ -134,22 +134,18 @@ public class HoldMotor implements PIDOutput {
 		motor.set(moving_offset + speed);
 	}
 	
-	public void setpointHold(int click_target) {
+	public boolean canHold(int click_target) {
 		if( click_target + click_tolerance > encoder.get() && encoder.get() > click_target - click_tolerance ) {
-			hold();
 			at_position = true;
 		} else {
 			at_position = false;
-			// TODO: implement PIDs here
-			
-			/* Temporary Solution */
-			setpointMove(click_target);
-		}
+			}
+		return at_position;
 	}
 	
 	@Override
 	public void pidWrite(double output) {
-		if( !failsafed ) {
+		/*if( !failsafed ) {
 			if( output != 0 ) {
 				set(output);
 			} else {
@@ -157,6 +153,7 @@ public class HoldMotor implements PIDOutput {
 			}
 		} else {
 			set(output);
-		}
+		}*/
+		set(output);
 	}
 }

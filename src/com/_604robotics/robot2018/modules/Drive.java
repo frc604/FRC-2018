@@ -8,14 +8,22 @@ import com._604robotics.robotnik.Output;
 
 import edu.wpi.first.wpilibj.CounterBase;
 import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.PWMVictorSPX;
 import edu.wpi.first.wpilibj.RobotDrive;
+import edu.wpi.first.wpilibj.SpeedControllerGroup;
+import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Drive extends Module {
-    private final RobotDrive robotDrive = new RobotDrive(
-            Ports.DRIVE_FRONT_LEFT_MOTOR,
-            Ports.DRIVE_REAR_LEFT_MOTOR,
-            Ports.DRIVE_FRONT_RIGHT_MOTOR,
-            Ports.DRIVE_REAR_RIGHT_MOTOR);
+    private final PWMVictorSPX m_frontLeft = new PWMVictorSPX(Ports.DRIVE_FRONT_LEFT_MOTOR);
+    private final PWMVictorSPX m_rearLeft = new PWMVictorSPX(Ports.DRIVE_REAR_LEFT_MOTOR);
+    private final SpeedControllerGroup m_left = new SpeedControllerGroup(m_frontLeft, m_rearLeft);
+
+    private final PWMVictorSPX m_frontRight = new PWMVictorSPX(Ports.DRIVE_FRONT_RIGHT_MOTOR);
+    private final PWMVictorSPX m_rearRight = new PWMVictorSPX(Ports.DRIVE_REAR_RIGHT_MOTOR);
+    private final SpeedControllerGroup m_right = new SpeedControllerGroup(m_frontRight, m_rearRight);
+
+    DifferentialDrive robotDrive = new DifferentialDrive(m_left, m_right);
 
     // Reversed from previously due to new mountings
     private final Encoder encoderLeft = new Encoder(Ports.ENCODER_LEFT_A,
@@ -41,6 +49,10 @@ public class Drive extends Module {
     
     public final Output<Double> leftClickRate = addOutput("leftClickRate", encoderLeft::getRate);
     public final Output<Double> rightClickRate = addOutput("rightClickRate", encoderRight::getRate);
+    
+    public void updateDashboardSendables() {
+        SmartDashboard.putData("Drive Base", robotDrive);
+    }
 
     public class Idle extends Action {
         public Idle () {
@@ -119,6 +131,7 @@ public class Drive extends Module {
 
     public Drive () {
         super(Drive.class);
+        robotDrive.setDeadband(0.04);
         //horizGyro.calibrate();
         setDefaultAction(idle);
     }
