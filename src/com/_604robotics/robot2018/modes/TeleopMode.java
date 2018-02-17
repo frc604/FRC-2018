@@ -241,7 +241,6 @@ public class TeleopMode extends Coordinator {
     		} else if( manipY ) {
     			setpoint.target_clicks.set(Calibration.ARM_HIGH_TARGET);
     			setpoint.activate();
-    			System.out.println("BAWFOwevjaminy0sneothuridk");
     			getHoldArmClicks = true;
     		} else {
     		    // This should only be called once
