@@ -87,40 +87,40 @@ public class Calibration {
     // Prefer to be at the bottom so push into hard stop
     public static final double ELEVATOR_ENCODER_ZERO = 720;
     public static final double ELEVATOR_LOW_TARGET = 0;
-    public static final double ELEVATOR_MID_TARGET = 8000;
-    public static final double ELEVATOR_HIGH_TARGET = 16000;
+    public static final double ELEVATOR_MID_TARGET = 14000;
+    public static final double ELEVATOR_HIGH_TARGET = 32000;
     //@Unreal("Find more reasonable time or eliminate hold part altogether")
     //public static final double ELEVATOR_PID_CONTINUE = 10;
     
     @Unreal("Calibration necessary")
-    public static final double ARM_P = 0.00007;
+    public static final double ARM_P = 0.00008;
     @Unreal("Calibration necessary")
     public static final double ARM_I = 0.00004;
     @Unreal("Calibration necessary")
     public static final double ARM_D = 0.00002;
     @Unreal("Calibration necessary")
     // This is multiplication by a cosine factor
-    public static final double ARM_F = 0.18;
-    public static final double ARM_ENCODER_ZERO = 1950;
-    public static final double ARM_ENCODER_FULL_ROT=4096*54/30;
+    public static final double ARM_F = 0.2;
+    public static final double ARM_ENCODER_ZERO = 2080;
+    public static final double ARM_ENCODER_FULL_ROT=2*4096*54/30;
     /* Arm */
     // Bound I term motor output to 0.15
-    public static final double ARM_MAX_SUM = 0.1/ARM_I;
-    public static final double ARM_MIN_SUM = -0.1;
+    public static final double ARM_MAX_SUM = 0.08/ARM_I;
+    public static final double ARM_MIN_SUM = -0.04/ARM_I;
     public static final double ARM_PID_PERIOD = 0.02;
     // Lower speed going down due to weight
-    public static final double ARM_MIN_SPEED = -0.1;
+    public static final double ARM_MIN_SPEED = -0.07;
     @Unreal("Will need to be adjusted once arm is tested")
-    public static final double ARM_MAX_SPEED = 0.4;
+    public static final double ARM_MAX_SPEED = 0.7;
     @Unreal("Calibration necessary")
-    public static final double ARM_RESET_SUM = 0;
+    public static final double ARM_RESET_SUM = 0.02/ARM_I;
     
     // Low will be negative, high will be positive, zero is horizontal
     // 4096 clicks/rot * 54/30 is 7372.8
     // Assuming 60 degree increments for now
-    public static final double ARM_LOW_TARGET = -2100;
+    public static final double ARM_LOW_TARGET = -2050;
     public static final double ARM_MID_TARGET = 0;
-    public static final double ARM_HIGH_TARGET = 4200;
+    public static final double ARM_HIGH_TARGET = 4100; //4200
     
     /* Intake */
     public static final double INTAKE_PASSIVE_POWER = 0;

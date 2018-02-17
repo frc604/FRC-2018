@@ -207,7 +207,7 @@ public class TeleopMode extends Coordinator {
     	
     	public void run() {
     		if( manipRightJoystickY != 0 ) {
-    			move.liftPower.set(manipRightJoystickY);
+    			move.liftPower.set(manipRightJoystickY/2);
     			move.activate();
     			getHoldArmClicks = true;
     		} else if( driverA ) {
@@ -215,7 +215,11 @@ public class TeleopMode extends Coordinator {
     			setpoint.activate();
     			getHoldArmClicks = true;
     		} else if( driverB ) {
-    			setpoint.target_clicks.set(Calibration.ARM_MID_TARGET);
+    		    if (driverLeftJoystickButton) {
+    		        setpoint.target_clicks.set(Calibration.ARM_HIGH_TARGET);
+    		    } else {
+    		        setpoint.target_clicks.set(Calibration.ARM_MID_TARGET);
+    		    }
     			setpoint.activate();
     			getHoldArmClicks = true;
     		} else if( driverY ) {
@@ -224,18 +228,27 @@ public class TeleopMode extends Coordinator {
     			getHoldArmClicks = true;
     		} else if( manipA ) {
     			setpoint.target_clicks.set(Calibration.ARM_LOW_TARGET);
+    			setpoint.activate();
     			getHoldArmClicks = true;
     		} else if( manipB ) {
-    			setpoint.target_clicks.set(Calibration.ARM_MID_TARGET);
+                if (manipLeftJoystickButton) {
+                    setpoint.target_clicks.set(Calibration.ARM_HIGH_TARGET);
+                } else {
+                    setpoint.target_clicks.set(Calibration.ARM_MID_TARGET);
+                }
+    			setpoint.activate();
     			getHoldArmClicks = true;
     		} else if( manipY ) {
     			setpoint.target_clicks.set(Calibration.ARM_HIGH_TARGET);
     			setpoint.activate();
+    			System.out.println("BAWFOwevjaminy0sneothuridk");
     			getHoldArmClicks = true;
     		} else {
     		    // This should only be called once
+    		    move.liftPower.set(0.0);
+    		    move.activate();
                 if( getHoldArmClicks ) {
-                    test.error("Activate hold with setpoint "+robot.arm.encoderClicks.get(), new Throwable());
+                    test.log("WARN","Activate arm hold with setpoint "+robot.arm.encoderClicks.get());
                     holdSetpoint=robot.arm.encoderClicks.get();
                     robot.arm.resetIntegral(Calibration.ARM_RESET_SUM);
                     getHoldArmClicks = false;
@@ -260,7 +273,7 @@ public class TeleopMode extends Coordinator {
     		if( driverLeftTrigger != 0 || driverRightTrigger != 0 ) {
     			run.runPower.set(driverLeftTrigger*driverLeftTrigger - driverRightTrigger*driverRightTrigger);
     			run.activate();
-    		} else if( manipLeftTrigger != 0 || manipLeftTrigger != 0 ) {
+    		} else if( manipLeftTrigger != 0 || manipRightTrigger != 0 ) {
     			run.runPower.set(manipLeftTrigger*manipLeftTrigger - manipRightTrigger*manipRightTrigger);
     			run.activate();
     		} else {
@@ -321,7 +334,7 @@ public class TeleopMode extends Coordinator {
         	} else {
         	    // This should only be called once
         		if( getHoldElevatorClicks ) {
-        		    test.error("Activate hold with setpoint "+robot.elevator.encoderClicks.get(), new Throwable());
+        		    test.log("WARN","Activate elevator hold with setpoint "+robot.elevator.encoderClicks.get());
         			holdSetpoint=robot.elevator.encoderClicks.get();
         			robot.elevator.resetIntegral(Calibration.ELEVATOR_RESET_SUM);
         			getHoldElevatorClicks = false;

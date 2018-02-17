@@ -89,7 +89,8 @@ public class Arm extends Module {
                 encoder,
                 motorA,
                 Calibration.ARM_PID_PERIOD);
-        pid.setInputRange(0,Calibration.ARM_ENCODER_FULL_ROT);
+        pid.setInputRange(-Calibration.ARM_ENCODER_FULL_ROT/2,
+                Calibration.ARM_ENCODER_FULL_ROT/2);
         pidError = addOutput("Arm PID Error", pid::getError);
         pid.setIntegralLimits(Calibration.ARM_MIN_SUM, Calibration.ARM_MAX_SUM);
         pid.setOutputRange(Calibration.ARM_MIN_SPEED, Calibration.ARM_MAX_SPEED);
