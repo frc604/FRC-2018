@@ -36,7 +36,8 @@ public class TeleopMode extends Coordinator {
         driver.rightStick.x.setDeadband(Calibration.TELEOP_DRIVE_DEADBAND);
         driver.rightStick.y.setDeadband(Calibration.TELEOP_DRIVE_DEADBAND);
 
-        driver.rightStick.x.setFactor(Calibration.TELEOP_FACTOR);
+        //driver.rightStick.x.setFactor(Calibration.TELEOP_FACTOR);
+        driver.rightStick.x.setFactor(1); // WEIRD_WHY_?FES:RLJTH *ROHT guirg
         driver.rightStick.y.setFactor(Calibration.TELEOP_FACTOR);
 
         manip.leftStick.x.setDeadband(Calibration.TELEOP_MANIP_DEADBAND);
