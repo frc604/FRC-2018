@@ -13,10 +13,10 @@ public class Clamp extends Module {
 	
 	private boolean clamping = true;
 	
-	public Output<Boolean> isClamped = addOutput("Clamping", this::isRetracted);
+	public Output<Boolean> isClamped = addOutput("Clamping", this::isClamped);
 	
-	public boolean isRetracted() {
-		return clamping;
+	public boolean isClamped() {
+		return !clamping;
 	}
 	
 	public Action retract = new Retract();
