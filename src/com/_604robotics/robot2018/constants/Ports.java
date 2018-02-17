@@ -20,18 +20,14 @@ public class Ports {
     public static final int DRIVE_REAR_RIGHT_MOTOR = 1;
 
     // Digital Inputs
-    @Unreal("Wiring yet to be determined")
-    public static final int ENCODER_LEFT_A = 2;
-    @Unreal("Wiring yet to be determined")
-    public static final int ENCODER_LEFT_B = 3;
-    @Unreal("Wiring yet to be determined")
-    public static final int ENCODER_RIGHT_A = 0;
-    @Unreal("Wiring yet to be determined")
-    public static final int ENCODER_RIGHT_B = 1;
+    public static final int ENCODER_LEFT_A = 0;
+    public static final int ENCODER_LEFT_B = 1;
+    public static final int ENCODER_RIGHT_A = 2;
+    public static final int ENCODER_RIGHT_B = 3;
     
     // CAN
-    public static final int COMPRESSOR = 0;
-    public static final int PDP_MODULE = 1;
+    public static final int COMPRESSOR = 50;
+    public static final int PDP_MODULE = 51;
     
     //left front intake is 12
     // right front intake is 14
