@@ -1,23 +1,14 @@
 package com._604robotics.robotnik.prefabs.controller;
 
-import com._604robotics.robotnik.utils.annotations.Untested;
-
 import edu.wpi.first.wpilibj.PIDOutput;
 import edu.wpi.first.wpilibj.PIDSource;
 
-// UNTESTED
-//             _            _           _
-// _   _ _ __ | |_ ___  ___| |_ ___  __| |
-//| | | | '_ \| __/ _ \/ __| __/ _ \/ _` |
-//| |_| | | | | ||  __/\__ \ ||  __/ (_| |
-// \__,_|_| |_|\__\___||___/\__\___|\__,_|
 
 /**
  * <p>Subclass of PIDController that has a feedforward for rotating arms.</p>
  * This subclass requires an PIDSource as the PIDSource and uses only continuous error.
  * Zero is assumed to be horizontal. Users are responsible for properly zeroing the PIDSource beforehand.
  */
-@Deprecated @Untested("Math needs to be checked by constructing an actual arm")
 public class RotatingArmPIDController extends ClampedIntegralPIDController {
 
     public RotatingArmPIDController(double Kp, double Ki, double Kd, PIDSource source, PIDOutput output) {
