@@ -100,13 +100,13 @@ public class Calibration {
     public static final double ARM_D = 0.00002;
     @Unreal("Calibration necessary")
     // This is multiplication by a cosine factor
-    public static final double ARM_F = 0.2;
-    public static final double ARM_ENCODER_ZERO = -1150;
+    public static final double ARM_F = 0.18;
+    public static final double ARM_ENCODER_ZERO = 1950;
     public static final double ARM_ENCODER_FULL_ROT=4096*54/30;
     /* Arm */
     // Bound I term motor output to 0.15
-    public static final double ARM_MAX_SUM = 0.15/ARM_I;
-    public static final double ARM_MIN_SUM = -0.15;
+    public static final double ARM_MAX_SUM = 0.1/ARM_I;
+    public static final double ARM_MIN_SUM = -0.1;
     public static final double ARM_PID_PERIOD = 0.02;
     // Lower speed going down due to weight
     public static final double ARM_MIN_SPEED = -0.1;
@@ -118,9 +118,9 @@ public class Calibration {
     // Low will be negative, high will be positive, zero is horizontal
     // 4096 clicks/rot * 54/30 is 7372.8
     // Assuming 60 degree increments for now
-    public static final double ARM_LOW_TARGET = -1228;
+    public static final double ARM_LOW_TARGET = -2100;
     public static final double ARM_MID_TARGET = 0;
-    public static final double ARM_HIGH_TARGET = 1228;
+    public static final double ARM_HIGH_TARGET = 4200;
     
     /* Intake */
     public static final double INTAKE_PASSIVE_POWER = 0;
