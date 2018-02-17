@@ -28,11 +28,11 @@ public class Drive extends Module {
     // Reversed from previously due to new mountings
     private final Encoder encoderLeft = new Encoder(Ports.ENCODER_LEFT_A,
             Ports.ENCODER_LEFT_B,
-            true,
+            false,
             CounterBase.EncodingType.k4X);
     private final Encoder encoderRight = new Encoder(Ports.ENCODER_RIGHT_A,
             Ports.ENCODER_RIGHT_B,
-            false,
+            true,
             CounterBase.EncodingType.k4X);
     
     //private final AnalogGyro horizGyro=new AnalogGyro(Ports.HORIZGYRO);
