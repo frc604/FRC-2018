@@ -11,7 +11,7 @@ public class Dashboard extends DashboardModule {
     public final Input<Double> leftDriveRate = addDashboardInput("leftDriveRate", 0.0);
     public final Input<Double> rightDriveRate = addDashboardInput("rightDriveRate", 0.0);
 
-    //public final Input<Double> totalCurrent = addDashboardInput("Current Drawn",0.0);
+    public final Input<Double> totalCurrent = addDashboardInput("Current Drawn",0.0);
 
     public final Input<Boolean> XboxFlipped = addDashboardInput("XboxFlipped", false);
     
