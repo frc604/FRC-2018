@@ -112,6 +112,8 @@ public class Calibration {
     public static final double ARM_MIN_SPEED = -0.1;
     @Unreal("Will need to be adjusted once arm is tested")
     public static final double ARM_MAX_SPEED = 0.4;
+    @Unreal("Calibration necessary")
+    public static final double ARM_RESET_SUM = 0;
     
     // Low will be negative, high will be positive, zero is horizontal
     // 4096 clicks/rot * 54/30 is 7372.8

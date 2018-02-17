@@ -236,7 +236,7 @@ public class TeleopMode extends Coordinator {
                 if( getHoldArmClicks ) {
                     test.error("Activate hold with setpoint "+robot.arm.encoderClicks.get(), new Throwable());
                     holdSetpoint=robot.arm.encoderClicks.get();
-                    robot.elevator.resetIntegral(0);
+                    robot.arm.resetIntegral(Calibration.ARM_RESET_SUM);
                     getHoldArmClicks = false;
                 }
                 setpoint.target_clicks.set(holdSetpoint);
