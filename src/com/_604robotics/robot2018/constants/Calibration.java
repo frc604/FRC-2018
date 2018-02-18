@@ -80,7 +80,7 @@ public class Calibration {
     public static final double ELEVATOR_PID_PERIOD = 0.02;
     // Lower speed going down due to weight
     public static final double ELEVATOR_MIN_SPEED = -0.1;
-    public static final double ELEVATOR_MAX_SPEED = 0.5;
+    public static final double ELEVATOR_MAX_SPEED = 0.8;
     
     public static final double ELEVATOR_TARGET_SPEED = 0.5;
     public static final int ELEVATOR_CLICK_TOLERANCE = 50;
