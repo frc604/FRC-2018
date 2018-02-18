@@ -344,7 +344,7 @@ public class AutonomousMode extends Coordinator {
             addState("Forward 16 feet", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, 12*14), 0));
             addState("Sleep 0.5 seconds", new SleepCoordinator(0.5));
             // Rotate right
-            addState("Rotate 180 right", new ArcadePIDCoordinator(0,AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, -90)));//flip
+            addState("Rotate 90 right", new ArcadePIDCoordinator(0,AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, 90)));
             addState("Sleep 0.5 seconds", new SleepCoordinator(0.5));
             addState("Forward 5 feet", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, 5), 0));
         }
