@@ -2,6 +2,7 @@ package com._604robotics.robot2018.constants;
 
 import com._604robotics.robotnik.utils.AutonMovement;
 import com._604robotics.robotnik.utils.annotations.Unreal;
+import com._604robotics.robotnik.utils.annotations.Untested;
 
 public class Calibration {
     private Calibration () {}
@@ -110,7 +111,8 @@ public class Calibration {
 
     public static final double ARM_RESET_SUM = 0.02/ARM_I;
     public static final double ARM_CLICK_TOLERANCE = 50;
-    public static final double ARM_PID_TIME_AFTER = 0.5;
+    @Untested("Verify after using SimultaneousCoordinator")
+    public static final double ARM_PID_TIME_RUN = 5;
     
     // Low will be negative, high will be positive, zero is horizontal
     // 4096 clicks/rot * 54/30 is 7372.8
