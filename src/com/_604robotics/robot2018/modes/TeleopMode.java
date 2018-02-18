@@ -230,7 +230,7 @@ public class TeleopMode extends Coordinator {
     			setpoint.activate();
     			getHoldArmClicks = true;
     		} else if( manipB ) {
-                if (manipLeftJoystickButton) {
+                if (manipLeftBumper) {
                     setpoint.target_clicks.set(Calibration.ARM_HIGH_TARGET);
                 } else {
                     setpoint.target_clicks.set(Calibration.ARM_MID_TARGET);
@@ -302,7 +302,7 @@ public class TeleopMode extends Coordinator {
         		 robot.elevator.encoder.zero();
                  setpoint.target_clicks.set(robot.elevator.encoderClicks.get());
                  setpoint.activate();
-        	} else */if( manipLeftJoystickY != 0 && !manipLeftJoystickButton ) {
+        	} else */if( manipLeftJoystickY != 0 && !manipLeftBumper ) {
         	    // Scale negative power for safety
         	    double elevPower = manipLeftJoystickY;
         	    if (elevPower<0) {
@@ -327,11 +327,11 @@ public class TeleopMode extends Coordinator {
         		setpoint.target_clicks.set(Calibration.ELEVATOR_LOW_TARGET);
         		setpoint.activate();
         		getHoldElevatorClicks = true;
-        	} else if( manipB && manipLeftJoystickButton ) {
+        	} else if( manipB && manipLeftBumper ) {
         		setpoint.target_clicks.set(Calibration.ELEVATOR_MID_TARGET);
         		setpoint.activate();
         		getHoldElevatorClicks = true;
-        	} else if( manipY && manipLeftJoystickButton ) {
+        	} else if( manipY && manipLeftBumper ) {
         		setpoint.target_clicks.set(Calibration.ELEVATOR_HIGH_TARGET);
         		setpoint.activate();
         		getHoldElevatorClicks = true;
