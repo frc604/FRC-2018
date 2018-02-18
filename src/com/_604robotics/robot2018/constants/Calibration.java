@@ -82,7 +82,7 @@ public class Calibration {
     public static final double ELEVATOR_MAX_SPEED = 0.5;
     
     public static final double ELEVATOR_TARGET_SPEED = 0.5;
-    public static final int ELEVATOR_CLICK_TOLERANCE = 100;//25
+    public static final int ELEVATOR_CLICK_TOLERANCE = 50;
     
     // Prefer to be at the bottom so push into hard stop
     public static final double ELEVATOR_ENCODER_ZERO = 720;
@@ -109,7 +109,7 @@ public class Calibration {
     public static final double ARM_MAX_SPEED = 0.7;
 
     public static final double ARM_RESET_SUM = 0.02/ARM_I;
-    public static final double ARM_PID_TOLERANCE = 50;
+    public static final double ARM_CLICK_TOLERANCE = 50;
     public static final double ARM_PID_TIME_AFTER = 0.5;
     
     // Low will be negative, high will be positive, zero is horizontal
