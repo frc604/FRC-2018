@@ -53,7 +53,7 @@ public class SmartTimer extends Timer {
      * Method that runs a runnable until a certain time has elapsed.
      * @param time the time to run the Runnable for
      * @param runnable the Runnable to run
-     * @return whether the Runnable was executed or not
+     * @return boolean representing whether the timer has not finished running. Returns FALSE if FINISHED.
      */
     public boolean runUntil (double time, Runnable runnable) {
         if (!hasReachedTime(time)) {

@@ -134,7 +134,7 @@ public class AutonomousMode extends Coordinator {
         @Override
         public boolean run() {
             autonArm.activate();
-            return timeElapsed.hasReachedTime(Calibration.ARM_PID_TIME_RUN);
+            return !timeElapsed.hasReachedTime(Calibration.ARM_PID_TIME_RUN);
         }
         
         @Override
