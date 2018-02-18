@@ -107,7 +107,7 @@ public class Elevator extends Module {
         pidError = addOutput("Elevator PID Error", pid::getError);
         pid.setIntegralLimits(Calibration.ELEVATOR_MIN_SUM, Calibration.ELEVATOR_MAX_SUM);
         pid.setOutputRange(Calibration.ELEVATOR_MIN_SPEED, Calibration.ELEVATOR_MAX_SPEED);
-        setpoint.target_clicks.set(encoder.getPosition());
+        //setpoint.target_clicks.set(encoder.getPosition());
         setDefaultAction(setpoint);
     }
 }

@@ -26,7 +26,7 @@ public class Ports {
     public static final int ENCODER_RIGHT_B = 3;
     
     // CAN
-    public static final int COMPRESSOR = 50;
+    public static final int COMPRESSOR = 0;
     public static final int PDP_MODULE = 51;
     
     public static final int ELEVATOR_MOTOR_A = 13;

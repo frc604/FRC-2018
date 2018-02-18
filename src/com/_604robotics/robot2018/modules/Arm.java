@@ -18,7 +18,7 @@ public class Arm extends Module {
     private WPI_TalonSRX motorB = new WPI_TalonSRX(Ports.ARM_MOTOR_B);
     public TalonPWMEncoder encoder = new TalonPWMEncoder(motorB);
 
-    public final Setpoint setpoint = new Setpoint();
+    public final Setpoint setpoint = new Setpoint(Calibration.ARM_LOW_TARGET);
 
     public final Output<Double> encoderRate = addOutput("Arm Rate", encoder::getVelocity);
     public final Output<Double> encoderClicks = addOutput("Arm Clicks", encoder::getPosition);
@@ -60,6 +60,10 @@ public class Arm extends Module {
             super(Arm.this, Setpoint.class);
             target_clicks = addInput("Target Arm Clicks", clicks, true);
         }
+        
+        public boolean atTolerance() {
+            return pid.onTarget();
+        }
 
         @Override
         public void begin() {
@@ -94,7 +98,8 @@ public class Arm extends Module {
         pidError = addOutput("Arm PID Error", pid::getError);
         pid.setIntegralLimits(Calibration.ARM_MIN_SUM, Calibration.ARM_MAX_SUM);
         pid.setOutputRange(Calibration.ARM_MIN_SPEED, Calibration.ARM_MAX_SPEED);
-        setpoint.target_clicks.set(encoder.getPosition());
+        pid.setAbsoluteTolerance(Calibration.ARM_PID_TOLERANCE);
+        //setpoint.target_clicks.set(encoder.getPosition());
         setDefaultAction(setpoint);
     }
 }

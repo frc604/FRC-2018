@@ -201,8 +201,7 @@ public class TeleopMode extends Coordinator {
     	
     	public ArmManager() {
     		move = robot.arm.new Move();
-    		setpoint = robot.arm.new Setpoint();
-    		//setpoint.target_clicks.set(Calibration.ARM_LOW_TARGET);
+    		setpoint = robot.arm.new Setpoint(Calibration.ARM_LOW_TARGET);
     	}
     	
     	public void run() {
@@ -244,8 +243,6 @@ public class TeleopMode extends Coordinator {
     			getHoldArmClicks = true;
     		} else {
     		    // This should only be called once
-    		    move.liftPower.set(0.0);
-    		    move.activate();
                 if( getHoldArmClicks ) {
                     test.log("WARN","Activate arm hold with setpoint "+robot.arm.encoderClicks.get());
                     holdSetpoint=robot.arm.encoderClicks.get();
@@ -372,7 +369,7 @@ public class TeleopMode extends Coordinator {
         	double rightY = driver.rightStick.y.get();
         	double rightX = driver.rightStick.x.get();
             // Set gears
-            gearState.update(driver.buttons.lb.get());
+            gearState.update(driverRightBumper);
             // Will probably be double solenoid but waiting
             if (gearState.isInOnState()) {
                 robot.shifter.highGear.activate();
@@ -380,7 +377,7 @@ public class TeleopMode extends Coordinator {
                 robot.shifter.lowGear.activate();
             }
             // Flip values if xbox inverted
-            inverted.update(driver.buttons.rb.get());
+            inverted.update(driverLeftBumper);
             robot.dashboard.XboxFlipped.set(inverted.isInOnState());
             if (inverted.isInOnState()) {
                 leftY*=-1;

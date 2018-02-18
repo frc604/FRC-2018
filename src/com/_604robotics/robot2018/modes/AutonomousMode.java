@@ -3,6 +3,7 @@ package com._604robotics.robot2018.modes;
 import com._604robotics.robot2018.Robot2018;
 import com._604robotics.robot2018.constants.Calibration;
 import com._604robotics.robot2018.macros.ArcadeTimedDriveMacro;
+import com._604robotics.robot2018.modules.Arm;
 import com._604robotics.robot2018.modules.Drive;
 import com._604robotics.robotnik.Coordinator;
 import com._604robotics.robotnik.Logger;
@@ -16,6 +17,7 @@ import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.PIDOutput;
 import edu.wpi.first.wpilibj.PIDSource;
 import edu.wpi.first.wpilibj.PIDSourceType;
+import edu.wpi.first.wpilibj.Timer;
 
 public class AutonomousMode extends Coordinator {
     private final Robot2018 robot;
@@ -23,7 +25,7 @@ public class AutonomousMode extends Coordinator {
     private final Coordinator rotateLeftStateMacro;
     private final Coordinator rotateRightStateMacro;
     private final Coordinator forwardStateMacro;
-    private final Coordinator forwardEmpericalMacro;
+    private final Coordinator forwardSwitchMacro;
     private final Coordinator backwardStateMacro;
     private final Coordinator kinematicFallback;
 
@@ -38,7 +40,7 @@ public class AutonomousMode extends Coordinator {
                 Calibration.DRIVE_ROTATE_RIGHT_TARGET);
         forwardStateMacro = new ArcadePIDStateMacro(Calibration.DRIVE_MOVE_FORWARD_TARGET,
                 Calibration.DRIVE_ROTATE_STILL_TARGET);
-        forwardEmpericalMacro = new ArcadePIDStateMacro(Calibration.DRIVE_MOVE_FORWARD_TEST_INCHES, 0);
+        forwardSwitchMacro = new ArcadePIDStateMacro(Calibration.DRIVE_MOVE_FORWARD_SWITCH_INCHES, 0);
         backwardStateMacro = new ArcadePIDStateMacro(Calibration.DRIVE_MOVE_BACKWARD_TARGET,
                 Calibration.DRIVE_ROTATE_STILL_TARGET);
         kinematicFallback =new ArcadeTimedDriveMacro(robot) {{
@@ -73,15 +75,17 @@ public class AutonomousMode extends Coordinator {
             case FORWARD_6:
                 selectedModeMacro = forwardStateMacro;
                 break;
-            case FORWARD_TEST:
-                selectedModeMacro = forwardEmpericalMacro;
-                break;
             case BACKWARD_6:
                 selectedModeMacro = backwardStateMacro;
                 break;
             case DEMO_NEW_AUTON:
                 selectedModeMacro = new DemoStateMacro();
                 break;
+            case FORWARD_SWITCH:
+                selectedModeMacro = forwardSwitchMacro;
+                break;
+            case SIDE_LEFT_SWITCH:
+                selectedModeMacro = new SideLeftMacro();
             case KINEMATIC_FORWARD:
                 selectedModeMacro = kinematicFallback;
             default:
@@ -107,6 +111,40 @@ public class AutonomousMode extends Coordinator {
     public void end () {
         if (selectedModeMacro != null) {
             selectedModeMacro.stop();
+        }
+    }
+    
+    protected final class ArmMove extends Coordinator {
+        private Arm.Setpoint autonArm;
+        private double armPosition;
+        private SmartTimer timeElapsed = new SmartTimer();
+        
+        public ArmMove(double armPos) {
+            armPosition = armPos;
+            autonArm = robot.arm.new Setpoint(armPosition);
+        }
+        
+        @Override
+        public void begin() {
+            autonArm.begin();
+            timeElapsed.start();
+        }
+        
+        @Override
+        public boolean run() {
+            return timeElapsed.runUntil(Calibration.ARM_PID_TIME_AFTER, new Runnable() {
+                @Override
+                public void run() {
+                    if (!autonArm.atTolerance()) {
+                        timeElapsed.reset();
+                    }
+                }
+            });
+        }
+        
+        @Override
+        public void end() {
+            // Do nothing
         }
     }
 
@@ -145,7 +183,7 @@ public class AutonomousMode extends Coordinator {
 
             @Override
             public double pidGet() {
-                return robot.drive.rightClicks.get()-robot.drive.leftClicks.get();
+                return -robot.drive.rightClicks.get()+robot.drive.leftClicks.get();
             }
         };
         // Encoder moving PIDSource
@@ -297,6 +335,18 @@ public class AutonomousMode extends Coordinator {
             addState("Rotate 180 right", new ArcadePIDCoordinator(0,AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, 180)));
             addState("Sleep 0.5 seconds", new SleepCoordinator(0.5));
             addState("Forward 12 feet", new ArcadePIDCoordinator(AutonMovement.empericalInchesToClicks(Calibration.DRIVE_PROPERTIES, 12*12), 0));
+        }
+    }
+    
+    private class SideLeftMacro extends StatefulCoordinator {
+        public SideLeftMacro() {
+            super(SideLeftMacro.class);
+            addState("Forward 16 feet", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, 12*14), 0));
+            addState("Sleep 0.5 seconds", new SleepCoordinator(0.5));
+            // Rotate right
+            addState("Rotate 180 right", new ArcadePIDCoordinator(0,AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, -90)));//flip
+            addState("Sleep 0.5 seconds", new SleepCoordinator(0.5));
+            addState("Forward 5 feet", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, 5), 0));
         }
     }
 }

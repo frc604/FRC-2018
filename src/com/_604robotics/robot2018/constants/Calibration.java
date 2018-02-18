@@ -10,10 +10,9 @@ public class Calibration {
     public static final double TELEOP_MANIP_DEADBAND = 0.11;
     public static final double TELEOP_FACTOR = -1;
     
-    public static final double DRIVE_MOVE_PID_P = 0.005;
+    public static final double DRIVE_MOVE_PID_P = 0.0045;
     public static final double DRIVE_MOVE_PID_I = 0;
-    // TODO: This probably needs to be much smaller?
-    public static final double DRIVE_MOVE_PID_D = 0.01;
+    public static final double DRIVE_MOVE_PID_D = 0.00;
     public static final double DRIVE_MOVE_PID_MAX = 0.5;
     public static final double DRIVE_MOVE_TOLERANCE = 20;
 
@@ -38,7 +37,7 @@ public class Calibration {
     @Unreal("Width and wheelRadius need to be adjusted."
             + "Remaining two parameters are to be empirically determined if necessary.")
     public static final AutonMovement.DriveTrainProperties DRIVE_PROPERTIES
-    = new AutonMovement.DriveTrainProperties(490, 26.08, 2.5, 20.767, 8.323);
+    = new AutonMovement.DriveTrainProperties(490, 25, 2.5, 20.767, 8.323);
     // second to last = coefficient, second value = offset
     static {
         System.out.println("Clicks over inches is "+DRIVE_PROPERTIES.getClicksOverInches());
@@ -47,17 +46,18 @@ public class Calibration {
     
     // Testing targets
     public static final double DRIVE_ROTATE_LEFT_TARGET
-    = AutonMovement.degreesToClicks(DRIVE_PROPERTIES, 360);
-    public static final double DRIVE_ROTATE_RIGHT_TARGET
     = AutonMovement.degreesToClicks(DRIVE_PROPERTIES, -360);
+    public static final double DRIVE_ROTATE_RIGHT_TARGET
+    = AutonMovement.degreesToClicks(DRIVE_PROPERTIES, 360);
     public static final double DRIVE_MOVE_FORWARD_TARGET
     = AutonMovement.inchesToClicks(DRIVE_PROPERTIES, 72);
     public static final double DRIVE_MOVE_BACKWARD_TARGET
     = AutonMovement.inchesToClicks(DRIVE_PROPERTIES, -72);
     
     // Empirical auton mode
-    public static final double DRIVE_MOVE_FORWARD_TEST_INCHES
-    = AutonMovement.empericalInchesToClicks(DRIVE_PROPERTIES, 36);
+    public static final double DRIVE_MOVE_FORWARD_SWITCH_INCHES
+     = AutonMovement.inchesToClicks(DRIVE_PROPERTIES, 14*12+1); // 168+1 in
+    //= AutonMovement.empericalInchesToClicks(DRIVE_PROPERTIES, 36);
     
     // Elevator
     public static final double ELEVATOR_RATE_TARGET = 500;
@@ -91,14 +91,10 @@ public class Calibration {
     public static final double ELEVATOR_HIGH_TARGET = 32000;
     //@Unreal("Find more reasonable time or eliminate hold part altogether")
     //public static final double ELEVATOR_PID_CONTINUE = 10;
-    
-    @Unreal("Calibration necessary")
+
     public static final double ARM_P = 0.00008;
-    @Unreal("Calibration necessary")
     public static final double ARM_I = 0.00004;
-    @Unreal("Calibration necessary")
     public static final double ARM_D = 0.00002;
-    @Unreal("Calibration necessary")
     // This is multiplication by a cosine factor
     public static final double ARM_F = 0.2;
     public static final double ARM_ENCODER_ZERO = 2080;
@@ -110,10 +106,11 @@ public class Calibration {
     public static final double ARM_PID_PERIOD = 0.02;
     // Lower speed going down due to weight
     public static final double ARM_MIN_SPEED = -0.07;
-    @Unreal("Will need to be adjusted once arm is tested")
     public static final double ARM_MAX_SPEED = 0.7;
-    @Unreal("Calibration necessary")
+
     public static final double ARM_RESET_SUM = 0.02/ARM_I;
+    public static final double ARM_PID_TOLERANCE = 50;
+    public static final double ARM_PID_TIME_AFTER = 0.5;
     
     // Low will be negative, high will be positive, zero is horizontal
     // 4096 clicks/rot * 54/30 is 7372.8

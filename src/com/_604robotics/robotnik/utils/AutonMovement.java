@@ -53,6 +53,9 @@ public class AutonMovement {
 			this.wheelRadius=wheelRadius;
 			this.offset = offset;
 			this.clicksPerInches = clicksPerInches;
+			if (clicksPerInches<0) {
+			    clicksPerInches = getClicksOverInches();
+			}
 		}
 		
 		public double getDegreesOverClicks() {
