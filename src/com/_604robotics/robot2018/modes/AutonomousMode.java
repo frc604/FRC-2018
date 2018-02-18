@@ -139,7 +139,7 @@ public class AutonomousMode extends Coordinator {
         
         @Override
         public void end() {
-            // Do nothing
+            timeElapsed.stopAndReset();
         }
     }
 
@@ -312,13 +312,6 @@ public class AutonomousMode extends Coordinator {
             // This avoids COMPLEX imperfections and reduces many issues to be purely IMAGINARY
             controller = new ArcadePIDCoordinator(moveSetpoint, rotSetpoint);
             addState("ArcadePID",controller);
-        }
-
-        public double getMoveError() {
-            return controller.getMoveError();
-        }
-        public double getRotError() {
-            return controller.getRotError();
         }
     }
 

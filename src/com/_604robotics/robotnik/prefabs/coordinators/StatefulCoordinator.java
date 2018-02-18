@@ -11,7 +11,7 @@ public abstract class StatefulCoordinator extends Coordinator {
     private final Logger logger;
 
     private List<Pair<String, Coordinator>> states = new ArrayList<>();
-    private int stateIndex;
+    private int stateIndex = 0;
 
     public StatefulCoordinator (String name) {
         logger = new Logger(StatefulCoordinator.class, name);
@@ -43,7 +43,7 @@ public abstract class StatefulCoordinator extends Coordinator {
             return false;
         }
 
-        if (!currentState.getValue().execute()) { // check execute later
+        if (!currentState.getValue().execute()) {
             exitState();
             ++stateIndex;
             return enterState();
