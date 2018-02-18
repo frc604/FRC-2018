@@ -209,11 +209,11 @@ public class TeleopMode extends Coordinator {
     			move.liftPower.set(manipRightJoystickY/2);
     			move.activate();
     			getHoldArmClicks = true;
-    		} else if( driverA ) {
+    		} else if( manipA ) {
     			setpoint.target_clicks.set(Calibration.ARM_LOW_TARGET);
     			setpoint.activate();
     			getHoldArmClicks = true;
-    		} else if( driverB ) {
+    		} else if( manipB ) {
     		    if (driverLeftJoystickButton) {
     		        setpoint.target_clicks.set(Calibration.ARM_HIGH_TARGET);
     		    } else {
@@ -221,15 +221,15 @@ public class TeleopMode extends Coordinator {
     		    }
     			setpoint.activate();
     			getHoldArmClicks = true;
-    		} else if( driverY ) {
+    		} else if( manipY ) {
     			setpoint.target_clicks.set(Calibration.ARM_HIGH_TARGET);
     			setpoint.activate();
     			getHoldArmClicks = true;
-    		} else if( manipA ) {
+    		} else if( driverA ) {
     			setpoint.target_clicks.set(Calibration.ARM_LOW_TARGET);
     			setpoint.activate();
     			getHoldArmClicks = true;
-    		} else if( manipB ) {
+    		} else if( driverB ) {
                 if (manipLeftBumper) {
                     setpoint.target_clicks.set(Calibration.ARM_HIGH_TARGET);
                 } else {
@@ -237,7 +237,7 @@ public class TeleopMode extends Coordinator {
                 }
     			setpoint.activate();
     			getHoldArmClicks = true;
-    		} else if( manipY ) {
+    		} else if( driverY ) {
     			setpoint.target_clicks.set(Calibration.ARM_HIGH_TARGET);
     			setpoint.activate();
     			getHoldArmClicks = true;
@@ -311,18 +311,6 @@ public class TeleopMode extends Coordinator {
         		move.liftPower.set(elevPower);
         		move.activate();
         		getHoldElevatorClicks = true;
-        	} else if( driverA ) {
-        		setpoint.target_clicks.set(Calibration.ELEVATOR_LOW_TARGET);
-        		setpoint.activate();
-        		getHoldElevatorClicks = true;
-        	} else if( driverB && driverLeftJoystickButton ) {
-        		setpoint.target_clicks.set(Calibration.ELEVATOR_MID_TARGET);
-        		setpoint.activate();
-        		getHoldElevatorClicks = true;
-        	} else if( driverY && driverLeftJoystickButton ) {
-        		setpoint.target_clicks.set(Calibration.ELEVATOR_HIGH_TARGET);
-        		setpoint.activate();
-        		getHoldElevatorClicks = true;
         	} else if( manipA ) {
         		setpoint.target_clicks.set(Calibration.ELEVATOR_LOW_TARGET);
         		setpoint.activate();
@@ -332,6 +320,18 @@ public class TeleopMode extends Coordinator {
         		setpoint.activate();
         		getHoldElevatorClicks = true;
         	} else if( manipY && manipLeftBumper ) {
+        		setpoint.target_clicks.set(Calibration.ELEVATOR_HIGH_TARGET);
+        		setpoint.activate();
+        		getHoldElevatorClicks = true;
+        	} else if( driverA ) {
+        		setpoint.target_clicks.set(Calibration.ELEVATOR_LOW_TARGET);
+        		setpoint.activate();
+        		getHoldElevatorClicks = true;
+        	} else if( driverB && driverLeftJoystickButton ) {
+        		setpoint.target_clicks.set(Calibration.ELEVATOR_MID_TARGET);
+        		setpoint.activate();
+        		getHoldElevatorClicks = true;
+        	} else if( driverY && driverLeftJoystickButton ) {
         		setpoint.target_clicks.set(Calibration.ELEVATOR_HIGH_TARGET);
         		setpoint.activate();
         		getHoldElevatorClicks = true;
