@@ -59,6 +59,7 @@ public class AutonomousMode extends Coordinator {
 
         @Override
         protected double getTime() {
+        	// TODO: change to a calibration value
             return 5;
         }};
     }

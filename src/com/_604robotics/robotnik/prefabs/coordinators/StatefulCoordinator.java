@@ -43,7 +43,7 @@ public abstract class StatefulCoordinator extends Coordinator {
             return false;
         }
 
-        if (!currentState.getValue().execute()) {
+        if (!currentState.getValue().execute()) { // check execute later
             exitState();
             ++stateIndex;
             return enterState();
