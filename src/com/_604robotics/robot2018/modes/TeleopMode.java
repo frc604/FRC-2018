@@ -267,10 +267,10 @@ public class TeleopMode extends Coordinator {
     	
     	public void run() {
     		if( driverLeftTrigger != 0 || driverRightTrigger != 0 ) {
-    			run.runPower.set(driverLeftTrigger*driverLeftTrigger - driverRightTrigger*driverRightTrigger);
+    			run.runPower.set(driverRightTrigger*driverRightTrigger - driverLeftTrigger*driverLeftTrigger);
     			run.activate();
     		} else if( manipLeftTrigger != 0 || manipRightTrigger != 0 ) {
-    			run.runPower.set(manipLeftTrigger*manipLeftTrigger - manipRightTrigger*manipRightTrigger);
+    			run.runPower.set(manipRightTrigger*manipRightTrigger - manipLeftTrigger*manipLeftTrigger);
     			run.activate();
     		} else {
     			idle.activate();
