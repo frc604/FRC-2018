@@ -97,7 +97,7 @@ public class Calibration {
     public static final double ARM_D = 0.00002;
     // This is multiplication by a cosine factor
     public static final double ARM_F = 0.2;
-    public static final double ARM_ENCODER_ZERO = 2080;
+    public static final double ARM_ENCODER_ZERO = 2080-2900-200;
     public static final double ARM_ENCODER_FULL_ROT=2*4096*54/30;
     /* Arm */
     // Bound I term motor output to 0.15
