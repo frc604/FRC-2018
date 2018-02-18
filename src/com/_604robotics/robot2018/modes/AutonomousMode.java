@@ -126,12 +126,13 @@ public class AutonomousMode extends Coordinator {
         
         @Override
         public void begin() {
-            autonArm.begin();
+            autonArm.activate();
             timeElapsed.start();
         }
         
         @Override
         public boolean run() {
+            autonArm.activate();
             return timeElapsed.runUntil(Calibration.ARM_PID_TIME_AFTER, new Runnable() {
                 @Override
                 public void run() {

@@ -104,6 +104,7 @@ public class Elevator extends Module {
                 encoder,
                 motorA,
                 Calibration.ELEVATOR_PID_PERIOD);
+        pid.setAbsoluteTolerance(Calibration.ELEVATOR_CLICK_TOLERANCE);
         pidError = addOutput("Elevator PID Error", pid::getError);
         pid.setIntegralLimits(Calibration.ELEVATOR_MIN_SUM, Calibration.ELEVATOR_MAX_SUM);
         pid.setOutputRange(Calibration.ELEVATOR_MIN_SPEED, Calibration.ELEVATOR_MAX_SPEED);
