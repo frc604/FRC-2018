@@ -92,7 +92,7 @@ public class Calibration {
     //@Unreal("Find more reasonable time or eliminate hold part altogether")
     //public static final double ELEVATOR_PID_CONTINUE = 10;
 
-    public static final double ARM_P = 0.00008;
+    public static final double ARM_P = 0.00009;
     public static final double ARM_I = 0.00004;
     public static final double ARM_D = 0.00002;
     // This is multiplication by a cosine factor
@@ -115,8 +115,8 @@ public class Calibration {
     // Low will be negative, high will be positive, zero is horizontal
     // 4096 clicks/rot * 54/30 is 7372.8
     // Assuming 60 degree increments for now
-    public static final double ARM_LOW_TARGET = -2050;
-    public static final double ARM_MID_TARGET = 0;
+    public static final double ARM_LOW_TARGET = -2100;
+    public static final double ARM_MID_TARGET = 200; //0
     public static final double ARM_HIGH_TARGET = 4100; //4200
     
     /* Intake */
