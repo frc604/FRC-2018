@@ -32,11 +32,9 @@ public class Calibration {
     
     /*
      * 2.5 in diameter of wheels
-     * width input = sqrt(25.23^2+(9.06)^2)
-     * 25.23 is width, 9.06 is wheel spacing
+     * 25 in width parameter found empirically
+     * XXX: Empirical parameters have not been updated AT ALL because they have been unnecessary so far
      */
-    @Unreal("Width and wheelRadius need to be adjusted."
-            + "Remaining two parameters are to be empirically determined if necessary.")
     public static final AutonMovement.DriveTrainProperties DRIVE_PROPERTIES
     = new AutonMovement.DriveTrainProperties(490, 25, 2.5, 20.767, 8.323);
     // second to last = coefficient, second value = offset
