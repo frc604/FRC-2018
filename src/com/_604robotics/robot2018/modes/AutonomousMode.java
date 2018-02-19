@@ -329,12 +329,13 @@ public class AutonomousMode extends Coordinator {
     private class SideLeftMacro extends StatefulCoordinator {
         public SideLeftMacro() {
             super(SideLeftMacro.class);
-            addState("Forward 16 feet", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, 12*14), 0));
-            addState("Sleep 0.5 seconds", new SleepCoordinator(0.5));
-            // Rotate right
+            addState("Backward 210 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -210), 0));
+            //addState("Sleep 0.5 seconds", new SleepCoordinator(0.5));
             addState("Rotate 90 right", new ArcadePIDCoordinator(0,AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, 90)));
-            addState("Sleep 0.5 seconds", new SleepCoordinator(0.5));
-            addState("Forward 5 feet", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, 5), 0));
+            //addState("Sleep 0.5 seconds", new SleepCoordinator(0.5));
+            addState("Backward 69 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -69), 0));
+            addState("Rotate 90 left", new ArcadePIDCoordinator(0,AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, -90)));
+            addState("Forward 14 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, 14), 0));
         }
     }
 }
