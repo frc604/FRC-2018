@@ -19,8 +19,8 @@ public class Ports {
     public static final int DRIVE_REAR_RIGHT_MOTOR = 1;
     
     // Intake
-    public static final int INTAKE_OUTER_MOTOR_A = 4;
-    public static final int INTAKE_OUTER_MOTOR_B = 5;
+    public static final int INTAKE_OUTER_MOTOR_A = 5;
+    public static final int INTAKE_OUTER_MOTOR_B = 4;
 
     /* Digital Inputs */
     public static final int ENCODER_LEFT_A = 0;
