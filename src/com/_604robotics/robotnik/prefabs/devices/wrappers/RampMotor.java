@@ -40,8 +40,6 @@ public class RampMotor implements SpeedController, PIDOutput {
         double maxChange = timerObj.get()*maxRate;
         double out = Math.max(output, prevSpeed-maxChange);
         out = Math.min(out, prevSpeed+maxChange);
-        System.out.println(prevSpeed+","+(prevSpeed-maxChange)+","+(prevSpeed+maxChange));
-        System.out.println(output+","+out);
         control.set(out);
         if (timerObj.isRunning()) {
             timerObj.stopAndReset();
