@@ -21,7 +21,7 @@ public class Calibration {
     public static final double DRIVE_ROTATE_PID_P = 0.01;
     public static final double DRIVE_ROTATE_PID_I = 0;
     public static final double DRIVE_ROTATE_PID_D = 0.018;
-    public static final double DRIVE_ROTATE_PID_MAX = 0.3;// was 0.5
+    public static final double DRIVE_ROTATE_PID_MAX = 0.4;// was 0.5
     public static final double DRIVE_ROTATE_TOLERANCE = 20;
 
     public static final double DRIVE_PID_AFTER_TIMING = 1.5;
@@ -36,7 +36,7 @@ public class Calibration {
      * XXX: Empirical parameters have not been updated AT ALL because they have been unnecessary so far
      */
     public static final AutonMovement.DriveTrainProperties DRIVE_PROPERTIES
-    = new AutonMovement.DriveTrainProperties(490, 25, 2.5, 20.767, 8.323);
+    = new AutonMovement.DriveTrainProperties(490, 26.05, 2.5, 20.767, 8.323);
     // second to last = coefficient, second value = offset
     static {
         System.out.println("Clicks over inches is "+DRIVE_PROPERTIES.getClicksOverInches());
