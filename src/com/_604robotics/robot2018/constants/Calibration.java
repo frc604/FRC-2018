@@ -53,10 +53,9 @@ public class Calibration {
     public static final double DRIVE_MOVE_BACKWARD_TARGET
     = AutonMovement.inchesToClicks(DRIVE_PROPERTIES, -72);
     
-    // Empirical auton mode
+    // Initial forward direction for switch
     public static final double DRIVE_MOVE_FORWARD_SWITCH_INCHES
      = AutonMovement.inchesToClicks(DRIVE_PROPERTIES, 14*12+1); // 168+1 in
-    //= AutonMovement.empericalInchesToClicks(DRIVE_PROPERTIES, 36);
     
     // Elevator
     public static final double ELEVATOR_RATE_TARGET = 500;
