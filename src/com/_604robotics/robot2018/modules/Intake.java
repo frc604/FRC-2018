@@ -8,15 +8,15 @@ import com._604robotics.robotnik.Module;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
-import edu.wpi.first.wpilibj.PWMVictorSPX;
+import edu.wpi.first.wpilibj.VictorSP;
 
 // TODO: Use current mode?
 public class Intake extends Module {
 	
     private WPI_TalonSRX motorA = new WPI_TalonSRX(Ports.INTAKE_INNER_MOTOR_A);
     private WPI_TalonSRX motorB = new WPI_TalonSRX(Ports.INTAKE_INNER_MOTOR_B);
-    private PWMVictorSPX outerMotorA = new PWMVictorSPX(Ports.INTAKE_OUTER_MOTOR_A);
-    private PWMVictorSPX outerMotorB = new PWMVictorSPX(Ports.INTAKE_OUTER_MOTOR_B);
+    private VictorSP outerMotorA = new VictorSP(Ports.INTAKE_OUTER_MOTOR_A);
+    private VictorSP outerMotorB = new VictorSP(Ports.INTAKE_OUTER_MOTOR_B);
 	
     public Action run = new Run();
 	public Action idle = new Idle();
