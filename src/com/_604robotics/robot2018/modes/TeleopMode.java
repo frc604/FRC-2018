@@ -197,7 +197,7 @@ public class TeleopMode extends Coordinator {
     private class ArmManager {
     	private final Arm.Move move;
     	private final Arm.Setpoint setpoint;
-    	private double holdSetpoint;
+    	private double holdSetpoint = Calibration.ARM_LOW_TARGET;
     	
     	public ArmManager() {
     		move = robot.arm.new Move();
