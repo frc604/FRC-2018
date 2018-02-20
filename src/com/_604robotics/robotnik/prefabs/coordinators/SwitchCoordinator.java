@@ -1,6 +1,6 @@
 package com._604robotics.robotnik.prefabs.coordinators;
 
-import java.beans.Expression;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import com._604robotics.robotnik.Coordinator;
@@ -8,25 +8,64 @@ import com._604robotics.robotnik.Logger;
 
 public class SwitchCoordinator extends Coordinator {
 	private final Logger logger;
-    
 	private GameDataCoordinator gdc;
-	
-	private HashMap<String, StatefulCoordinator> cases;
+	private HashMap<String, Coordinator> cases;
+	private String gameData;
+	private boolean gotData;
+	private boolean endedGameDataCoordinator;
+	private boolean started;
+	private Coordinator active;
 	
     public SwitchCoordinator (String name) {
-    	gdc = new GameDataCoordinator();
-    	cases = new HashMap<String, StatefulCoordinator>();
     	logger = new Logger(SwitchCoordinator.class, name);
+    	gdc = new GameDataCoordinator();
+    	cases = new HashMap<String, Coordinator>();
+    	gameData = "";
+    	endedGameDataCoordinator = false;
+    	started = false;
     }
     public SwitchCoordinator (Class klass) {
     	this(klass.getSimpleName());
-    	gdc = new GameDataCoordinator();
-    	cases = new HashMap<String, StatefulCoordinator>();
+    }
+    
+    public void addCase( ArrayList<String> conditions, Coordinator coordinator ) {
+    	for( String condition : conditions ) {
+    		cases.put(condition, coordinator);
+    	}
     }
     
     @Override
     public void begin() {
     	logger.info("Begin");
-    	
+    	gdc.start();
+    	gameData = "";
+    	endedGameDataCoordinator = false;
+    	started = false;
+    }
+    
+    @Override
+    public boolean run() {
+    	if( !gotData ) {
+    		if( !gdc.run() ) {
+        		gameData = gdc.getGameData();
+        		gotData = true;
+        	}
+    	} else if( !endedGameDataCoordinator ) {
+    		gdc.end();
+    		endedGameDataCoordinator = true;
+    	} else if( !started ) {
+    		active = cases.get(gameData);
+    		active.start();
+    		started = true;
+    	} else {
+    		return active.execute();
+    	}
+    	return true;
+    }
+    
+    @Override
+    public void end() {
+    	active.stop();
+        logger.info("End");
     }
 }
