@@ -14,17 +14,17 @@ public class Calibration {
     public static final double DRIVE_MOVE_PID_P = 0.0045;
     public static final double DRIVE_MOVE_PID_I = 0;
     public static final double DRIVE_MOVE_PID_D = 0.00;
-    public static final double DRIVE_MOVE_PID_MAX = 0.5;
+    public static final double DRIVE_MOVE_PID_MAX = 0.7;
     public static final double DRIVE_MOVE_TOLERANCE = 100;
 
     // Rotate PID is now calibrated-don't touch
-    public static final double DRIVE_ROTATE_PID_P = 0.003; // 0.005 / 0.01
+    public static final double DRIVE_ROTATE_PID_P = 0.003; // 0.003 / 0.005 / 0.01
     public static final double DRIVE_ROTATE_PID_I = 0;
     public static final double DRIVE_ROTATE_PID_D = 0.00; // 0.005
     public static final double DRIVE_ROTATE_PID_MAX = 0.5;// was 0.5
     public static final double DRIVE_ROTATE_TOLERANCE = 100;
 
-    public static final double DRIVE_PID_AFTER_TIMING = 1;
+    public static final double DRIVE_PID_AFTER_TIMING = 0.5;
     public static final double DRIVE_PID_SAMPLE_RATE = 0.01;
 
     public static final double DRIVE_MOVE_STILL_TARGET = 0;
@@ -110,7 +110,7 @@ public class Calibration {
     public static final double ARM_PID_PERIOD = 0.02;
     // Lower speed going down due to weight
     public static final double ARM_MIN_SPEED = -0.07;
-    public static final double ARM_MAX_SPEED = 0.7;
+    public static final double ARM_MAX_SPEED = 0.8;
 
     public static final double ARM_RESET_SUM = 0.02/ARM_I;
     public static final double ARM_CLICK_TOLERANCE = 50;
@@ -122,8 +122,8 @@ public class Calibration {
     // Assuming 60 degree increments for now
     public static final double ARM_LOW_TARGET = -2100;
     public static final double ARM_MID_TARGET = 200; //0
-    public static final double ARM_BALANCE_TARGET = 1000;
-    public static final double ARM_HIGH_TARGET = 4200;
+    public static final double ARM_BALANCE_TARGET = 900;
+    public static final double ARM_HIGH_TARGET = 4600;
     
     /* Intake */
     public static final double INTAKE_PASSIVE_POWER = 0;
