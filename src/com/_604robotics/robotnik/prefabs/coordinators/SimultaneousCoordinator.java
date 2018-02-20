@@ -32,7 +32,6 @@ public class SimultaneousCoordinator extends Coordinator {
         boolean currentstate=false;
         // Continue running until all are done
         for (Coordinator co:coordinators) {
-            System.out.println("Running co "+co.toString());
             // execute does nothing if the coordinator is in stopped state
             currentstate = currentstate || co.execute();
         }
