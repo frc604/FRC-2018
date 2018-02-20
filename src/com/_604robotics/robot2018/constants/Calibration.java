@@ -30,6 +30,8 @@ public class Calibration {
     public static final double DRIVE_MOVE_STILL_TARGET = 0;
     public static final double DRIVE_ROTATE_STILL_TARGET = 0;
     
+    public static final double DRIVE_MOTOR_RAMP = 5;
+    
     /*
      * 2.5 in diameter of wheels
      * 25 in width parameter found empirically
