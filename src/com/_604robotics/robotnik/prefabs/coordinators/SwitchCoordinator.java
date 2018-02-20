@@ -1,11 +1,11 @@
 package com._604robotics.robotnik.prefabs.coordinators;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 import com._604robotics.robotnik.Coordinator;
 import com._604robotics.robotnik.Logger;
 
+// TODO: use regex
 public class SwitchCoordinator extends Coordinator {
 	private final Logger logger;
 	private GameDataCoordinator gdc;
@@ -28,7 +28,7 @@ public class SwitchCoordinator extends Coordinator {
     	this(klass.getSimpleName());
     }
     
-    public void addCase( ArrayList<String> conditions, Coordinator coordinator ) {
+    public void addCase( String[] conditions, Coordinator coordinator ) {
     	for( String condition : conditions ) {
     		cases.put(condition, coordinator);
     	}

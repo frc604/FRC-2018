@@ -1,5 +1,7 @@
 package com._604robotics.robot2018.modes;
 
+import java.util.ArrayList;
+
 import com._604robotics.robot2018.Robot2018;
 import com._604robotics.robot2018.constants.Calibration;
 import com._604robotics.robot2018.macros.ArcadeTimedDriveMacro;
@@ -13,6 +15,7 @@ import com._604robotics.robotnik.Logger;
 import com._604robotics.robotnik.prefabs.coordinators.SimultaneousCoordinator;
 import com._604robotics.robotnik.prefabs.coordinators.SleepCoordinator;
 import com._604robotics.robotnik.prefabs.coordinators.StatefulCoordinator;
+import com._604robotics.robotnik.prefabs.coordinators.SwitchCoordinator;
 import com._604robotics.robotnik.prefabs.flow.Pulse;
 import com._604robotics.robotnik.prefabs.flow.SmartTimer;
 import com._604robotics.robotnik.utils.AutonMovement;
@@ -543,8 +546,16 @@ public class AutonomousMode extends Coordinator {
         }
     }
 
-    /* Auton Modes */
+    /* Modular Modes */
+    private class CenterSwitchMacro extends SwitchCoordinator {
+    	public CenterSwitchMacro() {
+    		super(CenterSwitchMacro.class);
+    		addCase(new String[]{"LLL", "LLR", "LRL", "LRR"}, new CenterMacroLeft());
+    		addCase(new String[]{"RLL", "RLR", "RRL", "RRR"}, new CenterMacroRight());
+    	}
+    }
     
+    /* Auton Modes */
     private class SwitchForwardMacro extends StatefulCoordinator {
         public SwitchForwardMacro() {
             super(SwitchForwardMacro.class);
