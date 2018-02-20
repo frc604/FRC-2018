@@ -137,7 +137,7 @@ public class TeleopMode extends Coordinator {
     @Override
     protected void begin () {
         if (robot.dashboard.recordAuton.get() && !inputPlayer.isPlaying()) {
-            inputRecorder = new InputRecorder(300, driverJoystick, manipJoystick);
+            inputRecorder = new InputRecorder(1200, driverJoystick, manipJoystick);
         }
     }
 
