@@ -604,6 +604,22 @@ public class AutonomousMode extends Coordinator {
         }
     }
     
+    private class NewScaleBackwardMacro extends StatefulCoordinator {
+    	public NewScaleBackwardMacro() {
+    		super(NewScaleBackwardMacro.class);
+    		addStates(new IntakeMacro());
+    		addState("Set Elevator Persistent", new ElevatorSetPersistent(Calibration.ELEVATOR_MID_TARGET));
+            addState("Backward 262 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(262+1)), 0));
+            addState("Set Arm Persistent", new ArmSetPersistent(Calibration.ARM_MID_TARGET));
+            addState("Rotate 35 right", new ArcadePIDCoordinator(0, AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, 35)));
+            addState("Set Arm High Persistent", new ArmSetPersistent(Calibration.ARM_HIGH_TARGET));
+            addState("Eject cube", new IntakeMove(-1,1));
+            addState("Retract arm", new ArmMove(Calibration.ARM_LOW_TARGET, 0.7));
+            addState("Retract elevator", new ElevatorMove(Calibration.ELEVATOR_LOW_TARGET, 0.7));
+            addState("Unclamp", new ClampExtend());
+    	}
+    }
+    
     private class ScaleOppositeMacroLeft extends StatefulCoordinator {
         public ScaleOppositeMacroLeft() {
             super(ScaleOppositeMacroLeft.class);
