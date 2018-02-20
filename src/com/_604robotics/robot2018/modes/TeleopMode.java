@@ -1,5 +1,9 @@
 package com._604robotics.robot2018.modes;
 
+import com._604robotics.marionette.InputPlayer;
+import com._604robotics.marionette.InputRecorder;
+import com._604robotics.marionette.InputRecording;
+import com._604robotics.marionette.MarionetteJoystick;
 import com._604robotics.robot2018.Robot2018;
 import com._604robotics.robot2018.constants.Calibration;
 import com._604robotics.robot2018.modules.Arm;
@@ -14,10 +18,18 @@ import com._604robotics.robotnik.prefabs.flow.Pulse;
 import com._604robotics.robotnik.prefabs.flow.Toggle;
 import com._604robotics.robotnik.prefabs.inputcontroller.xbox.XboxController;
 
+import java.io.IOException;
+
 public class TeleopMode extends Coordinator {
 
-    private final XboxController driver = new XboxController(0);
-    private final XboxController manip = new XboxController(1);
+    private final InputPlayer inputPlayer = new InputPlayer();
+    private InputRecorder inputRecorder;
+
+    private final MarionetteJoystick driverJoystick = new MarionetteJoystick(0, inputPlayer, 0);
+    private final MarionetteJoystick manipJoystick = new MarionetteJoystick(1, inputPlayer, 1);
+
+    private final XboxController driver = new XboxController(driverJoystick);
+    private final XboxController manip = new XboxController(manipJoystick);
 
     private final Robot2018 robot;
 
@@ -61,6 +73,14 @@ public class TeleopMode extends Coordinator {
         intakeManager = new IntakeManager();
         armManager = new ArmManager();
         clampManager = new ClampManager();
+    }
+
+    public void startPlayback (InputRecording recording) {
+        inputPlayer.startPlayback(recording);
+    }
+
+    public void stopPlayback () {
+        inputPlayer.stopPlayback();
     }
     
     private boolean getHoldArmClicks = false;
@@ -112,16 +132,37 @@ public class TeleopMode extends Coordinator {
     private boolean manipB= false;
     private boolean manipX= false;
     private boolean manipY= false;
-    
     private boolean manipDPad = false;
     
     @Override
-    public boolean run () {
+    protected void begin () {
+        if (robot.dashboard.recordAuton.get() && !inputPlayer.isPlaying()) {
+            inputRecorder = new InputRecorder(300, driverJoystick, manipJoystick);
+        }
+    }
+
+    @Override
+    protected boolean run () {
     	updateControls();
         process();
         return true;
     }
-   
+
+    @Override
+    protected void end () {
+        if (inputRecorder != null) {
+            final InputRecorder oldInputRecorder = inputRecorder;
+            inputRecorder = null;
+
+            try {
+                oldInputRecorder.close();
+                oldInputRecorder.getRecording().save("autonomous.marionette");
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
     private void updateControls() {
     	driverLeftJoystickY = driver.leftStick.y.get();
         driverLeftJoystickX = driver.leftStick.x.get();

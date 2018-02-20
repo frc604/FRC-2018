@@ -1,5 +1,6 @@
 package com._604robotics.robot2018.modes;
 
+import com._604robotics.marionette.InputRecording;
 import com._604robotics.robot2018.Robot2018;
 import com._604robotics.robot2018.constants.Calibration;
 import com._604robotics.robot2018.macros.ArcadeTimedDriveMacro;
@@ -24,6 +25,8 @@ import edu.wpi.first.wpilibj.PIDOutput;
 import edu.wpi.first.wpilibj.PIDSource;
 import edu.wpi.first.wpilibj.PIDSourceType;
 
+import java.io.IOException;
+
 public class AutonomousMode extends Coordinator {
     private final Robot2018 robot;
 
@@ -32,6 +35,8 @@ public class AutonomousMode extends Coordinator {
     private final Coordinator forwardStateMacro;
     private final Coordinator forwardSwitchMacro;
     private final Coordinator backwardStateMacro;
+
+    private final Coordinator marionetteDriver;
 
     private Coordinator selectedModeMacro;
 
@@ -47,6 +52,33 @@ public class AutonomousMode extends Coordinator {
         forwardSwitchMacro = new ArcadePIDStateMacro(Calibration.DRIVE_MOVE_FORWARD_SWITCH_INCHES, 0);
         backwardStateMacro = new ArcadePIDStateMacro(Calibration.DRIVE_MOVE_BACKWARD_TARGET,
                 Calibration.DRIVE_ROTATE_STILL_TARGET);
+
+        marionetteDriver = new Coordinator() {
+            private boolean loaded = false;
+
+            @Override
+            protected void begin () {
+                final InputRecording recording;
+                try {
+                    recording = InputRecording.load("autonomous.marionette");
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+
+                robot.teleopMode.startPlayback(recording);
+                robot.teleopMode.start();
+            }
+
+            @Override
+            protected boolean run () {
+                return robot.teleopMode.execute();
+            }
+
+            @Override
+            protected void end () {
+                robot.teleopMode.stop();
+            }
+        };
     }
 
     @Override
@@ -136,6 +168,9 @@ public class AutonomousMode extends Coordinator {
 //            case BALANCED_SWEPT_RIGHT_TURN_TEST:
 //            	selectedModeMacro = new BalancedSweptRightTurnMacro();
 //            	break;
+            case MARIONETTE:
+                selectedModeMacro = marionetteDriver;
+                break;
             case OFF:
             default:
                 selectedModeMacro = null;
