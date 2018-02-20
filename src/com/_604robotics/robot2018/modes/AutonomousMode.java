@@ -4,7 +4,10 @@ import com._604robotics.robot2018.Robot2018;
 import com._604robotics.robot2018.constants.Calibration;
 import com._604robotics.robot2018.macros.ArcadeTimedDriveMacro;
 import com._604robotics.robot2018.modules.Arm;
+import com._604robotics.robot2018.modules.Clamp;
 import com._604robotics.robot2018.modules.Drive;
+import com._604robotics.robot2018.modules.Elevator;
+import com._604robotics.robot2018.modules.Intake;
 import com._604robotics.robotnik.Coordinator;
 import com._604robotics.robotnik.Logger;
 import com._604robotics.robotnik.prefabs.coordinators.SleepCoordinator;
@@ -115,6 +118,98 @@ public class AutonomousMode extends Coordinator {
         }
     }
     
+    protected final class ClampExtend extends Coordinator {
+    	private Clamp.Extend autonClampExtend;
+    	private boolean sent;
+    	
+    	public ClampExtend() {
+    		autonClampExtend = robot.clamp.new Extend();
+    		sent = false;
+    	}
+    	
+    	@Override
+    	public void begin() {
+    		autonClampExtend.activate();
+    		sent = false;
+    	}
+    	
+    	@Override
+    	public boolean run() {
+    		if( sent ) {
+    			return false;
+    		} else {
+    			sent = true;
+        		autonClampExtend.activate();
+        		return true;
+    		}
+    	}
+    	
+    	@Override
+    	public void end() {
+    		// Do nothing
+    	}
+    }
+    
+    protected final class ClampRetract extends Coordinator {
+    	private Clamp.Retract autonClampRetract;
+    	private boolean sent;
+    	
+    	public ClampRetract() {
+    		autonClampRetract = robot.clamp.new Retract();
+    		sent = false;
+    	}
+    	
+    	@Override
+    	public void begin() {
+    		autonClampRetract.activate();
+    		sent = false;
+    	}
+    	
+    	@Override
+    	public boolean run() {
+    		if( sent ) {
+    			return false;
+    		} else {
+    			sent = true;
+        		autonClampRetract.activate();
+        		return true;
+    		}
+    	}
+    	
+    	@Override
+    	public void end() {
+    		// Do nothing
+    	}
+    }
+    
+    protected final class ElevatorMove extends Coordinator {
+    	private Elevator.Setpoint autonElevator;
+    	private double elevatorPosition;
+    	private SmartTimer timeElapsed = new SmartTimer();
+    	
+    	public ElevatorMove(double elevatorPos) {
+    		elevatorPosition = elevatorPos;
+    		autonElevator = robot.elevator.new Setpoint(elevatorPosition);
+    	}
+    	
+    	 @Override
+         public void begin() {
+             autonElevator.activate();
+             timeElapsed.start();
+         }
+         
+         @Override
+         public boolean run() {
+             autonElevator.activate();
+             return !timeElapsed.hasReachedTime(Calibration.ELEVATOR_PID_TIME_RUN);
+         }
+         
+         @Override
+         public void end() {
+             timeElapsed.stopAndReset();
+         }
+    }
+    
     protected final class ArmMove extends Coordinator {
         private Arm.Setpoint autonArm;
         private double armPosition;
@@ -143,6 +238,37 @@ public class AutonomousMode extends Coordinator {
         }
     }
 
+    protected final class IntakeMove extends Coordinator {
+    	private SmartTimer timeElapsed;
+    	private Intake.Run autonIntake;
+    	private double power;
+    	private double time;
+    	
+    	public IntakeMove(double pow, double seconds) {
+    		power = pow;
+    		time = seconds;
+    		timeElapsed = new SmartTimer();
+    		autonIntake = robot.intake.new Run(power);
+    	}
+    	
+    	@Override
+    	public void begin() {
+    		timeElapsed.start();
+    		autonIntake.activate();
+    	}
+    	
+    	@Override
+    	public boolean run() {
+    		autonIntake.activate();
+    		return !timeElapsed.hasReachedTime(time);
+    	}
+    	
+    	@Override
+    	public void end() {
+    		timeElapsed.stopAndReset();
+    	}
+    }
+    
     protected final class ArcadePIDCoordinator extends Coordinator {
         private Logger arcadePIDLog=new Logger(ArcadePIDCoordinator.class);
         // Timer that is started to continue running PID for some time after equilibrium
