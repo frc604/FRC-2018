@@ -28,6 +28,8 @@ import edu.wpi.first.wpilibj.PIDSourceType;
 import java.io.IOException;
 
 public class AutonomousMode extends Coordinator {
+    private static final Logger logger = new Logger(AutonomousMode.class);
+
     private final Robot2018 robot;
 
     private final Coordinator rotateLeftStateMacro;
@@ -58,6 +60,7 @@ public class AutonomousMode extends Coordinator {
 
             @Override
             protected void begin () {
+                logger.info("Loading Marionette recording from \"autonomous.marionette\"");
                 final InputRecording recording;
                 try {
                     recording = InputRecording.load("autonomous.marionette");
@@ -65,6 +68,7 @@ public class AutonomousMode extends Coordinator {
                     throw new RuntimeException(e);
                 }
 
+                logger.info("Starting Marionette playback");
                 robot.teleopMode.startPlayback(recording);
                 robot.teleopMode.start();
             }
@@ -76,6 +80,7 @@ public class AutonomousMode extends Coordinator {
 
             @Override
             protected void end () {
+                logger.info("Stopping Marionette playback");
                 robot.teleopMode.stop();
                 robot.teleopMode.stopPlayback();
             }

@@ -22,6 +22,8 @@ import java.io.IOException;
 
 public class TeleopMode extends Coordinator {
 
+    private static final Logger logger = new Logger(TeleopMode.class);
+
     private final InputPlayer inputPlayer = new InputPlayer();
     private InputRecorder inputRecorder;
 
@@ -136,7 +138,10 @@ public class TeleopMode extends Coordinator {
     
     @Override
     protected void begin () {
-        if (robot.dashboard.recordAuton.get() && !inputPlayer.isPlaying()) {
+        if (inputPlayer.isPlaying()) {
+            logger.info("Playing back Marionette recording");
+        } else if (robot.dashboard.recordAuton.get()) {
+            logger.info("Recording inputs with Marionette");
             inputRecorder = new InputRecorder(1200, driverJoystick, manipJoystick);
         }
     }
@@ -155,7 +160,10 @@ public class TeleopMode extends Coordinator {
             inputRecorder = null;
 
             try {
+                logger.info("Terminating Marionette recording");
                 oldInputRecorder.close();
+
+                logger.info("Saving Marionette recording to \"autonomous.marionette\"");
                 oldInputRecorder.getRecording().save("autonomous.marionette");
             } catch (IOException e) {
                 throw new RuntimeException(e);
