@@ -75,6 +75,7 @@ public class Dashboard extends DashboardModule {
 //        BALANCED_RIGHT_TURN_TEST,
 //        SWEPT_RIGHT_TURN_TEST,
 //        BALANCED_SWEPT_RIGHT_TURN_TEST,
+        MARIONETTE
     }
     
     public enum DriveMode {
@@ -87,6 +88,8 @@ public class Dashboard extends DashboardModule {
     public final Output<AutonMode> autonMode = addDashboardOutput("autonMode", AutonMode.OFF, AutonMode.class);
     
     public final Output<DriveMode> driveMode = addDashboardOutput("driveMode", DriveMode.DYNAMIC, DriveMode.class);
+
+    public final Output<Boolean> recordAuton = addDashboardOutput("recordAuton", false);
 
     public Dashboard () {
         super(Dashboard.class);
