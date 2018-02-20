@@ -44,6 +44,7 @@ public class Dashboard extends DashboardModule {
         SWITCH_FORWARD,
         SCALE_BACKWARD,
         SCALE_BACKWARD_2,
+        NEW_SCALE_BACKWARD,
         SCALE_OPPOSITE,
         APPENDAGE_TEST,
         PERSISTENCE_TEST,
