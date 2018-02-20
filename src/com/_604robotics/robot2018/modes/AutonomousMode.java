@@ -488,7 +488,7 @@ public class AutonomousMode extends Coordinator {
         public SwitchForwardMacro() {
             super(SwitchForwardMacro.class);
             addStates(new IntakeMacro());
-            addState("Forward and Arm", new SimultaneousCoordinator(
+            addState("Forward and Elevator", new SimultaneousCoordinator(
                     new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, 140+1), 0),
                     new ElevatorMove(Calibration.ELEVATOR_MID_TARGET,7)
                     ));
