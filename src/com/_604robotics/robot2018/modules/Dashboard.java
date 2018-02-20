@@ -42,6 +42,7 @@ public class Dashboard extends DashboardModule {
         SIDE_LEFT_SWITCH,
         SWITCH_FORWARD,
         APPENDAGE_TEST,
+        PERSISTENCE_TEST,
     }
     
     public enum DriveMode {

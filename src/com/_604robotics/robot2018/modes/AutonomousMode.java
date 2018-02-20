@@ -98,6 +98,8 @@ public class AutonomousMode extends Coordinator {
             case SWITCH_FORWARD:
                 selectedModeMacro = new SwitchForwardMacro();
                 break;
+            case PERSISTENCE_TEST:
+            	selectedModeMacro = new SimultaneousMacro();
             default:
                 selectedModeMacro = null;
                 break;
@@ -186,6 +188,41 @@ public class AutonomousMode extends Coordinator {
     	public void end() {
     		// Do nothing
     	}
+    }
+    
+    protected final class ElevatorSetPersistent extends Coordinator {
+    	private Elevator.SetPersistent autonElevatorSetPersistent;
+    	private double setpoint;
+    	private boolean sent;
+    	
+    	public ElevatorSetPersistent(double clicks) {
+    		setpoint = clicks;
+    		autonElevatorSetPersistent = robot.elevator.new SetPersistent(setpoint);
+    		sent = false;
+    	}
+    	
+    	@Override
+    	public void begin() {
+    		autonElevatorSetPersistent.activate();
+    		sent = false;
+    	}
+    	
+    	@Override
+    	public boolean run() {
+    		if( sent ) {
+    			return false;
+    		} else {
+    			sent = true;
+        		autonElevatorSetPersistent.activate();
+        		return true;
+    		}
+    	}
+    	
+    	@Override
+    	public void end() {
+    		// Do nothing
+    	}
+    	
     }
     
     protected final class ElevatorMove extends Coordinator {
@@ -450,6 +487,18 @@ public class AutonomousMode extends Coordinator {
             controller = new ArcadePIDCoordinator(moveSetpoint, rotSetpoint);
             addState("ArcadePID",controller);
         }
+    }
+    
+    private class SimultaneousMacro extends StatefulCoordinator {
+    	public SimultaneousMacro() {
+    		super(SimultaneousMacro.class);
+    		addState("Intake cube", new IntakeMove(0.5,1));
+            addState("Sleep 0.25 seconds", new SleepCoordinator(0.25));
+            addState("Clamp cube", new ClampRetract());
+    		addState("Set Persistent", new ElevatorSetPersistent(Calibration.ELEVATOR_HIGH_TARGET));
+    		addState("Sleep 3 seconds", new SleepCoordinator(3));
+    		addState("Eject cube", new IntakeMove(-0.5, 1));
+    	}
     }
     
     private class IntakeMacro extends StatefulCoordinator {
