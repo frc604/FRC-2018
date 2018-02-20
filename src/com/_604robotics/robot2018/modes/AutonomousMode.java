@@ -77,6 +77,7 @@ public class AutonomousMode extends Coordinator {
             @Override
             protected void end () {
                 robot.teleopMode.stop();
+                robot.teleopMode.stopPlayback();
             }
         };
     }
