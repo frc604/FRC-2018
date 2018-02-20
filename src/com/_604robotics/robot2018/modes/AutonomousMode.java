@@ -474,12 +474,12 @@ public class AutonomousMode extends Coordinator {
     private class DemoStateMacro extends StatefulCoordinator {
         public DemoStateMacro() {
             super(DemoStateMacro.class);
-            //addStates(new IntakeMacro());
+            addStates(new IntakeMacro());
             addState("Forward 12 feet", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, 12*12+1), 0));
-            //addState("Sleep 0.5 seconds", new SleepCoordinator(0.5));
-            //addStates(new SwitchEjectMacro());
+            addState("Sleep 0.5 seconds", new SleepCoordinator(0.5));
+            addStates(new SwitchEjectMacro());
             addState("Rotate 180 left", new ArcadePIDCoordinator(0,AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, -180)));
-            //addState("Sleep 0.5 seconds", new SleepCoordinator(0.5));
+            addState("Sleep 0.5 seconds", new SleepCoordinator(0.5));
             addState("Forward 12 feet", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, 12*12+1), 0));
         }
     }
