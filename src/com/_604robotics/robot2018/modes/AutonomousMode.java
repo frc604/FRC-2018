@@ -92,7 +92,7 @@ public class AutonomousMode extends Coordinator {
                 selectedModeMacro = new SideLeftMacro();
                 break;
             case APPENDAGE_TEST:
-                selectedModeMacro = new IntakeMacro();
+                selectedModeMacro = new ElevatorMove(8000, Calibration.ELEVATOR_PID_TIME_RUN);
                 break;
             default:
                 selectedModeMacro = null;
@@ -186,11 +186,13 @@ public class AutonomousMode extends Coordinator {
     
     protected final class ElevatorMove extends Coordinator {
     	private Elevator.Setpoint autonElevator;
-    	private double elevatorPosition;
     	private SmartTimer timeElapsed = new SmartTimer();
+    	private double elevatorPosition;
+    	private double time;
     	
-    	public ElevatorMove(double elevatorPos) {
+    	public ElevatorMove(double elevatorPos, double seconds) {
     		elevatorPosition = elevatorPos;
+    		time = seconds;
     		autonElevator = robot.elevator.new Setpoint(elevatorPosition);
     	}
     	
@@ -203,7 +205,7 @@ public class AutonomousMode extends Coordinator {
          @Override
          public boolean run() {
              autonElevator.activate();
-             return !timeElapsed.hasReachedTime(Calibration.ELEVATOR_PID_TIME_RUN);
+             return !timeElapsed.hasReachedTime(time);
          }
          
          @Override
@@ -214,11 +216,13 @@ public class AutonomousMode extends Coordinator {
     
     protected final class ArmMove extends Coordinator {
         private Arm.Setpoint autonArm;
-        private double armPosition;
         private SmartTimer timeElapsed = new SmartTimer();
+        private double armPosition;
+        private double time;
         
-        public ArmMove(double armPos) {
+        public ArmMove(double armPos, double seconds) {
             armPosition = armPos;
+            time = seconds;
             autonArm = robot.arm.new Setpoint(armPosition);
         }
         
@@ -231,7 +235,7 @@ public class AutonomousMode extends Coordinator {
         @Override
         public boolean run() {
             autonArm.activate();
-            return !timeElapsed.hasReachedTime(Calibration.ARM_PID_TIME_RUN);
+            return !timeElapsed.hasReachedTime(time);
         }
         
         @Override
