@@ -91,8 +91,8 @@ public class AutonomousMode extends Coordinator {
             case SIDE_LEFT_SWITCH:
                 selectedModeMacro = new SideLeftMacro();
                 break;
-            case KINEMATIC_FORWARD:
-                selectedModeMacro = kinematicFallback;
+            case APPENDAGE_TEST:
+                selectedModeMacro = new ElevatorMove(8000);
                 break;
             default:
                 selectedModeMacro = null;
