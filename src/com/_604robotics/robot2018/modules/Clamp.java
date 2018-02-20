@@ -46,6 +46,40 @@ public class Clamp extends Module {
 		}
 	}
 	
+	public class HoldRetract extends Action {
+		public HoldRetract() {
+			super(Clamp.this, HoldRetract.class);
+		}
+		
+		@Override
+		public void begin() {
+			setDefaultAction(retract);
+		}
+		
+		@Override
+		public void run() {
+			solenoid.set(Value.kReverse);
+			clamping = false;
+		}
+	}
+	
+	public class HoldExtend extends Action {
+		public HoldExtend() {
+			super(Clamp.this, HoldExtend.class);
+		}
+		
+		@Override
+		public void begin() {
+			setDefaultAction(extend);
+		}
+		
+		@Override
+		public void run() {
+			solenoid.set(Value.kForward);
+			clamping = true;
+		}	
+	}
+	
 	public Clamp() {
 		super(Clamp.class);
 		this.setDefaultAction(retract);

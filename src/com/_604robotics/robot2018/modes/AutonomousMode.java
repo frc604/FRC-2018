@@ -119,11 +119,11 @@ public class AutonomousMode extends Coordinator {
     }
     
     protected final class ClampExtend extends Coordinator {
-    	private Clamp.Extend autonClampExtend;
+    	private Clamp.HoldExtend autonClampExtend;
     	private boolean sent;
     	
     	public ClampExtend() {
-    		autonClampExtend = robot.clamp.new Extend();
+    		autonClampExtend = robot.clamp.new HoldExtend();
     		sent = false;
     	}
     	
@@ -151,11 +151,11 @@ public class AutonomousMode extends Coordinator {
     }
     
     protected final class ClampRetract extends Coordinator {
-    	private Clamp.Retract autonClampRetract;
+    	private Clamp.HoldRetract autonClampRetract;
     	private boolean sent;
     	
     	public ClampRetract() {
-    		autonClampRetract = robot.clamp.new Retract();
+    		autonClampRetract = robot.clamp.new HoldRetract();
     		sent = false;
     	}
     	
