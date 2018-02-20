@@ -43,8 +43,14 @@ public class XboxController {
      * @param port Port of the controller.
      */
     public XboxController (int port) {
-        final Joystick joystick = new Joystick(port);
+        this(new Joystick(port));
+    }
 
+    /**
+     * Creates an Xbox controller.
+     * @param joystick Underlying joystick object to wrap.
+     */
+    public XboxController (Joystick joystick) {
         this.buttons = new XboxControllerButtons(joystick);
 
         this.leftStick  = new XboxControllerStick(joystick, 0, 1);
