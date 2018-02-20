@@ -70,10 +70,10 @@ public class AutonomousMode extends Coordinator {
     @Override
     public void begin () {
         switch (robot.dashboard.autonMode.get()) {
-            case ROTATE_LEFT_360:
+            case ROTATE_LEFT_TEST:
                 selectedModeMacro = rotateLeftStateMacro;
                 break;
-            case ROTATE_RIGHT_360:
+            case ROTATE_RIGHT_TEST:
                 selectedModeMacro = rotateRightStateMacro;
                 break;
             case FORWARD_6:
@@ -90,8 +90,10 @@ public class AutonomousMode extends Coordinator {
                 break;
             case SIDE_LEFT_SWITCH:
                 selectedModeMacro = new SideLeftMacro();
-            case KINEMATIC_FORWARD:
-                selectedModeMacro = kinematicFallback;
+                break;
+            case APPENDAGE_TEST:
+                selectedModeMacro = new ElevatorMove(8000);
+                break;
             default:
                 selectedModeMacro = null;
                 break;
@@ -396,7 +398,7 @@ public class AutonomousMode extends Coordinator {
         @Override
         protected synchronized boolean run() {
             arcadeDrive.activate();
-            System.out.println("Move error is " + getMoveError() + ", Rot error is " + getRotError());
+            //System.out.println("Move error is " + getMoveError() + ", Rot error is " + getRotError());
             return timeElapsed.runUntil(Calibration.DRIVE_PID_AFTER_TIMING, new Runnable() {
                 @Override
                 public void run() {
@@ -444,11 +446,11 @@ public class AutonomousMode extends Coordinator {
     private class DemoStateMacro extends StatefulCoordinator {
         public DemoStateMacro() {
             super(DemoStateMacro.class);
-            addState("Forward 12 feet", new ArcadePIDCoordinator(AutonMovement.empericalInchesToClicks(Calibration.DRIVE_PROPERTIES, 12*12), 0));
-            addState("Sleep 0.5 seconds", new SleepCoordinator(0.5));
+            addState("Forward 12 feet", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, 12*12+1), 0));
+            //addState("Sleep 0.5 seconds", new SleepCoordinator(0.5));
             addState("Rotate 180 right", new ArcadePIDCoordinator(0,AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, 180)));
-            addState("Sleep 0.5 seconds", new SleepCoordinator(0.5));
-            addState("Forward 12 feet", new ArcadePIDCoordinator(AutonMovement.empericalInchesToClicks(Calibration.DRIVE_PROPERTIES, 12*12), 0));
+            //addState("Sleep 0.5 seconds", new SleepCoordinator(0.5));
+            addState("Forward 12 feet", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, 12*12+1), 0));
         }
     }
     

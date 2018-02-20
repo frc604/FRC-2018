@@ -1,10 +1,12 @@
 package com._604robotics.robot2018.modules;
 
+import com._604robotics.robot2018.constants.Calibration;
 import com._604robotics.robot2018.constants.Ports;
 import com._604robotics.robotnik.Action;
 import com._604robotics.robotnik.Input;
 import com._604robotics.robotnik.Module;
 import com._604robotics.robotnik.Output;
+import com._604robotics.robotnik.prefabs.devices.wrappers.RampMotor;
 
 import edu.wpi.first.wpilibj.CounterBase;
 import edu.wpi.first.wpilibj.Encoder;
@@ -15,12 +17,12 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Drive extends Module {
-    private final PWMVictorSPX m_frontLeft = new PWMVictorSPX(Ports.DRIVE_FRONT_LEFT_MOTOR);
-    private final PWMVictorSPX m_rearLeft = new PWMVictorSPX(Ports.DRIVE_REAR_LEFT_MOTOR);
+    private final RampMotor m_frontLeft = new RampMotor(new PWMVictorSPX(Ports.DRIVE_FRONT_LEFT_MOTOR),Calibration.DRIVE_MOTOR_RAMP);
+    private final RampMotor m_rearLeft = new RampMotor(new PWMVictorSPX(Ports.DRIVE_REAR_LEFT_MOTOR),Calibration.DRIVE_MOTOR_RAMP);
     private final SpeedControllerGroup m_left = new SpeedControllerGroup(m_frontLeft, m_rearLeft);
 
-    private final PWMVictorSPX m_frontRight = new PWMVictorSPX(Ports.DRIVE_FRONT_RIGHT_MOTOR);
-    private final PWMVictorSPX m_rearRight = new PWMVictorSPX(Ports.DRIVE_REAR_RIGHT_MOTOR);
+    private final RampMotor m_frontRight = new RampMotor(new PWMVictorSPX(Ports.DRIVE_FRONT_RIGHT_MOTOR),Calibration.DRIVE_MOTOR_RAMP);
+    private final RampMotor m_rearRight = new RampMotor(new PWMVictorSPX(Ports.DRIVE_REAR_RIGHT_MOTOR),Calibration.DRIVE_MOTOR_RAMP);
     private final SpeedControllerGroup m_right = new SpeedControllerGroup(m_frontRight, m_rearRight);
 
     DifferentialDrive robotDrive = new DifferentialDrive(m_left, m_right);

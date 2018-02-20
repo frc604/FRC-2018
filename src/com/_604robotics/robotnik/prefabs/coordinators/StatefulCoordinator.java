@@ -28,6 +28,12 @@ public abstract class StatefulCoordinator extends Coordinator {
     public void addState (Class klass, Coordinator coordinator) {
         addState(klass.getSimpleName(), coordinator);
     }
+    
+    public void addStates(StatefulCoordinator statecoord) {
+        for (Pair<String, Coordinator>pair:statecoord.states) {
+            states.add(pair);
+        }
+    }
 
     @Override
     public void begin () {
