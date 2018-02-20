@@ -74,6 +74,8 @@ public class AutonomousMode extends Coordinator {
     @Override
     public void begin () {
         switch (robot.dashboard.autonMode.get()) {
+	        case CENTER_SWITCH:
+	        	selectedModeMacro = new CenterSwitchMacro();
             case ROTATE_LEFT_TEST:
                 selectedModeMacro = rotateLeftStateMacro;
                 break;
