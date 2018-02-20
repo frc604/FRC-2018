@@ -91,7 +91,9 @@ public class Calibration {
     public static final double ELEVATOR_HIGH_TARGET = 32000;
     //@Unreal("Find more reasonable time or eliminate hold part altogether")
     //public static final double ELEVATOR_PID_CONTINUE = 10;
-
+    public static final double ELEVATOR_PID_TIME_RUN = 5;
+    
+    
     public static final double ARM_P = 0.00009;
     public static final double ARM_I = 0.00004;
     public static final double ARM_D = 0.00002;
@@ -122,4 +124,5 @@ public class Calibration {
     
     /* Intake */
     public static final double INTAKE_PASSIVE_POWER = 0;
+    
 }
