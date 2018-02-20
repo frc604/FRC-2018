@@ -100,6 +100,7 @@ public class AutonomousMode extends Coordinator {
                 break;
             case PERSISTENCE_TEST:
             	selectedModeMacro = new SimultaneousMacro();
+            	break;
             default:
                 selectedModeMacro = null;
                 break;
@@ -492,9 +493,7 @@ public class AutonomousMode extends Coordinator {
     private class SimultaneousMacro extends StatefulCoordinator {
     	public SimultaneousMacro() {
     		super(SimultaneousMacro.class);
-    		addState("Intake cube", new IntakeMove(0.5,1));
-            addState("Sleep 0.25 seconds", new SleepCoordinator(0.25));
-            addState("Clamp cube", new ClampRetract());
+    		addState("Intake cube", new IntakeMacro());
     		addState("Set Persistent", new ElevatorSetPersistent(Calibration.ELEVATOR_HIGH_TARGET));
     		addState("Sleep 3 seconds", new SleepCoordinator(3));
     		addState("Eject cube", new IntakeMove(-0.5, 1));
