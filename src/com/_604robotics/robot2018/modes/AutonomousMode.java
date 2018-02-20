@@ -56,8 +56,6 @@ public class AutonomousMode extends Coordinator {
                 Calibration.DRIVE_ROTATE_STILL_TARGET);
 
         marionetteDriver = new Coordinator() {
-            private boolean loaded = false;
-
             @Override
             protected void begin () {
                 logger.info("Loading Marionette recording from \"autonomous.marionette\"");
