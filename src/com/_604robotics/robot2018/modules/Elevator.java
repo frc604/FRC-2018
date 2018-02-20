@@ -20,6 +20,7 @@ public class Elevator extends Module {
     public double persistent = 0;
     
     public final Setpoint setpoint = new Setpoint();
+    public final PersistentSetpoint persistentSetpoint = new PersistentSetpoint();
 
     public final Output<Double> encoderRate = addOutput("Elevator Rate", encoder::getVelocity);
     public final Output<Double> encoderClicks = addOutput("Elevator Clicks", encoder::getPosition);
@@ -113,8 +114,6 @@ public class Elevator extends Module {
     		setDefaultAction(persistentSetpoint);
     	}
     }
-    
-    public PersistentSetpoint persistentSetpoint = new PersistentSetpoint();
     
     public class PersistentSetpoint extends Action {
     	public PersistentSetpoint() {

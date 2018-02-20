@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import com._604robotics.robotnik.Coordinator;
 import com._604robotics.robotnik.utils.annotations.Untested;
 
-@Deprecated @Untested("Needs to be actually used")
+@Deprecated @Untested("Straight-up doesn't work")
 public class SimultaneousCoordinator extends Coordinator {
     
     private ArrayList<Coordinator> coordinators;

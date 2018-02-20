@@ -18,7 +18,10 @@ public class Arm extends Module {
     private WPI_TalonSRX motorB = new WPI_TalonSRX(Ports.ARM_MOTOR_B);
     public TalonPWMEncoder encoder = new TalonPWMEncoder(motorB);
 
+    public double persistent = 0;
+    
     public final Setpoint setpoint = new Setpoint(Calibration.ARM_LOW_TARGET);
+    public final PersistentSetpoint persistentSetpoint = new PersistentSetpoint();
 
     public final Output<Double> encoderRate = addOutput("Arm Rate", encoder::getVelocity);
     public final Output<Double> encoderClicks = addOutput("Arm Clicks", encoder::getPosition);
@@ -44,6 +47,11 @@ public class Arm extends Module {
         }
 
         @Override
+        public void begin() {
+            setDefaultAction(setpoint);
+        }
+        
+        @Override
         public void run () {
             motorA.set(liftPower.get());
         }
@@ -68,6 +76,7 @@ public class Arm extends Module {
         @Override
         public void begin() {
             pid.enable();
+            setDefaultAction(setpoint);
         }
         @Override
         public void run () {
@@ -79,6 +88,42 @@ public class Arm extends Module {
         }
     }
 
+    public class SetPersistent extends Action {
+        public final Input<Double> target_clicks;
+    	
+    	public SetPersistent(double target) {
+    		super(Arm.this, PersistentSetpoint.class);
+    		target_clicks = addInput("Persistent Setpoint", target, true);
+    	}
+    	
+    	@Override
+    	public void begin() {
+    		persistent = target_clicks.get();
+    		setDefaultAction(persistentSetpoint);
+    	}
+    }
+    
+    public class PersistentSetpoint extends Action {
+    	public PersistentSetpoint() {
+    		super(Arm.this, PersistentSetpoint.class);
+    	}
+    	
+    	@Override
+    	public void begin() {
+    		pid.enable();
+    	}
+    	
+    	@Override
+    	public void run() {
+    		pid.setSetpoint(persistent);
+    	}
+    	
+    	@Override
+    	public void end() {
+    		pid.disable();
+    	}
+    }
+    
     public Arm() {
         super(Arm.class);
         encoder.setInverted(true);
