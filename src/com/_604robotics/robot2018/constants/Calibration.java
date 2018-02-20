@@ -21,7 +21,7 @@ public class Calibration {
     public static final double DRIVE_ROTATE_PID_P = 0.003; // 0.005 / 0.01
     public static final double DRIVE_ROTATE_PID_I = 0;
     public static final double DRIVE_ROTATE_PID_D = 0.00; // 0.005
-    public static final double DRIVE_ROTATE_PID_MAX = 0.3;// was 0.5
+    public static final double DRIVE_ROTATE_PID_MAX = 0.5;// was 0.5
     public static final double DRIVE_ROTATE_TOLERANCE = 100;
 
     public static final double DRIVE_PID_AFTER_TIMING = 1;
@@ -122,6 +122,7 @@ public class Calibration {
     // Assuming 60 degree increments for now
     public static final double ARM_LOW_TARGET = -2100;
     public static final double ARM_MID_TARGET = 200; //0
+    public static final double ARM_BALANCE_TARGET = 1000;
     public static final double ARM_HIGH_TARGET = 4200;
     
     /* Intake */
