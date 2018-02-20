@@ -38,7 +38,7 @@ public class Calibration {
      * XXX: Empirical parameters have not been updated AT ALL because they have been unnecessary so far
      */
     public static final AutonMovement.DriveTrainProperties DRIVE_PROPERTIES
-    = new AutonMovement.DriveTrainProperties(490, 25.85, 2.5, 20.767, 8.323);//26.05
+    = new AutonMovement.DriveTrainProperties(490, 26.7, 2.5, 20.767, 8.323);//26.05
     // second to last = coefficient, second value = offset
     static {
         System.out.println("Clicks over inches is "+DRIVE_PROPERTIES.getClicksOverInches());
@@ -47,9 +47,9 @@ public class Calibration {
     
     // Testing targets
     public static final double DRIVE_ROTATE_LEFT_TARGET
-    = AutonMovement.degreesToClicks(DRIVE_PROPERTIES, -180);
+    = AutonMovement.degreesToClicks(DRIVE_PROPERTIES, -90);
     public static final double DRIVE_ROTATE_RIGHT_TARGET
-    = AutonMovement.degreesToClicks(DRIVE_PROPERTIES, 180);
+    = AutonMovement.degreesToClicks(DRIVE_PROPERTIES, 90);
     public static final double DRIVE_MOVE_FORWARD_TARGET
     = AutonMovement.inchesToClicks(DRIVE_PROPERTIES, 72);
     public static final double DRIVE_MOVE_BACKWARD_TARGET
@@ -87,7 +87,8 @@ public class Calibration {
     // Prefer to be at the bottom so push into hard stop
     public static final double ELEVATOR_ENCODER_ZERO = 720;
     public static final double ELEVATOR_LOW_TARGET = 0;
-    public static final double ELEVATOR_BUMPER_CLEAR = 2000;
+    public static final double ELEVATOR_BUMPER_CLEAR = 3000;
+    public static final double ELEVATOR_SWITCH_CLEAR = 19100;
     public static final double ELEVATOR_MID_TARGET = 14000;
     public static final double ELEVATOR_HIGH_TARGET = 32000;
     //@Unreal("Find more reasonable time or eliminate hold part altogether")
@@ -121,7 +122,7 @@ public class Calibration {
     // Assuming 60 degree increments for now
     public static final double ARM_LOW_TARGET = -2100;
     public static final double ARM_MID_TARGET = 200; //0
-    public static final double ARM_HIGH_TARGET = 4100; //4200
+    public static final double ARM_HIGH_TARGET = 4200;
     
     /* Intake */
     public static final double INTAKE_PASSIVE_POWER = 0;
