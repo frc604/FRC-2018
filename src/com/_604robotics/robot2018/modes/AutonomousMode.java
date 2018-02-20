@@ -16,6 +16,7 @@ import com._604robotics.robotnik.prefabs.coordinators.StatefulCoordinator;
 import com._604robotics.robotnik.prefabs.flow.Pulse;
 import com._604robotics.robotnik.prefabs.flow.SmartTimer;
 import com._604robotics.robotnik.utils.AutonMovement;
+import com._604robotics.robotnik.utils.annotations.Unreal;
 
 import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.PIDOutput;
@@ -583,6 +584,7 @@ public class AutonomousMode extends Coordinator {
         }
     }
     
+    @Unreal("Old legacy testing of previous distances")
     private class ScaleBackwardMacro extends StatefulCoordinator {
         public ScaleBackwardMacro() {
             super(ScaleBackwardMacro.class);
@@ -596,6 +598,7 @@ public class AutonomousMode extends Coordinator {
         }
     }
     
+    @Unreal("Old legacy testing of previous distances")
     private class ScaleBackwardMacro2 extends StatefulCoordinator {
         public ScaleBackwardMacro2() {
             super(ScaleBackwardMacro2.class);
@@ -645,6 +648,7 @@ public class AutonomousMode extends Coordinator {
         }
     }
     
+    @Unreal("Old legacy testing")
     private class SideLeftMacro extends StatefulCoordinator {
         public SideLeftMacro() {
             super(SideLeftMacro.class);
@@ -659,6 +663,7 @@ public class AutonomousMode extends Coordinator {
     }
     
     /* Debug */
+    @Unreal("Old legacy testing kept for debugging purposes")
     private class SimultaneousMacro extends StatefulCoordinator {
     	public SimultaneousMacro() {
     		super(SimultaneousMacro.class);
@@ -670,6 +675,7 @@ public class AutonomousMode extends Coordinator {
     	}
     }
     
+    @Unreal("Old legacy testing kept for debugging purposes")
     private class BalancedLeftTurnMacro extends StatefulCoordinator {
     	public BalancedLeftTurnMacro() {
     		super(BalancedLeftTurnMacro.class);
@@ -680,6 +686,7 @@ public class AutonomousMode extends Coordinator {
     	}
     }
     
+    @Unreal("Old legacy testing")
     private class SweptLeftTurnMacro extends StatefulCoordinator {
     	public SweptLeftTurnMacro() {
     		super(SweptLeftTurnMacro.class);
@@ -687,6 +694,7 @@ public class AutonomousMode extends Coordinator {
     	}
     }
     
+    @Unreal("Old legacy testing")
     private class BalancedSweptLeftTurnMacro extends StatefulCoordinator {
     	public BalancedSweptLeftTurnMacro() {
     		super(BalancedSweptLeftTurnMacro.class);
@@ -697,6 +705,7 @@ public class AutonomousMode extends Coordinator {
     	}
     }
     
+    @Unreal("Old legacy testing")
     private class BalancedRightTurnMacro extends StatefulCoordinator {
     	public BalancedRightTurnMacro() {
     		super(BalancedRightTurnMacro.class);
@@ -708,13 +717,14 @@ public class AutonomousMode extends Coordinator {
     	}
     }
     
+    @Unreal("Old legacy testing")
     private class SweptRightTurnMacro extends StatefulCoordinator {
     	public SweptRightTurnMacro() {
     		super(SweptRightTurnMacro.class);
     		addState("Sweep 6 feet forward, 90 Right", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, 72), AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, 90)));
     	}
     }
-    
+    @Unreal("Old legacy testing")
     private class BalancedSweptRightTurnMacro extends StatefulCoordinator {
     	public BalancedSweptRightTurnMacro() {
     		super(BalancedSweptRightTurnMacro.class);
