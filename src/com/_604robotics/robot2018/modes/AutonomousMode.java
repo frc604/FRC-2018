@@ -16,6 +16,7 @@ import com._604robotics.robotnik.prefabs.coordinators.StatefulCoordinator;
 import com._604robotics.robotnik.prefabs.flow.Pulse;
 import com._604robotics.robotnik.prefabs.flow.SmartTimer;
 import com._604robotics.robotnik.utils.AutonMovement;
+import com._604robotics.robotnik.utils.annotations.Unreal;
 
 import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.PIDOutput;
@@ -105,6 +106,9 @@ public class AutonomousMode extends Coordinator {
                 break;
             case SCALE_BACKWARD_2:
                 selectedModeMacro = new ScaleBackwardMacro2();
+                break;
+            case NEW_SCALE_BACKWARD:
+                selectedModeMacro = new NewScaleBackwardMacro();
                 break;
             case SCALE_OPPOSITE:
                 selectedModeMacro = new ScaleOppositeMacroLeft();
@@ -580,6 +584,7 @@ public class AutonomousMode extends Coordinator {
         }
     }
     
+    @Unreal("Old legacy testing of previous distances")
     private class ScaleBackwardMacro extends StatefulCoordinator {
         public ScaleBackwardMacro() {
             super(ScaleBackwardMacro.class);
@@ -593,6 +598,7 @@ public class AutonomousMode extends Coordinator {
         }
     }
     
+    @Unreal("Old legacy testing of previous distances")
     private class ScaleBackwardMacro2 extends StatefulCoordinator {
         public ScaleBackwardMacro2() {
             super(ScaleBackwardMacro2.class);
@@ -610,9 +616,11 @@ public class AutonomousMode extends Coordinator {
     		addStates(new IntakeMacro());
     		addState("Set Elevator Persistent", new ElevatorSetPersistent(Calibration.ELEVATOR_MID_TARGET));
             addState("Backward 262 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(262+1)), 0));
-            addState("Set Arm Persistent", new ArmSetPersistent(Calibration.ARM_MID_TARGET));
+            addState("Set Arm Persistent", new ArmSetPersistent(Calibration.ARM_BALANCE_TARGET));
+            addState("Sleep 0.5 seconds", new SleepCoordinator(0.5));
             addState("Rotate 35 right", new ArcadePIDCoordinator(0, AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, 35)));
             addState("Set Arm High Persistent", new ArmSetPersistent(Calibration.ARM_HIGH_TARGET));
+            addState("Sleep 1 second", new SleepCoordinator(1));
             addState("Eject cube", new IntakeMove(-1,1));
             addState("Retract arm", new ArmMove(Calibration.ARM_LOW_TARGET, 0.7));
             addState("Retract elevator", new ElevatorMove(Calibration.ELEVATOR_LOW_TARGET, 0.7));
@@ -624,16 +632,23 @@ public class AutonomousMode extends Coordinator {
         public ScaleOppositeMacroLeft() {
             super(ScaleOppositeMacroLeft.class);
             addStates(new IntakeMacro());
+            addState("Set Elevator Persistent", new ElevatorSetPersistent(Calibration.ELEVATOR_MID_TARGET));
             addState("Backward 227 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(227+1)), 0));
-            // rotate 90 right
+            addState("Set Arm Persistent", new ArmSetPersistent(Calibration.ARM_BALANCE_TARGET));
+            addState("Sleep 0.5 seconds", new SleepCoordinator(0.5));
             addState("Rotate 90 left", new ArcadePIDCoordinator(0, AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, -100)));
             addState("Forward 176 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, (176+1)), 0));
             addState("Rotate 90 right", new ArcadePIDCoordinator(0, AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, 90)));
+            addState("Set Arm High Persistent", new ArmSetPersistent(Calibration.ARM_HIGH_TARGET));
             addState("Backward 27 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(27+1)), 0));
-            addStates(new ScaleEjectMacro());
+            addState("Eject cube", new IntakeMove(-1,1));
+            addState("Retract arm", new ArmMove(Calibration.ARM_LOW_TARGET, 0.7));
+            addState("Retract elevator", new ElevatorMove(Calibration.ELEVATOR_LOW_TARGET, 0.7));
+            addState("Unclamp", new ClampExtend());
         }
     }
     
+    @Unreal("Old legacy testing")
     private class SideLeftMacro extends StatefulCoordinator {
         public SideLeftMacro() {
             super(SideLeftMacro.class);
@@ -648,6 +663,7 @@ public class AutonomousMode extends Coordinator {
     }
     
     /* Debug */
+    @Unreal("Old legacy testing kept for debugging purposes")
     private class SimultaneousMacro extends StatefulCoordinator {
     	public SimultaneousMacro() {
     		super(SimultaneousMacro.class);
@@ -659,49 +675,63 @@ public class AutonomousMode extends Coordinator {
     	}
     }
     
+    @Unreal("Old legacy testing kept for debugging purposes")
     private class BalancedLeftTurnMacro extends StatefulCoordinator {
     	public BalancedLeftTurnMacro() {
     		super(BalancedLeftTurnMacro.class);
-    		addState("Set Arm Persistent", new ArmSetPersistent(Calibration.ARM_MIN_SPEED));
-    		addState("Rotate 90 left", new ArcadePIDCoordinator(0, AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, -100)));
+    		addState("Set Arm Persistent", new ArmSetPersistent(Calibration.ARM_BALANCE_TARGET));
+            addState("Sleep 0.5 seconds", new SleepCoordinator(0.5));
+    		addState("Rotate 90 left", new ArcadePIDCoordinator(0, AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, -90)));
+            addState("Retract arm", new ArmMove(Calibration.ARM_LOW_TARGET, 0.7));
     	}
     }
     
+    @Unreal("Old legacy testing")
     private class SweptLeftTurnMacro extends StatefulCoordinator {
     	public SweptLeftTurnMacro() {
     		super(SweptLeftTurnMacro.class);
-    		addState("Sweep 3 feet forward, 90 left", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, 36), AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, -100)));
+    		addState("Sweep 3 feet forward, 90 left", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, 72), AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, -90)));
     	}
     }
     
+    @Unreal("Old legacy testing")
     private class BalancedSweptLeftTurnMacro extends StatefulCoordinator {
     	public BalancedSweptLeftTurnMacro() {
     		super(BalancedSweptLeftTurnMacro.class);
-    		addState("Set Arm Persistent", new ArmSetPersistent(Calibration.ARM_MIN_SPEED));
-    		addState("Sweep 3 feet forward, 90 left", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, 36), AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, -100)));
+    		addState("Set Arm Persistent", new ArmSetPersistent(Calibration.ARM_BALANCE_TARGET));
+            addState("Sleep 0.5 seconds", new SleepCoordinator(0.5));
+    		addState("Sweep 3 feet forward, 90 left", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, 72), AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, -90)));
+            addState("Retract arm", new ArmMove(Calibration.ARM_LOW_TARGET, 0.7));
     	}
     }
     
+    @Unreal("Old legacy testing")
     private class BalancedRightTurnMacro extends StatefulCoordinator {
     	public BalancedRightTurnMacro() {
     		super(BalancedRightTurnMacro.class);
-    		addState("Set Arm Persistent", new ArmSetPersistent(Calibration.ARM_MIN_SPEED));
-    		addState("Rotate 90 Right", new ArcadePIDCoordinator(0, AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, -100)));
+    		addState("Set Arm Persistent", new ArmSetPersistent(Calibration.ARM_BALANCE_TARGET));
+            addState("Sleep 0.5 seconds", new SleepCoordinator(0.5));
+    		addState("Rotate 90 Right", new ArcadePIDCoordinator(0, AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, 90)));
+            addState("Retract arm", new ArmMove(Calibration.ARM_LOW_TARGET, 0.7));
+
     	}
     }
     
+    @Unreal("Old legacy testing")
     private class SweptRightTurnMacro extends StatefulCoordinator {
     	public SweptRightTurnMacro() {
     		super(SweptRightTurnMacro.class);
-    		addState("Sweep 3 feet forward, 90 Right", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, 36), AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, -100)));
+    		addState("Sweep 6 feet forward, 90 Right", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, 72), AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, 90)));
     	}
     }
-    
+    @Unreal("Old legacy testing")
     private class BalancedSweptRightTurnMacro extends StatefulCoordinator {
     	public BalancedSweptRightTurnMacro() {
     		super(BalancedSweptRightTurnMacro.class);
-    		addState("Set Arm Persistent", new ArmSetPersistent(Calibration.ARM_MIN_SPEED));
-    		addState("Sweep 3 feet forward, 90 Right", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, 36), AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, -100)));
+    		addState("Set Arm Persistent", new ArmSetPersistent(Calibration.ARM_BALANCE_TARGET));
+            addState("Sleep 0.5 seconds", new SleepCoordinator(0.5));
+    		addState("Sweep 6 feet forward, 90 Right", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, 72), AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, 100)));
+            addState("Retract arm", new ArmMove(Calibration.ARM_LOW_TARGET, 0.7));
     	}
     }
     
