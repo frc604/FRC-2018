@@ -46,6 +46,7 @@ public class Dashboard extends DashboardModule {
         SCALE_BACKWARD_2,
         SCALE_OPPOSITE,
         APPENDAGE_TEST,
+        PERSISTENCE_TEST,
     }
     
     public enum DriveMode {

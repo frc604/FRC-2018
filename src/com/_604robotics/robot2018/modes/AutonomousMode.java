@@ -110,6 +110,9 @@ public class AutonomousMode extends Coordinator {
             case SCALE_OPPOSITE:
                 selectedModeMacro = new ScaleOppositeMacroLeft();
                 break;
+            case PERSISTENCE_TEST:
+            	selectedModeMacro = new SimultaneousMacro();
+            	break;
             default:
                 selectedModeMacro = null;
                 break;
@@ -200,6 +203,41 @@ public class AutonomousMode extends Coordinator {
     	}
     }
     
+    protected final class ElevatorSetPersistent extends Coordinator {
+    	private Elevator.SetPersistent autonElevatorSetPersistent;
+    	private double setpoint;
+    	private boolean sent;
+    	
+    	public ElevatorSetPersistent(double clicks) {
+    		setpoint = clicks;
+    		autonElevatorSetPersistent = robot.elevator.new SetPersistent(setpoint);
+    		sent = false;
+    	}
+    	
+    	@Override
+    	public void begin() {
+    		autonElevatorSetPersistent.activate();
+    		sent = false;
+    	}
+    	
+    	@Override
+    	public boolean run() {
+    		if( sent ) {
+    			return false;
+    		} else {
+    			sent = true;
+        		autonElevatorSetPersistent.activate();
+        		return true;
+    		}
+    	}
+    	
+    	@Override
+    	public void end() {
+    		// Do nothing
+    	}
+    	
+    }
+    
     protected final class ElevatorMove extends Coordinator {
     	private Elevator.Setpoint autonElevator;
     	private SmartTimer timeElapsed = new SmartTimer();
@@ -215,12 +253,6 @@ public class AutonomousMode extends Coordinator {
     	 @Override
          public void begin() {
              autonElevator.activate();
-             try {
-                Thread.sleep(10);
-            } catch (InterruptedException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
              timeElapsed.start();
          }
          
@@ -250,11 +282,6 @@ public class AutonomousMode extends Coordinator {
         
         @Override
         public void begin() {
-            try {
-                Thread.sleep(5);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
             autonArm.activate();
             timeElapsed.start();
         }
@@ -475,6 +502,16 @@ public class AutonomousMode extends Coordinator {
         }
     }
     
+    private class SimultaneousMacro extends StatefulCoordinator {
+    	public SimultaneousMacro() {
+    		super(SimultaneousMacro.class);
+    		addState("Intake cube", new IntakeMacro());
+    		addState("Set Persistent", new ElevatorSetPersistent(Calibration.ELEVATOR_HIGH_TARGET));
+    		addState("Sleep 3 seconds", new SleepCoordinator(3));
+    		addState("Eject cube", new IntakeMove(-0.5, 1));
+    	}
+    }
+    
     private class IntakeMacro extends StatefulCoordinator {
         public IntakeMacro() {
             super(IntakeMacro.class);
@@ -575,7 +612,7 @@ public class AutonomousMode extends Coordinator {
         public DemoStateMacro() {
             super(DemoStateMacro.class);
             addStates(new IntakeMacro());
-            addState("Forward and Arm", new SimultaneousCoordinator(
+            addState("Forward and Elevator", new SimultaneousCoordinator(
                     new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, 140+1), 0),
                     new ElevatorMove(Calibration.ELEVATOR_MID_TARGET,7)
                     ));

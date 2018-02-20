@@ -17,6 +17,8 @@ public class Elevator extends Module {
     private WPI_TalonSRX motorB = new WPI_TalonSRX(Ports.ELEVATOR_MOTOR_B);
     public TalonPWMEncoder encoder = new TalonPWMEncoder(motorA);
 
+    public double persistent = 0;
+    
     public final Setpoint setpoint = new Setpoint();
 
     public final Output<Double> encoderRate = addOutput("Elevator Rate", encoder::getVelocity);
@@ -57,6 +59,11 @@ public class Elevator extends Module {
         }
 
         @Override
+        public void begin() {
+        	setDefaultAction(setpoint);
+        }
+        
+        @Override
         public void run () {
             holding = false;
             power = liftPower.get();
@@ -80,6 +87,7 @@ public class Elevator extends Module {
         public void begin() {
             pid.enable();
             holding = false;
+            setDefaultAction(setpoint);
         }
         @Override
         public void run () {
@@ -91,6 +99,44 @@ public class Elevator extends Module {
         }
     }
 
+    public class SetPersistent extends Action {
+        public final Input<Double> target_clicks;
+    	
+    	public SetPersistent(double target) {
+    		super(Elevator.this, PersistentSetpoint.class);
+    		target_clicks = addInput("Persistent Setpoint", target, true);
+    	}
+    	
+    	@Override
+    	public void begin() {
+    		persistent = target_clicks.get();
+    		setDefaultAction(persistentSetpoint);
+    	}
+    }
+    
+    public PersistentSetpoint persistentSetpoint = new PersistentSetpoint();
+    
+    public class PersistentSetpoint extends Action {
+    	public PersistentSetpoint() {
+    		super(Elevator.this, PersistentSetpoint.class);
+    	}
+    	
+    	@Override
+    	public void begin() {
+    		pid.enable();
+    	}
+    	
+    	@Override
+    	public void run() {
+    		pid.setSetpoint(persistent);
+    	}
+    	
+    	@Override
+    	public void end() {
+    		pid.disable();
+    	}
+    }
+    
     public Elevator() {
         super(Elevator.class);
         encoder.setInverted(false);
