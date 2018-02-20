@@ -18,10 +18,8 @@ public class Robot2018 extends Robot {
     public final Camera camera = addModule(new Camera());
     //public final PowerMonitor powermonitor = addModule(new PowerMonitor(Ports.PDP_MODULE, Ports.COMPRESSOR));
     
-    public Robot2018() {
-        setAutonomousMode(new AutonomousMode(this));
-        setTeleopMode(new TeleopMode(this));
-                
-        addSystem(DashboardSystem.class, new DashboardSystem(this));
-    }
+    public final DashboardSystem dashboardSystem = addSystem(DashboardSystem.class, new DashboardSystem(this));
+
+    public final TeleopMode teleopMode = setTeleopMode(new TeleopMode(this));
+    public final AutonomousMode autonomousMode = setAutonomousMode(new AutonomousMode(this));
 }
