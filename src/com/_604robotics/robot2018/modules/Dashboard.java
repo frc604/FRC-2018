@@ -40,6 +40,7 @@ public class Dashboard extends DashboardModule {
         DEMO_NEW_AUTON,
         FORWARD_SWITCH,
         SIDE_LEFT_SWITCH,
+        SWITCH_FORWARD,
         APPENDAGE_TEST,
     }
     

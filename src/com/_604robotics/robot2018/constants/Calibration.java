@@ -15,14 +15,14 @@ public class Calibration {
     public static final double DRIVE_MOVE_PID_I = 0;
     public static final double DRIVE_MOVE_PID_D = 0.00;
     public static final double DRIVE_MOVE_PID_MAX = 0.5;
-    public static final double DRIVE_MOVE_TOLERANCE = 50;
+    public static final double DRIVE_MOVE_TOLERANCE = 100;
 
     // Rotate PID is now calibrated-don't touch
-    public static final double DRIVE_ROTATE_PID_P = 0.01;
+    public static final double DRIVE_ROTATE_PID_P = 0.003; // 0.005 / 0.01
     public static final double DRIVE_ROTATE_PID_I = 0;
-    public static final double DRIVE_ROTATE_PID_D = 0.005;
-    public static final double DRIVE_ROTATE_PID_MAX = 0.4;// was 0.5
-    public static final double DRIVE_ROTATE_TOLERANCE = 50;
+    public static final double DRIVE_ROTATE_PID_D = 0.00; // 0.005
+    public static final double DRIVE_ROTATE_PID_MAX = 0.3;// was 0.5
+    public static final double DRIVE_ROTATE_TOLERANCE = 100;
 
     public static final double DRIVE_PID_AFTER_TIMING = 1;
     public static final double DRIVE_PID_SAMPLE_RATE = 0.01;
@@ -47,9 +47,9 @@ public class Calibration {
     
     // Testing targets
     public static final double DRIVE_ROTATE_LEFT_TARGET
-    = AutonMovement.degreesToClicks(DRIVE_PROPERTIES, -90);
+    = AutonMovement.degreesToClicks(DRIVE_PROPERTIES, -180);
     public static final double DRIVE_ROTATE_RIGHT_TARGET
-    = AutonMovement.degreesToClicks(DRIVE_PROPERTIES, 90);
+    = AutonMovement.degreesToClicks(DRIVE_PROPERTIES, 180);
     public static final double DRIVE_MOVE_FORWARD_TARGET
     = AutonMovement.inchesToClicks(DRIVE_PROPERTIES, 72);
     public static final double DRIVE_MOVE_BACKWARD_TARGET

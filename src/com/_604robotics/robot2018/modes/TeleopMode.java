@@ -163,6 +163,8 @@ public class TeleopMode extends Coordinator {
         manipB = manip.buttons.b.get();
         manipX = manip.buttons.x.get();
         manipY = manip.buttons.y.get();
+        /*System.out.println("driverLeftY: "+driverLeftJoystickY+", driverRightX"+driverRightJoystickX
+                +", driverRightY"+driverRightJoystickY);*/
     }
     
     private void process() {
