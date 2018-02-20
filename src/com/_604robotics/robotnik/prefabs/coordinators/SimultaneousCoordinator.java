@@ -61,6 +61,7 @@ public class SimultaneousCoordinator extends Coordinator {
     			if( !stopped.get(f) ) {
     				stopped.set(f, true);
     				coordinators.get(f).stop();
+    				System.out.println("Stopped "+coordinators.get(f).toString());
     				stoppedState = true;
     				break;
     			}
@@ -68,6 +69,7 @@ public class SimultaneousCoordinator extends Coordinator {
     	} else if( finishedStarting ) {
     		int modulatedIndex = index%coordinators.size();
     		fullCycle |= coordinators.get(modulatedIndex).execute();
+    		System.out.println("Executed " + coordinators.get(modulatedIndex).toString());
     		if( !(modulatedIndex == coordinators.size()-1 && !fullCycle) ) {
     			fullCycle = false;
     			currentState = true;
@@ -79,6 +81,7 @@ public class SimultaneousCoordinator extends Coordinator {
     			if( !started.get(f) ) {
     				started.set(f, true);
     				coordinators.get(f).start();
+    				System.out.println("Started " + coordinators.get(f).toString());
     				break;
     			}
     		}
