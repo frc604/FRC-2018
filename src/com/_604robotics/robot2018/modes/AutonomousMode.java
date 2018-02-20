@@ -98,6 +98,9 @@ public class AutonomousMode extends Coordinator {
             case SWITCH_FORWARD:
                 selectedModeMacro = new SwitchForwardMacro();
                 break;
+            case SCALE_FORWARD:
+                selectedModeMacro = new ScaleForwardMacro();
+                break;
             default:
                 selectedModeMacro = null;
                 break;
@@ -464,6 +467,7 @@ public class AutonomousMode extends Coordinator {
     private class SwitchEjectMacro extends StatefulCoordinator {
         public SwitchEjectMacro() {
             super(SwitchEjectMacro.class);
+            addState("Move elevator", new ElevatorMove(Calibration.ELEVATOR_BUMPER_CLEAR, 1));
             addState("Move arm", new ArmMove(Calibration.ARM_MID_TARGET, 1.5));
             addState("Eject cube", new IntakeMove(-0.5,1));
             addState("Move arm", new ArmMove(Calibration.ARM_LOW_TARGET, 0.5));
@@ -471,29 +475,61 @@ public class AutonomousMode extends Coordinator {
         }
     }
 
-    private class DemoStateMacro extends StatefulCoordinator {
-        public DemoStateMacro() {
-            super(DemoStateMacro.class);
+    private class SwitchForwardMacro extends StatefulCoordinator {
+        public SwitchForwardMacro() {
+            super(SwitchForwardMacro.class);
             addStates(new IntakeMacro());
             addState("Forward 12 feet", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, 12*12+1), 0));
             addState("Sleep 0.5 seconds", new SleepCoordinator(0.5));
             addStates(new SwitchEjectMacro());
-            addState("Rotate 180 left", new ArcadePIDCoordinator(0,AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, -180)));
-            addState("Sleep 0.5 seconds", new SleepCoordinator(0.5));
-            addState("Forward 12 feet", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, 12*12+1), 0));
+            //addState("Rotate 180 left", new ArcadePIDCoordinator(0,AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, -180)));
+            //addState("Sleep 0.5 seconds", new SleepCoordinator(0.5));
+            //addState("Forward 12 feet", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, 12*12+1), 0));
         }
     }
     
-    private class SwitchForwardMacro extends StatefulCoordinator {
-        public SwitchForwardMacro() {
-            super(SwitchForwardMacro.class);
+    private class ScaleForwardMacro extends StatefulCoordinator {
+        public ScaleForwardMacro() {
+            super(ScaleForwardMacro.class);
+            addStates(new IntakeMacro());
+            // backward 310
+            addState("Backward 310 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(310+1)), 0));
+            // rotate 90 right
+            addState("Rotate 90 right", new ArcadePIDCoordinator(0, AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, 90)));
+            // Eject
+            addState("Move elevator", new ElevatorMove(Calibration.ELEVATOR_BUMPER_CLEAR, 0.5));
+            addState("Move arm", new ArmMove(Calibration.ARM_HIGH_TARGET, 1.5));
+            addState("Eject cube", new IntakeMove(-1,1));
+            addState("Move arm", new ArmMove(Calibration.ARM_LOW_TARGET, 0.7));
+            addState("Unclamp", new ClampExtend());
+        }
+    }
+    
+    private class ScaleForwardMacro2 extends StatefulCoordinator {
+        public ScaleForwardMacro2() {
+            super(ScaleForwardMacro2.class);
+            addStates(new IntakeMacro());
+            addState("Backward 240 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(240+1)), 0));
+            addState("Rotate 30 right", new ArcadePIDCoordinator(0, AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, 30)));
+            // Eject
+            addState("Move elevator", new ElevatorMove(Calibration.ELEVATOR_BUMPER_CLEAR, 0.5));
+            addState("Move arm", new ArmMove(Calibration.ARM_HIGH_TARGET, 1.5));
+            addState("Eject cube", new IntakeMove(-1,1));
+            addState("Move arm", new ArmMove(Calibration.ARM_LOW_TARGET, 0.7));
+            addState("Unclamp", new ClampExtend());
+        }
+    }
+    
+    private class DemoStateMacro extends StatefulCoordinator {
+        public DemoStateMacro() {
+            super(DemoStateMacro.class);
             addStates(new IntakeMacro());
             addState("Forward and Arm", new SimultaneousCoordinator(
                     new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, 140+1), 0),
                     new ElevatorMove(Calibration.ELEVATOR_MID_TARGET,7)
                     ));
             addState("Eject cube", new IntakeMove(-0.5,1));
-            addState("Move arm", new ArmMove(Calibration.ARM_LOW_TARGET, 0.5));
+            //addState("Move arm", new ArmMove(Calibration.ARM_LOW_TARGET, 0.5));
             addState("Unclamp", new ClampExtend());
             //addState("Sleep 0.5 seconds", new SleepCoordinator(0.5));
             //addStates(new SwitchEjectMacro());

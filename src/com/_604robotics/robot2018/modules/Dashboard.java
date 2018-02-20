@@ -41,6 +41,7 @@ public class Dashboard extends DashboardModule {
         FORWARD_SWITCH,
         SIDE_LEFT_SWITCH,
         SWITCH_FORWARD,
+        SCALE_FORWARD,
         APPENDAGE_TEST,
     }
     
