@@ -92,7 +92,7 @@ public class AutonomousMode extends Coordinator {
                 selectedModeMacro = new SideLeftMacro();
                 break;
             case APPENDAGE_TEST:
-                selectedModeMacro = new ElevatorMove(8000);
+                selectedModeMacro = new IntakeMacro();
                 break;
             default:
                 selectedModeMacro = null;
@@ -442,10 +442,20 @@ public class AutonomousMode extends Coordinator {
             addState("ArcadePID",controller);
         }
     }
+    
+    private class IntakeMacro extends StatefulCoordinator {
+        public IntakeMacro() {
+            super(IntakeMacro.class);
+            addState("Intake cube", new IntakeMove(0.5,1));
+            addState("Sleep 0.25 seconds", new SleepCoordinator(0.25));
+            addState("Clamp cube", new ClampRetract());
+        }
+    }
 
     private class DemoStateMacro extends StatefulCoordinator {
         public DemoStateMacro() {
             super(DemoStateMacro.class);
+            addStates(new IntakeMacro());
             addState("Forward 12 feet", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, 12*12+1), 0));
             //addState("Sleep 0.5 seconds", new SleepCoordinator(0.5));
             addState("Rotate 180 right", new ArcadePIDCoordinator(0,AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, 180)));
