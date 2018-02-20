@@ -132,4 +132,4 @@ build.xml
 
 # IntelliJ IDEA
 .idea/
-FRC-2018.iml
+*.iml
