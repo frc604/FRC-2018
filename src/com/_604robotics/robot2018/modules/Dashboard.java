@@ -33,14 +33,18 @@ public class Dashboard extends DashboardModule {
     
     public enum AutonMode {
         OFF,
+        // Following are actual strategy selections
         CENTER_SWITCH,
         LEFT_SCALE,
         RIGHT_SCALE,
+        // Calibration autons to verify angles and distances
         ROTATE_LEFT_TEST,
         ROTATE_RIGHT_TEST,
         FORWARD_6,
         BACKWARD_6,
+        // Demo auton into which arbitrary stuff can be stashed for testing
         DEMO_NEW_AUTON,
+        // Remnants of various tests
         FORWARD_SWITCH,
         CENTER_SWITCH_LEFT,
         CENTER_SWITCH_RIGHT,
@@ -50,7 +54,6 @@ public class Dashboard extends DashboardModule {
         NEW_SCALE_BACKWARD,
         SCALE_OPPOSITE,
         SWERVE_SCALE_OPPOSITE_LEFT,
-        PERSISTENCE_TEST,
         BALANCED_LEFT_TURN_TEST,
         SWEPT_LEFT_TURN_TEST,
         BALANCED_SWEPT_LEFT_TURN_TEST,

@@ -32,7 +32,6 @@ public class AutonomousMode extends Coordinator {
     private final Coordinator forwardStateMacro;
     private final Coordinator forwardSwitchMacro;
     private final Coordinator backwardStateMacro;
-    private final Coordinator kinematicFallback;
 
     private Coordinator selectedModeMacro;
 
@@ -48,25 +47,6 @@ public class AutonomousMode extends Coordinator {
         forwardSwitchMacro = new ArcadePIDStateMacro(Calibration.DRIVE_MOVE_FORWARD_SWITCH_INCHES, 0);
         backwardStateMacro = new ArcadePIDStateMacro(Calibration.DRIVE_MOVE_BACKWARD_TARGET,
                 Calibration.DRIVE_ROTATE_STILL_TARGET);
-        kinematicFallback =new ArcadeTimedDriveMacro(robot) {{
-            
-        }
-
-        @Override
-        protected double getMovePower() {
-            return Calibration.DRIVE_MOVE_PID_MAX;
-        }
-
-        @Override
-        protected double getRotatePower() {
-            return 0;
-        }
-
-        @Override
-        protected double getTime() {
-        	// TODO: change to a calibration value
-            return 5;
-        }};
     }
 
     @Override
@@ -123,9 +103,6 @@ public class AutonomousMode extends Coordinator {
             case SCALE_OPPOSITE:
                 selectedModeMacro = new ScaleOppositeMacroLeft();
                 break;
-            case PERSISTENCE_TEST:
-            	selectedModeMacro = new SimultaneousMacro();
-            	break;
             case BALANCED_LEFT_TURN_TEST:
             	selectedModeMacro = new BalancedLeftTurnMacro();
             	break;
@@ -144,9 +121,10 @@ public class AutonomousMode extends Coordinator {
             case BALANCED_SWEPT_RIGHT_TURN_TEST:
             	selectedModeMacro = new BalancedSweptRightTurnMacro();
             	break;
-            default:
+            case OFF:
                 selectedModeMacro = null;
                 break;
+            // DO NOT ADD A DEFAULT CASE SO THAT ECLIPSE WILL THROW A PROPER WARNING!
         }
 
         if (selectedModeMacro != null) {
