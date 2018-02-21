@@ -216,7 +216,7 @@ public class TeleopMode extends Coordinator {
     			setpoint.activate();
     			getHoldArmClicks = true;
     		} else if( manipB ) {
-    		    if (driverLeftJoystickButton) {
+    		    if (manipLeftBumper) {
     		        setpoint.target_clicks.set(Calibration.ARM_HIGH_TARGET);
     		    } else {
     		        setpoint.target_clicks.set(Calibration.ARM_MID_TARGET);
@@ -232,7 +232,7 @@ public class TeleopMode extends Coordinator {
     			setpoint.activate();
     			getHoldArmClicks = true;
     		} else if( driverB ) {
-                if (manipLeftBumper) {
+                if (driverLeftJoystickButton) {
                     setpoint.target_clicks.set(Calibration.ARM_HIGH_TARGET);
                 } else {
                     setpoint.target_clicks.set(Calibration.ARM_MID_TARGET);
@@ -271,7 +271,7 @@ public class TeleopMode extends Coordinator {
     		if( driverLeftTrigger != 0 || driverRightTrigger != 0 ) {
     			double output = 0;
     			if( driverLeftTrigger != 0 ) {
-    				output = -(driverLeftTrigger*driverLeftTrigger);
+    				output = -0.7*(driverLeftTrigger*driverLeftTrigger);
     			} else if( driverRightTrigger != 0 ) {
     				output = driverRightTrigger;
     			}
@@ -280,7 +280,7 @@ public class TeleopMode extends Coordinator {
     		} else if( manipLeftTrigger != 0 || manipRightTrigger != 0 ) {
     			double output = 0;
     		    if( manipLeftTrigger != 0 ) {
-    		    	output = -(manipLeftTrigger*manipLeftTrigger);
+    		    	output = -0.7*(manipLeftTrigger*manipLeftTrigger);
     		    } else if( manipRightTrigger != 0 ) {
     		    	output = manipRightTrigger;
     		    }
