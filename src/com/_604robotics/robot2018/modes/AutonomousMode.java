@@ -75,6 +75,12 @@ public class AutonomousMode extends Coordinator {
 	        case CENTER_SWITCH:
 	        	selectedModeMacro = new CenterSwitchMacro();
 	        	break;
+	        case LEFT_SCALE:
+	        	selectedModeMacro = new LeftScaleMacro();
+	        	break;
+	        case RIGHT_SCALE:
+	        	selectedModeMacro = new RightScaleMacro();
+	        	break;
             case ROTATE_LEFT_TEST:
                 selectedModeMacro = rotateLeftStateMacro;
                 break;
@@ -112,7 +118,7 @@ public class AutonomousMode extends Coordinator {
                 selectedModeMacro = new ScaleBackwardMacro2();
                 break;
             case NEW_SCALE_BACKWARD:
-                selectedModeMacro = new NewScaleBackwardMacro();
+                selectedModeMacro = new NewScaleBackwardMacroLeft();
                 break;
             case SCALE_OPPOSITE:
                 selectedModeMacro = new ScaleOppositeMacroLeft();
@@ -556,6 +562,22 @@ public class AutonomousMode extends Coordinator {
     	}
     }
     
+    private class LeftScaleMacro extends SwitchCoordinator {
+    	public LeftScaleMacro() {
+    		super(LeftScaleMacro.class);
+    		addCase(new String[]{"LLL", "LLR", "RLL", "RLR"}, new NewScaleBackwardMacroLeft());
+    		addCase(new String[]{"LRL", "LRR", "RRL", "RRR"}, new SwerveScaleOppositeMacroLeft());
+    	}
+    }
+    
+    private class RightScaleMacro extends SwitchCoordinator {
+    	public RightScaleMacro() {
+    		super(RightScaleMacro.class);
+    		addCase(new String[]{"LLL", "LLR", "RLL", "RLR"}, new SwerveScaleOppositeMacroRight());
+    		addCase(new String[]{"LRL", "LRR", "RRL", "RRR"}, new NewScaleBackwardMacroRight());
+    	}
+    }
+    
     /* Auton Modes */
     private class SwitchForwardMacro extends StatefulCoordinator {
         public SwitchForwardMacro() {
@@ -624,9 +646,9 @@ public class AutonomousMode extends Coordinator {
         }
     }
     
-    private class NewScaleBackwardMacro extends StatefulCoordinator {
-    	public NewScaleBackwardMacro() {
-    		super(NewScaleBackwardMacro.class);
+    private class NewScaleBackwardMacroLeft extends StatefulCoordinator {
+    	public NewScaleBackwardMacroLeft() {
+    		super(NewScaleBackwardMacroLeft.class);
     		addStates(new IntakeMacro());
     		addState("Set Elevator Persistent", new ElevatorSetPersistent(Calibration.ELEVATOR_MID_TARGET));
             addState("Backward 262 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(262+1)), 0));
@@ -642,6 +664,26 @@ public class AutonomousMode extends Coordinator {
             addState("Unclamp", new ClampExtend());
     	}
     }
+    
+    private class NewScaleBackwardMacroRight extends StatefulCoordinator {
+    	public NewScaleBackwardMacroRight() {
+    		super(NewScaleBackwardMacroRight.class);
+    		addStates(new IntakeMacro());
+    		addState("Set Elevator Persistent", new ElevatorSetPersistent(Calibration.ELEVATOR_MID_TARGET));
+            addState("Backward 262 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(262+1)), 0));
+            addState("Set Arm Persistent", new ArmSetPersistent(Calibration.ARM_BALANCE_TARGET));
+            addState("Sleep 0.5 seconds", new SleepCoordinator(0.5));
+            addState("Rotate 35 left", new ArcadePIDCoordinator(0, AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, -35)));
+            addState("Set Arm High Persistent", new ArmSetPersistent(Calibration.ARM_HIGH_TARGET));
+            addState("Sleep 1 second", new SleepCoordinator(1.5));
+            addState("Eject cube", new IntakeMove(-1,0.5));
+            addState("Retract arm", new ArmSetPersistent(Calibration.ARM_LOW_TARGET));
+            addState("Retract elevator", new ElevatorSetPersistent(Calibration.ELEVATOR_LOW_TARGET));
+            addState("Wait for arm", new SleepCoordinator(0.7));
+            addState("Unclamp", new ClampExtend());
+    	}
+    }
+    
     
     @Unreal("Old legacy code without swerve")
     private class ScaleOppositeMacroLeft extends StatefulCoordinator {
@@ -677,6 +719,28 @@ public class AutonomousMode extends Coordinator {
             //addState("Rotate 90 left", new ArcadePIDCoordinator(0, AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, -100)));
             addState("Backward 130 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(130+1)), 0));
             addState("Rotate 90 left", new ArcadePIDCoordinator(0, AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, -90)));
+            addState("Set Arm High Persistent", new ArmSetPersistent(Calibration.ARM_HIGH_TARGET));
+            addState("Backward 27 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(27+1)), 0));
+            addState("Eject cube", new IntakeMove(-1,0.25));
+            addState("Retract arm", new ArmSetPersistent(Calibration.ARM_LOW_TARGET));
+            addState("Retract elevator", new ElevatorSetPersistent(Calibration.ELEVATOR_LOW_TARGET));
+            addState("Unclamp", new ClampExtend());
+            addState("Wait for reset", new SleepCoordinator(0.7));
+        }
+    }
+    
+    private class SwerveScaleOppositeMacroRight extends StatefulCoordinator {
+        public SwerveScaleOppositeMacroRight() {
+            super(SwerveScaleOppositeMacroRight.class);
+            addStates(new IntakeMacro());
+            addState("Set Elevator Persistent", new ElevatorSetPersistent(Calibration.ELEVATOR_MID_TARGET));
+            addState("Backward 149 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(149+1)), 0));
+            addState("Set Arm Persistent", new ArmSetPersistent(Calibration.ARM_BALANCE_TARGET));
+            //addState("Sleep 0.5 seconds", new SleepCoordinator(0.5));
+            addState("Sweep 6 feet backwards, 90 right", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, 72), AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, 90)));
+            //addState("Rotate 90 left", new ArcadePIDCoordinator(0, AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, -100)));
+            addState("Backward 130 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(130+1)), 0));
+            addState("Rotate 90 right", new ArcadePIDCoordinator(0, AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, 90)));
             addState("Set Arm High Persistent", new ArmSetPersistent(Calibration.ARM_HIGH_TARGET));
             addState("Backward 27 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(27+1)), 0));
             addState("Eject cube", new IntakeMove(-1,0.25));
