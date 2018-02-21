@@ -74,6 +74,7 @@ public class AutonomousMode extends Coordinator {
         switch (robot.dashboard.autonMode.get()) {
 	        case CENTER_SWITCH:
 	        	selectedModeMacro = new CenterSwitchMacro();
+	        	break;
             case ROTATE_LEFT_TEST:
                 selectedModeMacro = rotateLeftStateMacro;
                 break;
@@ -806,15 +807,18 @@ public class AutonomousMode extends Coordinator {
         public SwitchEjectMacro() {
             super(SwitchEjectMacro.class);
             addState("Move elevator", new ElevatorMove(Calibration.ELEVATOR_SWITCH_CLEAR, 1));
-            addState("Move arm", new ArmMove(Calibration.ARM_MID_TARGET, 1.2));
-            addState("Eject cube", new IntakeMove(-0.5,1));
+            addState("Move arm", new ArmSetPersistent(Calibration.ARM_MID_TARGET));
+            addState("Wait", new SleepCoordinator(0.8));
+            addState("Eject cube", new IntakeMove(-0.5,0.5));
             // addState("Move elevator", new ElevatorMove(Calibration.ELEVATOR_BUMPER_CLEAR, 1));
             // Arm falls down
-            addState("Move arm", new ArmMove(Calibration.ARM_LOW_TARGET, 0.5));
+            addState("Move arm", new ArmSetPersistent(Calibration.ARM_LOW_TARGET));
+            addState("Wait", new SleepCoordinator(0.5));
             addState("Unclamp", new ClampExtend());
         }
     }
     
+    @Unreal("Legacy")
     private class ScaleEjectMacro extends StatefulCoordinator {
         public ScaleEjectMacro() {
             super(ScaleEjectMacro.class);
