@@ -20,6 +20,7 @@ public class SwitchCoordinator extends Coordinator {
     	logger = new Logger(SwitchCoordinator.class, name);
     	gdc = new GameDataCoordinator();
     	cases = new HashMap<String, Coordinator>();
+    	gotData = false;
     	gameData = "";
     	endedGameDataCoordinator = false;
     	started = false;
@@ -39,6 +40,7 @@ public class SwitchCoordinator extends Coordinator {
     	logger.info("Begin");
     	gdc.start();
     	gameData = "";
+    	gotData = false;
     	endedGameDataCoordinator = false;
     	started = false;
     }
@@ -46,12 +48,12 @@ public class SwitchCoordinator extends Coordinator {
     @Override
     public boolean run() {
     	if( !gotData ) {
-    		if( !gdc.run() ) {
+    		if( !gdc.execute() ) {
         		gameData = gdc.getGameData();
         		gotData = true;
         	}
     	} else if( !endedGameDataCoordinator ) {
-    		gdc.end();
+    		gdc.stop();
     		endedGameDataCoordinator = true;
     	} else if( !started ) {
     		active = cases.get(gameData);
