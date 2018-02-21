@@ -10,6 +10,7 @@ import com._604robotics.robot2018.modules.Elevator;
 import com._604robotics.robot2018.modules.Intake;
 import com._604robotics.robotnik.Coordinator;
 import com._604robotics.robotnik.Logger;
+import com._604robotics.robotnik.prefabs.coordinators.GameDataCoordinator;
 import com._604robotics.robotnik.prefabs.coordinators.SimultaneousCoordinator;
 import com._604robotics.robotnik.prefabs.coordinators.SleepCoordinator;
 import com._604robotics.robotnik.prefabs.coordinators.StatefulCoordinator;
@@ -95,8 +96,8 @@ public class AutonomousMode extends Coordinator {
             case CENTER_SWITCH_RIGHT:
                 selectedModeMacro = new CenterMacroRight();
                 break;
-            case APPENDAGE_TEST:
-                selectedModeMacro = new ElevatorMove(8000, Calibration.ELEVATOR_PID_TIME_RUN);
+            case SWERVE_SCALE_OPPOSITE_LEFT:
+                selectedModeMacro = new SwerveScaleOppositeMacroLeft();
                 break;
             case SWITCH_FORWARD:
                 selectedModeMacro = new SwitchForwardMacro();
@@ -543,6 +544,22 @@ public class AutonomousMode extends Coordinator {
         }
     }
 
+    /* Modular Auton Modes */
+    private class CenterSwitchMacro extends StatefulCoordinator {
+        public CenterSwitchMacro() {
+            super(CenterSwitchMacro.class);
+            addStates(new IntakeMacro());
+            GameDataCoordinator gdc = new GameDataCoordinator();
+            addState("Read Game Data", gdc);
+            String data = gdc.getGameData();
+            if( data.startsWith("L") ) {
+                addStates(new CenterMacroLeft());
+            } else if( data.startsWith("R") ) {
+                addStates(new CenterMacroRight());
+            }
+        }
+    }
+    
     /* Auton Modes */
     
     private class SwitchForwardMacro extends StatefulCoordinator {
@@ -620,14 +637,16 @@ public class AutonomousMode extends Coordinator {
             addState("Sleep 0.5 seconds", new SleepCoordinator(0.5));
             addState("Rotate 35 right", new ArcadePIDCoordinator(0, AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, 35)));
             addState("Set Arm High Persistent", new ArmSetPersistent(Calibration.ARM_HIGH_TARGET));
-            addState("Sleep 1 second", new SleepCoordinator(1));
-            addState("Eject cube", new IntakeMove(-1,1));
-            addState("Retract arm", new ArmMove(Calibration.ARM_LOW_TARGET, 0.7));
-            addState("Retract elevator", new ElevatorMove(Calibration.ELEVATOR_LOW_TARGET, 0.7));
+            addState("Sleep 1 second", new SleepCoordinator(1.5));
+            addState("Eject cube", new IntakeMove(-1,0.5));
+            addState("Retract arm", new ArmSetPersistent(Calibration.ARM_LOW_TARGET));
+            addState("Retract elevator", new ElevatorSetPersistent(Calibration.ELEVATOR_LOW_TARGET));
+            addState("Wait for arm", new SleepCoordinator(0.7));
             addState("Unclamp", new ClampExtend());
     	}
     }
     
+    @Unreal("Old legacy code without swerve")
     private class ScaleOppositeMacroLeft extends StatefulCoordinator {
         public ScaleOppositeMacroLeft() {
             super(ScaleOppositeMacroLeft.class);
@@ -642,9 +661,32 @@ public class AutonomousMode extends Coordinator {
             addState("Set Arm High Persistent", new ArmSetPersistent(Calibration.ARM_HIGH_TARGET));
             addState("Backward 27 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(27+1)), 0));
             addState("Eject cube", new IntakeMove(-1,1));
-            addState("Retract arm", new ArmMove(Calibration.ARM_LOW_TARGET, 0.7));
-            addState("Retract elevator", new ElevatorMove(Calibration.ELEVATOR_LOW_TARGET, 0.7));
+            addState("Retract arm", new ArmSetPersistent(Calibration.ARM_LOW_TARGET));
+            addState("Retract elevator", new ElevatorSetPersistent(Calibration.ELEVATOR_LOW_TARGET));
+            addState("Wait for reset", new SleepCoordinator(0.7));
             addState("Unclamp", new ClampExtend());
+        }
+    }
+    
+    private class SwerveScaleOppositeMacroLeft extends StatefulCoordinator {
+        public SwerveScaleOppositeMacroLeft() {
+            super(SwerveScaleOppositeMacroLeft.class);
+            addStates(new IntakeMacro());
+            addState("Set Elevator Persistent", new ElevatorSetPersistent(Calibration.ELEVATOR_MID_TARGET));
+            addState("Backward 149 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(149+1)), 0));
+            addState("Set Arm Persistent", new ArmSetPersistent(Calibration.ARM_BALANCE_TARGET));
+            //addState("Sleep 0.5 seconds", new SleepCoordinator(0.5));
+            addState("Sweep 6 feet backwards, 90 left", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -72), AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, 90)));
+            //addState("Rotate 90 left", new ArcadePIDCoordinator(0, AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, -100)));
+            addState("Backward 130 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(130+1)), 0));
+            addState("Rotate 90 left", new ArcadePIDCoordinator(0, AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, -90)));
+            addState("Set Arm High Persistent", new ArmSetPersistent(Calibration.ARM_HIGH_TARGET));
+            addState("Backward 27 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(27+1)), 0));
+            addState("Eject cube", new IntakeMove(-1,0.25));
+            addState("Retract arm", new ArmSetPersistent(Calibration.ARM_LOW_TARGET));
+            addState("Retract elevator", new ElevatorSetPersistent(Calibration.ELEVATOR_LOW_TARGET));
+            addState("Unclamp", new ClampExtend());
+            addState("Wait for reset", new SleepCoordinator(0.7));
         }
     }
     
@@ -682,7 +724,7 @@ public class AutonomousMode extends Coordinator {
     		addState("Set Arm Persistent", new ArmSetPersistent(Calibration.ARM_BALANCE_TARGET));
             addState("Sleep 0.5 seconds", new SleepCoordinator(0.5));
     		addState("Rotate 90 left", new ArcadePIDCoordinator(0, AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, -90)));
-            addState("Retract arm", new ArmMove(Calibration.ARM_LOW_TARGET, 0.7));
+    		addState("Retract arm", new ArmSetPersistent(Calibration.ARM_LOW_TARGET));
     	}
     }
     
@@ -700,8 +742,8 @@ public class AutonomousMode extends Coordinator {
     		super(BalancedSweptLeftTurnMacro.class);
     		addState("Set Arm Persistent", new ArmSetPersistent(Calibration.ARM_BALANCE_TARGET));
             addState("Sleep 0.5 seconds", new SleepCoordinator(0.5));
-    		addState("Sweep 3 feet forward, 90 left", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, 72), AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, -90)));
-            addState("Retract arm", new ArmMove(Calibration.ARM_LOW_TARGET, 0.7));
+    		addState("Sweep 6 feet forward, 90 left", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, 72), AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, -90)));
+            addState("Retract arm", new ArmSetPersistent(Calibration.ARM_LOW_TARGET));
     	}
     }
     
@@ -712,7 +754,7 @@ public class AutonomousMode extends Coordinator {
     		addState("Set Arm Persistent", new ArmSetPersistent(Calibration.ARM_BALANCE_TARGET));
             addState("Sleep 0.5 seconds", new SleepCoordinator(0.5));
     		addState("Rotate 90 Right", new ArcadePIDCoordinator(0, AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, 90)));
-            addState("Retract arm", new ArmMove(Calibration.ARM_LOW_TARGET, 0.7));
+            addState("Retract arm", new ArmSetPersistent(Calibration.ARM_LOW_TARGET));
 
     	}
     }
@@ -731,7 +773,7 @@ public class AutonomousMode extends Coordinator {
     		addState("Set Arm Persistent", new ArmSetPersistent(Calibration.ARM_BALANCE_TARGET));
             addState("Sleep 0.5 seconds", new SleepCoordinator(0.5));
     		addState("Sweep 6 feet forward, 90 Right", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, 72), AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, 100)));
-            addState("Retract arm", new ArmMove(Calibration.ARM_LOW_TARGET, 0.7));
+    		addState("Retract arm", new ArmSetPersistent(Calibration.ARM_LOW_TARGET));
     	}
     }
     
@@ -758,7 +800,7 @@ public class AutonomousMode extends Coordinator {
     private class IntakeMacro extends StatefulCoordinator {
         public IntakeMacro() {
             super(IntakeMacro.class);
-            addState("Intake cube", new IntakeMove(0.5,0.25));
+            addState("Intake cube", new IntakeMove(0.5,0.2));
             //addState("Sleep 0.25 seconds", new SleepCoordinator(0.25));
             addState("Clamp cube", new ClampRetract());
         }
