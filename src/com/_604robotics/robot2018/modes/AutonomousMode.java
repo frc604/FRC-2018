@@ -10,10 +10,10 @@ import com._604robotics.robot2018.modules.Elevator;
 import com._604robotics.robot2018.modules.Intake;
 import com._604robotics.robotnik.Coordinator;
 import com._604robotics.robotnik.Logger;
-import com._604robotics.robotnik.prefabs.coordinators.GameDataCoordinator;
 import com._604robotics.robotnik.prefabs.coordinators.SimultaneousCoordinator;
 import com._604robotics.robotnik.prefabs.coordinators.SleepCoordinator;
 import com._604robotics.robotnik.prefabs.coordinators.StatefulCoordinator;
+import com._604robotics.robotnik.prefabs.coordinators.SwitchCoordinator;
 import com._604robotics.robotnik.prefabs.flow.Pulse;
 import com._604robotics.robotnik.prefabs.flow.SmartTimer;
 import com._604robotics.robotnik.utils.AutonMovement;
@@ -72,6 +72,8 @@ public class AutonomousMode extends Coordinator {
     @Override
     public void begin () {
         switch (robot.dashboard.autonMode.get()) {
+	        case CENTER_SWITCH:
+	        	selectedModeMacro = new CenterSwitchMacro();
             case ROTATE_LEFT_TEST:
                 selectedModeMacro = rotateLeftStateMacro;
                 break;
@@ -543,25 +545,17 @@ public class AutonomousMode extends Coordinator {
             timeElapsed.stopAndReset();
         }
     }
-
-    /* Modular Auton Modes */
-    private class CenterSwitchMacro extends StatefulCoordinator {
-        public CenterSwitchMacro() {
-            super(CenterSwitchMacro.class);
-            addStates(new IntakeMacro());
-            GameDataCoordinator gdc = new GameDataCoordinator();
-            addState("Read Game Data", gdc);
-            String data = gdc.getGameData();
-            if( data.startsWith("L") ) {
-                addStates(new CenterMacroLeft());
-            } else if( data.startsWith("R") ) {
-                addStates(new CenterMacroRight());
-            }
-        }
+    
+    /* Modular Modes */
+    private class CenterSwitchMacro extends SwitchCoordinator {
+    	public CenterSwitchMacro() {
+    		super(CenterSwitchMacro.class);
+    		addCase(new String[]{"LLL", "LLR", "LRL", "LRR"}, new CenterMacroLeft());
+    		addCase(new String[]{"RLL", "RLR", "RRL", "RRR"}, new CenterMacroRight());
+    	}
     }
     
     /* Auton Modes */
-    
     private class SwitchForwardMacro extends StatefulCoordinator {
         public SwitchForwardMacro() {
             super(SwitchForwardMacro.class);

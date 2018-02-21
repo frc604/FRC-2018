@@ -33,6 +33,7 @@ public class Dashboard extends DashboardModule {
     
     public enum AutonMode {
         OFF,
+        CENTER_SWITCH,
         ROTATE_LEFT_TEST,
         ROTATE_RIGHT_TEST,
         FORWARD_6,
