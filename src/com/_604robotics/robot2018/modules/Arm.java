@@ -20,7 +20,7 @@ public class Arm extends Module {
 
     public double persistent = 0;
     
-    public final Setpoint setpoint = new Setpoint();
+    public final Setpoint setpoint = new Setpoint(Calibration.ARM_LOW_TARGET);
     public final PersistentSetpoint persistentSetpoint = new PersistentSetpoint();
 
     public final Output<Double> encoderRate = addOutput("Arm Rate", encoder::getVelocity);
