@@ -516,7 +516,7 @@ public class AutonomousMode extends Coordinator {
         @Override
         protected synchronized boolean run() {
             arcadeDrive.activate();
-            System.out.println("Move error is " + getMoveError() + ", Rot error is " + getRotError());
+            // System.out.println("Move error is " + getMoveError() + ", Rot error is " + getRotError());
             return timeElapsed.runUntil(Calibration.DRIVE_PID_AFTER_TIMING, new Runnable() {
                 @Override
                 public void run() {
@@ -572,6 +572,7 @@ public class AutonomousMode extends Coordinator {
     private class CenterMacroLeft extends StatefulCoordinator {
         public CenterMacroLeft() {
             super(CenterMacroLeft.class);
+            addState("Running left", new SleepCoordinator(0.1));
             addStates(new IntakeMacro());
             addState("Forward 10 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, 10+1),0));
             addState("Rotate 45 left", new ArcadePIDCoordinator(0, AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, -45)));
@@ -585,6 +586,7 @@ public class AutonomousMode extends Coordinator {
     private class CenterMacroRight extends StatefulCoordinator {
         public CenterMacroRight() {
             super(CenterMacroRight.class);
+            addState("Running right", new SleepCoordinator(0.1));
             addStates(new IntakeMacro());
             addState("Forward 10 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, 10+1),0));
             addState("Rotate 45 right", new ArcadePIDCoordinator(0, AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, 45)));
