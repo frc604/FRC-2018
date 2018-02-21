@@ -595,7 +595,6 @@ public class AutonomousMode extends Coordinator {
     private class CenterMacroLeft extends StatefulCoordinator {
         public CenterMacroLeft() {
             super(CenterMacroLeft.class);
-            addState("Running left", new SleepCoordinator(0.1));
             addStates(new IntakeMacro());
             addState("Forward 10 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, 10+1),0));
             addState("Rotate 45 left", new ArcadePIDCoordinator(0, AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, -45)));
@@ -609,7 +608,6 @@ public class AutonomousMode extends Coordinator {
     private class CenterMacroRight extends StatefulCoordinator {
         public CenterMacroRight() {
             super(CenterMacroRight.class);
-            addState("Running right", new SleepCoordinator(0.1));
             addStates(new IntakeMacro());
             addState("Forward 10 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, 10+1),0));
             addState("Rotate 45 right", new ArcadePIDCoordinator(0, AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, 45)));
@@ -657,10 +655,10 @@ public class AutonomousMode extends Coordinator {
             addState("Rotate 35 right", new ArcadePIDCoordinator(0, AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, 35)));
             addState("Set Arm High Persistent", new ArmSetPersistent(Calibration.ARM_HIGH_TARGET));
             addState("Sleep 1 second", new SleepCoordinator(1.5));
-            addState("Eject cube", new IntakeMove(-1,0.5));
+            addState("Eject cube", new IntakeMove(-0.3,0.5));
             addState("Retract arm", new ArmSetPersistent(Calibration.ARM_LOW_TARGET));
             addState("Retract elevator", new ElevatorSetPersistent(Calibration.ELEVATOR_LOW_TARGET));
-            addState("Wait for arm", new SleepCoordinator(0.7));
+            addState("Wait for appendages", new SleepCoordinator(0.7));
             addState("Unclamp", new ClampExtend());
     	}
     }
@@ -676,10 +674,10 @@ public class AutonomousMode extends Coordinator {
             addState("Rotate 35 left", new ArcadePIDCoordinator(0, AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, -35)));
             addState("Set Arm High Persistent", new ArmSetPersistent(Calibration.ARM_HIGH_TARGET));
             addState("Sleep 1 second", new SleepCoordinator(1.5));
-            addState("Eject cube", new IntakeMove(-1,0.5));
+            addState("Eject cube", new IntakeMove(-0.3,0.5));
             addState("Retract arm", new ArmSetPersistent(Calibration.ARM_LOW_TARGET));
             addState("Retract elevator", new ElevatorSetPersistent(Calibration.ELEVATOR_LOW_TARGET));
-            addState("Wait for arm", new SleepCoordinator(0.7));
+            addState("Wait for appendage", new SleepCoordinator(0.7));
             addState("Unclamp", new ClampExtend());
     	}
     }
