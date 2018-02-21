@@ -46,12 +46,12 @@ public class SwitchCoordinator extends Coordinator {
     @Override
     public boolean run() {
     	if( !gotData ) {
-    		if( !gdc.run() ) {
+    		if( !gdc.execute() ) {
         		gameData = gdc.getGameData();
         		gotData = true;
         	}
     	} else if( !endedGameDataCoordinator ) {
-    		gdc.end();
+    		gdc.stop();
     		endedGameDataCoordinator = true;
     	} else if( !started ) {
     		active = cases.get(gameData);

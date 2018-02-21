@@ -1,7 +1,5 @@
 package com._604robotics.robot2018.modes;
 
-import java.util.ArrayList;
-
 import com._604robotics.robot2018.Robot2018;
 import com._604robotics.robot2018.constants.Calibration;
 import com._604robotics.robot2018.macros.ArcadeTimedDriveMacro;
