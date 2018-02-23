@@ -2,11 +2,8 @@ package com._604robotics.robotnik.prefabs.controller;
 
 import com._604robotics.robotnik.utils.annotations.Untested;
 
-import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.PIDOutput;
 import edu.wpi.first.wpilibj.PIDSource;
-import edu.wpi.first.wpilibj.PIDSourceType;
-import edu.wpi.first.wpilibj.Timer;
 
 //Untested (algorithm used previously on 2014 but port INCOMPLETE) 
 //             _            _           _
