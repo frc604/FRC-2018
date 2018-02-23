@@ -59,7 +59,7 @@ public abstract class Robot extends SampleRobot {
         systems.add(new Pair<>(name, system));
     }
 
-    protected void addSystem (Class klass, Coordinator system) {
+    protected void addSystem (Class<?> klass, Coordinator system) {
         addSystem(klass.getSimpleName(), system);
     }
 

@@ -87,7 +87,7 @@ public class DashboardModule extends Module {
         super(name);
     }
 
-    public DashboardModule (Class klass) {
+    public DashboardModule (Class<?> klass) {
         super(klass);
     }
 

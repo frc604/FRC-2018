@@ -57,7 +57,7 @@ public abstract class Module {
         activeActionOutputsTable = activeActionTable.getSubTable("outputs");
     }
 
-    public Module (Class klass) {
+    public Module (Class<?> klass) {
         this(klass.getSimpleName());
     }
 

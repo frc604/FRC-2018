@@ -17,7 +17,7 @@ public abstract class StatefulCoordinator extends Coordinator {
         logger = new Logger(StatefulCoordinator.class, name);
     }
 
-    public StatefulCoordinator (Class klass) {
+    public StatefulCoordinator (Class<?> klass) {
         this(klass.getSimpleName());
     }
 
@@ -25,7 +25,7 @@ public abstract class StatefulCoordinator extends Coordinator {
         states.add(new Pair<>(name, coordinator));
     }
 
-    public void addState (Class klass, Coordinator coordinator) {
+    public void addState (Class<?> klass, Coordinator coordinator) {
         addState(klass.getSimpleName(), coordinator);
     }
     

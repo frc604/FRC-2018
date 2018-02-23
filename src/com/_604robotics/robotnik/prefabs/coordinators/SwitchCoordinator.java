@@ -25,7 +25,7 @@ public class SwitchCoordinator extends Coordinator {
     	endedGameDataCoordinator = false;
     	started = false;
     }
-    public SwitchCoordinator (Class klass) {
+    public SwitchCoordinator (Class<?> klass) {
     	this(klass.getSimpleName());
     }
     

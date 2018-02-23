@@ -2,7 +2,6 @@ package com._604robotics.robot2018.modes;
 
 import com._604robotics.robot2018.Robot2018;
 import com._604robotics.robot2018.constants.Calibration;
-import com._604robotics.robot2018.macros.ArcadeTimedDriveMacro;
 import com._604robotics.robot2018.modules.Arm;
 import com._604robotics.robot2018.modules.Clamp;
 import com._604robotics.robot2018.modules.Drive;
