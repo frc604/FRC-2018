@@ -25,7 +25,7 @@ public abstract class Action {
         this.name = name;
     }
 
-    public Action (Module parent, Class klass) {
+    public Action (Module parent, Class<?> klass) {
         this(parent, klass.getSimpleName());
     }
 

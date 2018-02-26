@@ -32,6 +32,10 @@ public abstract class Coordinator {
     }
 
     protected void begin () {}
+    /**
+     * Returns FALSE when FINISHED. FALSE. FINISHED. BOTH START WITH 'F'.
+     * @return boolean representing whether this Coordinator is running. IS RUNNING.
+     */
     protected boolean run () { return true; }
     protected void end () {}
 }

@@ -1,7 +1,6 @@
 package com._604robotics.robotnik.prefabs.devices.wrappers;
 
 import com._604robotics.robotnik.prefabs.flow.SmartTimer;
-
 import edu.wpi.first.wpilibj.PIDOutput;
 import edu.wpi.first.wpilibj.SpeedController;
 
@@ -10,8 +9,9 @@ import edu.wpi.first.wpilibj.SpeedController;
  */
 public class RampMotor implements SpeedController, PIDOutput {
     private SpeedController control;
-    private SmartTimer timerObj;
+    private SmartTimer timerObj = new SmartTimer();
     private final double maxRate;
+    private double prevSpeed = 0;
 
     /**
      * Constructor that uses a default change rate of 4 units per second.
@@ -38,12 +38,13 @@ public class RampMotor implements SpeedController, PIDOutput {
     public void pidWrite(double output) {
         timerObj.startIfNotRunning();
         double maxChange = timerObj.get()*maxRate;
-        double out = Math.max(output, get()-maxChange);
-        out = Math.min(output, get()+maxChange);
+        double out = Math.max(output, prevSpeed-maxChange);
+        out = Math.min(out, prevSpeed+maxChange);
         control.set(out);
         if (timerObj.isRunning()) {
             timerObj.stopAndReset();
         }
+        prevSpeed = out;
         timerObj.start();
     }
 

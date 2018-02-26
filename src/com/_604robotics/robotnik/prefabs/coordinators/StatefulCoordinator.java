@@ -11,13 +11,13 @@ public abstract class StatefulCoordinator extends Coordinator {
     private final Logger logger;
 
     private List<Pair<String, Coordinator>> states = new ArrayList<>();
-    private int stateIndex;
+    private int stateIndex = 0;
 
     public StatefulCoordinator (String name) {
         logger = new Logger(StatefulCoordinator.class, name);
     }
 
-    public StatefulCoordinator (Class klass) {
+    public StatefulCoordinator (Class<?> klass) {
         this(klass.getSimpleName());
     }
 
@@ -25,8 +25,14 @@ public abstract class StatefulCoordinator extends Coordinator {
         states.add(new Pair<>(name, coordinator));
     }
 
-    public void addState (Class klass, Coordinator coordinator) {
+    public void addState (Class<?> klass, Coordinator coordinator) {
         addState(klass.getSimpleName(), coordinator);
+    }
+    
+    public void addStates(StatefulCoordinator statecoord) {
+        for (Pair<String, Coordinator>pair:statecoord.states) {
+            states.add(pair);
+        }
     }
 
     @Override

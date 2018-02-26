@@ -11,11 +11,8 @@ public class Dashboard extends DashboardModule {
     public final Input<Double> leftDriveRate = addDashboardInput("leftDriveRate", 0.0);
     public final Input<Double> rightDriveRate = addDashboardInput("rightDriveRate", 0.0);
 
-    //public final Input<Double> totalCurrent = addDashboardInput("Current Drawn",0.0);
+    public final Input<Double> totalCurrent = addDashboardInput("Current Drawn",0.0);
 
-    public final Output<Double> PIDMoveError = addDashboardOutput("PID Move Error",0.0);
-    public final Output<Double> PIDRotateError = addDashboardOutput("PID Rotate Error",0.0);
-    
     public final Input<Boolean> XboxFlipped = addDashboardInput("XboxFlipped", false);
     
     //public final Input<Double> elevatorOffset = addDashboardInput("Elevator Offset", 0.0);
@@ -36,13 +33,33 @@ public class Dashboard extends DashboardModule {
     
     public enum AutonMode {
         OFF,
-        ROTATE_LEFT_360,
-        ROTATE_RIGHT_360,
+        // Following are actual strategy selections
+        CENTER_SWITCH,
+        LEFT_SCALE,
+        RIGHT_SCALE,
+        // Calibration autons to verify angles and distances
+        ROTATE_LEFT_TEST,
+        ROTATE_RIGHT_TEST,
         FORWARD_6,
         BACKWARD_6,
+        // Demo auton into which arbitrary stuff can be stashed for testing
         DEMO_NEW_AUTON,
-        FORWARD_TEST,
-        KINEMATIC_FORWARD,
+        // Remnants of various tests
+        FORWARD_SWITCH,
+        CENTER_SWITCH_LEFT,
+        CENTER_SWITCH_RIGHT,
+        SWITCH_FORWARD,
+        SCALE_BACKWARD,
+        SCALE_BACKWARD_2,
+        NEW_SCALE_BACKWARD,
+        SCALE_OPPOSITE,
+        SWERVE_SCALE_OPPOSITE_LEFT,
+        BALANCED_LEFT_TURN_TEST,
+        SWEPT_LEFT_TURN_TEST,
+        BALANCED_SWEPT_LEFT_TURN_TEST,
+        BALANCED_RIGHT_TURN_TEST,
+        SWEPT_RIGHT_TURN_TEST,
+        BALANCED_SWEPT_RIGHT_TURN_TEST,
     }
     
     public enum DriveMode {
