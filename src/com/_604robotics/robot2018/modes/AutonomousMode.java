@@ -88,7 +88,7 @@ public class AutonomousMode extends Coordinator {
                 selectedModeMacro = new SwerveScaleOppositeMacroLeft();
                 break;
             case SWITCH_FORWARD:
-                selectedModeMacro = new SwitchForwardMacro();
+                selectedModeMacro = new SwitchForwardBackupMacro();
                 break;
             case SCALE_BACKWARD:
                 selectedModeMacro = new ScaleBackwardMacro();
@@ -536,6 +536,7 @@ public class AutonomousMode extends Coordinator {
             addState("Raise arm", new ArmSetPersistent(Calibration.ARM_MID_TARGET));
             // Forward distance between front bumper and scale -76?
             addState("Forward 14 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, 14+1),0));
+            // Choose based on FMS Game Data
             addState("Switch choosing", new CenterSwitchChooserMacro());
         }
     }
@@ -553,7 +554,7 @@ public class AutonomousMode extends Coordinator {
     private class LeftScaleMacro extends SwitchCoordinator {
     	public LeftScaleMacro() {
     		super(LeftScaleMacro.class);
-    		addDefault(new SwitchForwardMacro());
+    		addDefault(new SwitchForwardBackupMacro());
     		addCase(new String[]{"LLL", "LLR", "RLL", "RLR"}, new NewScaleBackwardMacroLeft());
     		addCase(new String[]{"LRL", "LRR", "RRL", "RRR"}, new SwerveScaleOppositeMacroLeft());
     	}
@@ -562,7 +563,7 @@ public class AutonomousMode extends Coordinator {
     private class RightScaleMacro extends SwitchCoordinator {
     	public RightScaleMacro() {
     		super(RightScaleMacro.class);
-    		addDefault(new SwitchForwardMacro());
+    		addDefault(new SwitchForwardBackupMacro());
     		addCase(new String[]{"LLL", "LLR", "RLL", "RLR"}, new SwerveScaleOppositeMacroRight());
     		addCase(new String[]{"LRL", "LRR", "RRL", "RRR"}, new NewScaleBackwardMacroRight());
     	}
@@ -593,9 +594,9 @@ public class AutonomousMode extends Coordinator {
     }
     
     // Backup in case scale game data FMS malfunctions
-    private class SwitchForwardMacro extends StatefulCoordinator {
-        public SwitchForwardMacro() {
-            super(SwitchForwardMacro.class);
+    private class SwitchForwardBackupMacro extends StatefulCoordinator {
+        public SwitchForwardBackupMacro() {
+            super(SwitchForwardBackupMacro.class);
             addStates(new IntakeMacro());
             addState("Forward 120 in", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, 80+1), 0));
             addState("Sleep 0.5 seconds", new SleepCoordinator(0.5));
