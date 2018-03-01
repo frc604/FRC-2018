@@ -19,7 +19,7 @@ public class GameDataCoordinator extends Coordinator {
     @Override
     protected boolean run() {
         gameData = DriverStation.getInstance().getGameSpecificMessage();
-        return (gameData==null) || (gameData.length()==0) || (timeout.get()<1);
+        return (gameData==null) || (gameData.length()==0) || (timeout.get()<2);
     }
 
     @Override
@@ -34,7 +34,7 @@ public class GameDataCoordinator extends Coordinator {
     
     public String getGameData() {
         if (gameData==null || gameData.length()==0) {
-            logGameData.info("Attempted to get Game Data while it was not ready!");
+            logGameData.log("ERROR","Attempted to get Game Data while it was not ready!");
         }
         return gameData;
     }
