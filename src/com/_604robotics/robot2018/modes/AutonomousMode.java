@@ -529,10 +529,21 @@ public class AutonomousMode extends Coordinator {
         }
     }
     
+    private class CenterSwitchMacro extends StatefulCoordinator {
+        public CenterSwitchMacro() {
+            super(CenterSwitchMacro.class);
+            addStates(new IntakeMacro());
+            addState("Raise arm", new ArmSetPersistent(Calibration.ARM_MID_TARGET));
+            // Forward distance between front bumper and scale -76?
+            addState("Forward 14 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, 14+1),0));
+            addState("Switch choosing", new CenterSwitchChooserMacro());
+        }
+    }
+    
     /* Modular Modes */
-    private class CenterSwitchMacro extends SwitchCoordinator {
-    	public CenterSwitchMacro() {
-    		super(CenterSwitchMacro.class);
+    private class CenterSwitchChooserMacro extends SwitchCoordinator {
+    	public CenterSwitchChooserMacro() {
+    		super(CenterSwitchChooserMacro.class);
     		addDefault(new CenterMacroLeft()); // Lucky randomness guaranteed by coin flip
     		addCase(new String[]{"LLL", "LLR", "LRL", "LRR"}, new CenterMacroLeft());
     		addCase(new String[]{"RLL", "RLR", "RRL", "RRR"}, new CenterMacroRight());
@@ -562,10 +573,6 @@ public class AutonomousMode extends Coordinator {
     private class CenterMacroLeft extends StatefulCoordinator {
         public CenterMacroLeft() {
             super(CenterMacroLeft.class);
-            addStates(new IntakeMacro());
-            addState("Raise arm", new ArmSetPersistent(Calibration.ARM_MID_TARGET));
-            // Forward distance between front bumper and scale -76?
-            addState("Forward 14 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, 14+1),0));
             addState("Rotate 45 left", new ArcadePIDCoordinator(0, AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, -45)));
             addState("Forward 69*sqrt(2) inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, 69*Math.sqrt(2)+1),0));
             addState("Rotate 45 right", new ArcadePIDCoordinator(0, AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, 45)));
@@ -577,10 +584,6 @@ public class AutonomousMode extends Coordinator {
     private class CenterMacroRight extends StatefulCoordinator {
         public CenterMacroRight() {
             super(CenterMacroRight.class);
-            addStates(new IntakeMacro());
-            addState("Raise arm", new ArmSetPersistent(Calibration.ARM_MID_TARGET));
-            // Forward distance between front bumper and scale -76?
-            addState("Forward 14 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, 14+1),0));
             addState("Rotate 45 right", new ArcadePIDCoordinator(0, AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, 45)));
             addState("Forward 69*sqrt(2) inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, 69*Math.sqrt(2)+1),0));
             addState("Rotate 45 left", new ArcadePIDCoordinator(0, AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, -45)));
