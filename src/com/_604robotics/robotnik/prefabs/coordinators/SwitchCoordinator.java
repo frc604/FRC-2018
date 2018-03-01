@@ -15,6 +15,7 @@ public class SwitchCoordinator extends Coordinator {
 	private boolean endedGameDataCoordinator;
 	private boolean started;
 	private Coordinator active;
+	private Coordinator defaultCoordinator;
 	
     public SwitchCoordinator (String name) {
     	logger = new Logger(SwitchCoordinator.class, name);
@@ -33,6 +34,9 @@ public class SwitchCoordinator extends Coordinator {
     	for( String condition : conditions ) {
     		cases.put(condition, coordinator);
     	}
+    }
+    public void addDefault(Coordinator coordinator) {
+        defaultCoordinator = coordinator;
     }
     
     @Override
@@ -56,7 +60,7 @@ public class SwitchCoordinator extends Coordinator {
     		gdc.stop();
     		endedGameDataCoordinator = true;
     	} else if( !started ) {
-    		active = cases.get(gameData);
+    		active = cases.getOrDefault(gameData, defaultCoordinator);
     		active.start();
     		started = true;
     	} else {

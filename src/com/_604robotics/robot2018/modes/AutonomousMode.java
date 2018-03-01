@@ -533,6 +533,7 @@ public class AutonomousMode extends Coordinator {
     private class CenterSwitchMacro extends SwitchCoordinator {
     	public CenterSwitchMacro() {
     		super(CenterSwitchMacro.class);
+    		addDefault(new CenterMacroLeft()); // Lucky randomness guaranteed by coin flip
     		addCase(new String[]{"LLL", "LLR", "LRL", "LRR"}, new CenterMacroLeft());
     		addCase(new String[]{"RLL", "RLR", "RRL", "RRR"}, new CenterMacroRight());
     	}
@@ -541,6 +542,7 @@ public class AutonomousMode extends Coordinator {
     private class LeftScaleMacro extends SwitchCoordinator {
     	public LeftScaleMacro() {
     		super(LeftScaleMacro.class);
+    		addDefault(new SwitchForwardMacro());
     		addCase(new String[]{"LLL", "LLR", "RLL", "RLR"}, new NewScaleBackwardMacroLeft());
     		addCase(new String[]{"LRL", "LRR", "RRL", "RRR"}, new SwerveScaleOppositeMacroLeft());
     	}
@@ -549,6 +551,7 @@ public class AutonomousMode extends Coordinator {
     private class RightScaleMacro extends SwitchCoordinator {
     	public RightScaleMacro() {
     		super(RightScaleMacro.class);
+    		addDefault(new SwitchForwardMacro());
     		addCase(new String[]{"LLL", "LLR", "RLL", "RLR"}, new SwerveScaleOppositeMacroRight());
     		addCase(new String[]{"LRL", "LRR", "RRL", "RRR"}, new NewScaleBackwardMacroRight());
     	}
@@ -586,12 +589,12 @@ public class AutonomousMode extends Coordinator {
         }
     }
     
-    @Unreal("Does not reference game data and only goes straignt")
+    // Backup in case scale game data FMS malfunctions
     private class SwitchForwardMacro extends StatefulCoordinator {
         public SwitchForwardMacro() {
             super(SwitchForwardMacro.class);
             addStates(new IntakeMacro());
-            addState("Forward 80 in", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, 80+1), 0));
+            addState("Forward 120 in", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, 80+1), 0));
             addState("Sleep 0.5 seconds", new SleepCoordinator(0.5));
             addStates(new SwitchEjectMacro());
             //addState("Rotate 180 left", new ArcadePIDCoordinator(0,AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, -180)));
