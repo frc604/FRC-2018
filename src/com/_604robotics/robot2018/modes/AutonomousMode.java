@@ -578,7 +578,7 @@ public class AutonomousMode extends Coordinator {
     private class LeftScaleChooserMacro extends SwitchCoordinator {
     	public LeftScaleChooserMacro() {
     		super(LeftScaleChooserMacro.class);
-    		addDefault(new SwitchForwardBackupMacro());
+    		addDefault(new SleepCoordinator(0.1));
     		addCase(new String[]{"LLL", "LLR", "RLL", "RLR"}, new NewScaleBackwardMacroLeft());
     		addCase(new String[]{"LRL", "LRR", "RRL", "RRR"}, new SwerveScaleOppositeMacroLeft());
     	}
@@ -587,7 +587,7 @@ public class AutonomousMode extends Coordinator {
     private class RightScaleChooserMacro extends SwitchCoordinator {
     	public RightScaleChooserMacro() {
     		super(RightScaleChooserMacro.class);
-    		addDefault(new SwitchForwardBackupMacro());
+    		addDefault(new SleepCoordinator(0.1));
     		addCase(new String[]{"LLL", "LLR", "RLL", "RLR"}, new SwerveScaleOppositeMacroRight());
     		addCase(new String[]{"LRL", "LRR", "RRL", "RRR"}, new NewScaleBackwardMacroRight());
     	}
