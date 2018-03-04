@@ -13,10 +13,10 @@ public class Ports {
     /* Victor Motors */
     // Remember to take note of PDP ports for these too once they are determined
     // Drive
-    public static final int DRIVE_FRONT_LEFT_MOTOR = 2;
-    public static final int DRIVE_REAR_LEFT_MOTOR = 3;
-    public static final int DRIVE_FRONT_RIGHT_MOTOR = 0;
-    public static final int DRIVE_REAR_RIGHT_MOTOR = 1;
+    public static final int DRIVE_FRONT_LEFT_MOTOR = 1;
+    public static final int DRIVE_REAR_LEFT_MOTOR = 0;
+    public static final int DRIVE_FRONT_RIGHT_MOTOR = 2;
+    public static final int DRIVE_REAR_RIGHT_MOTOR = 3;
     
     // Intake
     public static final int INTAKE_OUTER_MOTOR_A = 5;
@@ -30,7 +30,7 @@ public class Ports {
     
     /* CAN Motors */
     public static final int COMPRESSOR = 0;
-    public static final int PDP_MODULE = 51;
+    public static final int PDP_MODULE = 1;
     
     public static final int ELEVATOR_MOTOR_A = 13;
     public static final int ELEVATOR_MOTOR_B = 15;
