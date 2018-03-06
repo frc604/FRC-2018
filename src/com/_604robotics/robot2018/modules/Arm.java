@@ -130,7 +130,7 @@ public class Arm extends Module {
         encoder.setOffset(Calibration.ARM_ENCODER_ZERO);
         motorA.setInverted(false);
         motorB.setInverted(true);
-        motorB.set(ControlMode.Follower,Ports.ARM_MOTOR_A);
+        //motorB.set(ControlMode.Follower,Ports.ARM_MOTOR_A);
         pid = new RotatingArmPIDController(Calibration.ARM_P,
                 Calibration.ARM_I,
                 Calibration.ARM_D,

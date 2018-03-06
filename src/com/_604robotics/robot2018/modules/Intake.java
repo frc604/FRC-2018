@@ -6,17 +6,19 @@ import com._604robotics.robotnik.Action;
 import com._604robotics.robotnik.Input;
 import com._604robotics.robotnik.Module;
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 
 import edu.wpi.first.wpilibj.VictorSP;
 
 // TODO: Use current mode?
 public class Intake extends Module {
 	
-    private WPI_TalonSRX motorA = new WPI_TalonSRX(Ports.INTAKE_INNER_MOTOR_A);
-    private WPI_TalonSRX motorB = new WPI_TalonSRX(Ports.INTAKE_INNER_MOTOR_B);
-    private VictorSP outerMotorA = new VictorSP(Ports.INTAKE_OUTER_MOTOR_A);
-    private VictorSP outerMotorB = new VictorSP(Ports.INTAKE_OUTER_MOTOR_B);
+    private VictorSP motorA = new VictorSP(Ports.INTAKE_OUTER_MOTOR_A);
+    private VictorSP motorB = new VictorSP(Ports.INTAKE_OUTER_MOTOR_B);
+    private WPI_VictorSPX outerMotorA = new WPI_VictorSPX(Ports.INTAKE_INNER_MOTOR_A);
+    private WPI_VictorSPX outerMotorB = new WPI_VictorSPX(Ports.INTAKE_INNER_MOTOR_B);
 	
     public Action run = new Run();
 	public Action idle = new Idle();
@@ -36,8 +38,8 @@ public class Intake extends Module {
     	@Override
     	public void run() {
     		motorA.set(runPower.get());
+    		motorB.set(runPower.get());
     		outerMotorA.set(runPower.get());
-    		outerMotorB.set(runPower.get());
     	}
     }
     	
@@ -49,16 +51,16 @@ public class Intake extends Module {
 		@Override
 		public void run() {
 			motorA.set(Calibration.INTAKE_PASSIVE_POWER);
+			motorB.set(Calibration.INTAKE_PASSIVE_POWER);
 			outerMotorA.set(Calibration.INTAKE_PASSIVE_POWER);
-			outerMotorB.set(Calibration.INTAKE_PASSIVE_POWER);
 		}
 	}
 	
 	public Intake () {
         super(Intake.class);
         motorB.setInverted(true);
-        motorB.set(ControlMode.Follower, Ports.INTAKE_INNER_MOTOR_A);
         outerMotorB.setInverted(true);
+        outerMotorB.set(ControlMode.Follower, Ports.INTAKE_OUTER_MOTOR_A);
         setDefaultAction(idle);
     }
 	
