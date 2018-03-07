@@ -30,7 +30,7 @@ public class Ports {
     
     /* CAN Motors */
     public static final int COMPRESSOR = 0;
-    public static final int PDP_MODULE = 1;
+    public static final int PDP_MODULE = 51;
     
     public static final int ELEVATOR_MOTOR_A = 13;
     public static final int ELEVATOR_MOTOR_B = 15;
