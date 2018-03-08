@@ -273,7 +273,7 @@ public class TeleopMode extends Coordinator {
     			if( driverLeftTrigger != 0 ) {
     				output = -0.7*(driverLeftTrigger*driverLeftTrigger);
     			} else if( driverRightTrigger != 0 ) {
-    				output = driverRightTrigger;
+    				output = 0.7*driverRightTrigger;
     			}
     			run.runPower.set(output);
     			run.activate();
@@ -282,7 +282,7 @@ public class TeleopMode extends Coordinator {
     		    if( manipLeftTrigger != 0 ) {
     		    	output = -0.7*(manipLeftTrigger*manipLeftTrigger);
     		    } else if( manipRightTrigger != 0 ) {
-    		    	output = manipRightTrigger;
+    		    	output = 0.7*manipRightTrigger;
     		    }
     		    run.runPower.set(output);
     		    run.activate();
