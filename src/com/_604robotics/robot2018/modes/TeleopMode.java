@@ -189,9 +189,9 @@ public class TeleopMode extends Coordinator {
     	public void run() {
     		clamping.update(driverX || manipX);
             if (clamping.isInOnState()) {
-                retract.activate();
-            } else if (clamping.isInOffState()) {
                 extend.activate();
+            } else if (clamping.isInOffState()) {
+                retract.activate();
             }
     	}
     }
