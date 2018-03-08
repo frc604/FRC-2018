@@ -349,8 +349,15 @@ public class TeleopMode extends Coordinator {
         			robot.elevator.resetIntegral(Calibration.ELEVATOR_RESET_SUM);
         			getHoldElevatorClicks = false;
         		}
-        		setpoint.target_clicks.set(holdSetpoint);
-        		setpoint.activate();
+        		// No need to hold up at such a low level
+        		// Reduce quiescent current consumption in these cases
+        		if (holdSetpoint<Calibration.ELEVATOR_BUMPER_CLEAR) {
+        			move.liftPower.set(0.0);
+        			move.activate();
+        		} else {
+        			setpoint.target_clicks.set(holdSetpoint);
+        			setpoint.activate();
+        		}
         	}
         }
     }
