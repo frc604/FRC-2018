@@ -40,6 +40,7 @@ public class Intake extends Module {
     		motorA.set(runPower.get());
     		motorB.set(runPower.get());
     		outerMotorA.set(runPower.get());
+    		outerMotorB.set(runPower.get());
     	}
     }
     	
@@ -53,14 +54,16 @@ public class Intake extends Module {
 			motorA.set(Calibration.INTAKE_PASSIVE_POWER);
 			motorB.set(Calibration.INTAKE_PASSIVE_POWER);
 			outerMotorA.set(Calibration.INTAKE_PASSIVE_POWER);
+			outerMotorB.set(Calibration.INTAKE_PASSIVE_POWER);
 		}
 	}
 	
 	public Intake () {
         super(Intake.class);
+        motorA.setInverted(true);
         motorB.setInverted(true);
+        // following done inside actions themselves
         outerMotorB.setInverted(true);
-        outerMotorB.set(ControlMode.Follower, Ports.INTAKE_OUTER_MOTOR_A);
         setDefaultAction(idle);
     }
 	

@@ -2,13 +2,14 @@ package com._604robotics.robot2018.constants;
 
 public class Ports {
     private Ports () {}
+    //WARNING: INTAKE ID MIXUP
     
     /* Solenoids */
-    public static final int SHIFTER_A = 0;
-    public static final int SHIFTER_B = 2;
+    public static final int SHIFTER_A = 6;
+    public static final int SHIFTER_B = 7;
     
-    public static final int CLAMP_A = 1;
-    public static final int CLAMP_B = 3;
+    public static final int CLAMP_A = 4;
+    public static final int CLAMP_B = 5;
     
     /* Victor Motors */
     // Remember to take note of PDP ports for these too once they are determined
@@ -35,8 +36,8 @@ public class Ports {
     public static final int ELEVATOR_MOTOR_A = 13;
     public static final int ELEVATOR_MOTOR_B = 15;
     
-    public static final int INTAKE_INNER_MOTOR_A = 12;
-    public static final int INTAKE_INNER_MOTOR_B = 14;
+    public static final int INTAKE_INNER_MOTOR_A = 14;
+    public static final int INTAKE_INNER_MOTOR_B = 12;
     
     public static final int ARM_MOTOR_A = 11;
     public static final int ARM_MOTOR_B = 10;
