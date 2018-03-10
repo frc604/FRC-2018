@@ -22,7 +22,7 @@ public class Calibration {
     public static final double DRIVE_ROTATE_PID_I = 0;
     public static final double DRIVE_ROTATE_PID_D = 0.01; // 0.005
     public static final double DRIVE_ROTATE_PID_MAX = 0.4;// was 0.5
-    public static final double DRIVE_ROTATE_TOLERANCE = 5;
+    public static final double DRIVE_ROTATE_TOLERANCE = 10;
 
     public static final double DRIVE_PID_AFTER_TIMING = 0.5;
     public static final double DRIVE_PID_SAMPLE_RATE = 0.01;
