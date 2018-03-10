@@ -38,8 +38,9 @@ public class Calibration {
      * XXX: Empirical parameters have not been updated AT ALL because they have been unnecessary so far
      */
     public static final AutonMovement.DriveTrainProperties DRIVE_PROPERTIES
-    = new AutonMovement.DriveTrainProperties(490, 26.7, 2.5, 20.767, 8.323);//26.05
+    = new AutonMovement.DriveTrainProperties(490, 25.22, 2.5, 20.767, 8.323);//26.05
     // second to last = coefficient, second value = offset
+    // Width was 26.7
     static {
         System.out.println("Clicks over inches is "+DRIVE_PROPERTIES.getClicksOverInches());
         System.out.println("Clicks over degrees is "+DRIVE_PROPERTIES.getDegreesOverClicks());
@@ -48,9 +49,9 @@ public class Calibration {
     // Testing targets
     // 340 degrees in code is 360 degrees irl at low level of rotation
     public static final double DRIVE_ROTATE_LEFT_TARGET
-    = AutonMovement.degreesToClicks(DRIVE_PROPERTIES, -85);
+    = AutonMovement.degreesToClicks(DRIVE_PROPERTIES, -90);
     public static final double DRIVE_ROTATE_RIGHT_TARGET
-    = AutonMovement.degreesToClicks(DRIVE_PROPERTIES, 85);
+    = AutonMovement.degreesToClicks(DRIVE_PROPERTIES, 90);
     public static final double DRIVE_MOVE_FORWARD_TARGET
     = AutonMovement.inchesToClicks(DRIVE_PROPERTIES, 72);
     public static final double DRIVE_MOVE_BACKWARD_TARGET
