@@ -20,9 +20,9 @@ public class Calibration {
     // Rotate PID is now calibrated-don't touch
     public static final double DRIVE_ROTATE_PID_P = 0.003; // 0.003 / 0.005 / 0.01
     public static final double DRIVE_ROTATE_PID_I = 0;
-    public static final double DRIVE_ROTATE_PID_D = 0.00; // 0.005
-    public static final double DRIVE_ROTATE_PID_MAX = 0.55;// was 0.5
-    public static final double DRIVE_ROTATE_TOLERANCE = 100;
+    public static final double DRIVE_ROTATE_PID_D = 0.01; // 0.005
+    public static final double DRIVE_ROTATE_PID_MAX = 0.4;// was 0.5
+    public static final double DRIVE_ROTATE_TOLERANCE = 5;
 
     public static final double DRIVE_PID_AFTER_TIMING = 0.5;
     public static final double DRIVE_PID_SAMPLE_RATE = 0.01;
@@ -46,10 +46,11 @@ public class Calibration {
     }
     
     // Testing targets
+    // 340 degrees in code is 360 degrees irl at low level of rotation
     public static final double DRIVE_ROTATE_LEFT_TARGET
-    = AutonMovement.degreesToClicks(DRIVE_PROPERTIES, -90);
+    = AutonMovement.degreesToClicks(DRIVE_PROPERTIES, -85);
     public static final double DRIVE_ROTATE_RIGHT_TARGET
-    = AutonMovement.degreesToClicks(DRIVE_PROPERTIES, 90);
+    = AutonMovement.degreesToClicks(DRIVE_PROPERTIES, 85);
     public static final double DRIVE_MOVE_FORWARD_TARGET
     = AutonMovement.inchesToClicks(DRIVE_PROPERTIES, 72);
     public static final double DRIVE_MOVE_BACKWARD_TARGET
@@ -96,7 +97,7 @@ public class Calibration {
     public static final double ELEVATOR_PID_TIME_RUN = 5;
     
     
-    public static final double ARM_P = 0.00009;
+    public static final double ARM_P = 0.0001; // 0.00009
     public static final double ARM_I = 0.00004;
     public static final double ARM_D = 0.00002;
     // This is multiplication by a cosine factor
