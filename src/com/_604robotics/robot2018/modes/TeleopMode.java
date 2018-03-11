@@ -271,16 +271,16 @@ public class TeleopMode extends Coordinator {
     		if( driverLeftTrigger != 0 || driverRightTrigger != 0 ) {
     			double output = 0;
     			if( driverLeftTrigger != 0 ) {
-    				output = -0.7*(driverLeftTrigger*driverLeftTrigger);
+    				output = -0.8*(driverLeftTrigger*driverLeftTrigger);
     			} else if( driverRightTrigger != 0 ) {
     				output = 0.7*driverRightTrigger;
     			}
     			run.runPower.set(output);
     			run.activate();
-    		} else if( manipLeftTrigger != 0 || manipRightTrigger != 0 ) {
+    		} else if( manipRightBumper || manipRightTrigger != 0 ) {
     			double output = 0;
-    		    if( manipLeftTrigger != 0 ) {
-    		    	output = -0.7*(manipLeftTrigger*manipLeftTrigger);
+    		    if( manipRightBumper ) {
+    		    	output = -0.8;
     		    } else if( manipRightTrigger != 0 ) {
     		    	output = 0.7*manipRightTrigger;
     		    }
