@@ -16,6 +16,7 @@ public class Robot2018 extends Robot {
     public final Shifter shifter = addModule(new Shifter(Ports.SHIFTER_A, Ports.SHIFTER_B));
     public final Clamp clamp = addModule(new Clamp());
     public final Arm arm = addModule(new Arm());
+    public final Camera camera = addModule(new Camera());
     public final PowerMonitor powermonitor = addModule(new PowerMonitor(Ports.PDP_MODULE, Ports.COMPRESSOR));
     
     public Robot2018() {
