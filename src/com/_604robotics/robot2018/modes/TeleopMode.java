@@ -308,7 +308,8 @@ public class TeleopMode extends Coordinator {
         		 robot.elevator.encoder.zero();
                  setpoint.target_clicks.set(robot.elevator.encoderClicks.get());
                  setpoint.activate();
-        	} else */if( manipLeftJoystickY != 0 && !manipLeftBumper ) {
+        	} else */
+            if( manipLeftJoystickY != 0 && !manipLeftBumper ) {
         	    // Scale negative power for safety
         	    double elevPower = manipLeftJoystickY;
         	    if (elevPower<0) {
@@ -342,9 +343,10 @@ public class TeleopMode extends Coordinator {
         		setpoint.activate();
         		getHoldElevatorClicks = true;
         	} else {
+        	    test.log("ERROR","Reaching set logic");
         	    // This should only be called once
         		if( getHoldElevatorClicks ) {
-        		    test.log("WARN","Activate elevator hold with setpoint "+robot.elevator.encoderClicks.get());
+        		    test.log("ERROR","Activate elevator hold with setpoint "+robot.elevator.encoderClicks.get());
         			holdSetpoint=robot.elevator.encoderClicks.get();
         			robot.elevator.resetIntegral(Calibration.ELEVATOR_RESET_SUM);
         			getHoldElevatorClicks = false;
