@@ -15,7 +15,7 @@ public class Elevator extends Module {
 
     private WPI_TalonSRX motorA = new WPI_TalonSRX(Ports.ELEVATOR_MOTOR_A);
     private WPI_TalonSRX motorB = new WPI_TalonSRX(Ports.ELEVATOR_MOTOR_B);
-    public TalonPWMEncoder encoder = new TalonPWMEncoder(motorA);
+    public TalonPWMEncoder encoder = new TalonPWMEncoder(motorB);
 
     public double persistent = 0;
     

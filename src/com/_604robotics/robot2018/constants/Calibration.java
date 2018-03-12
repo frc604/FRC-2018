@@ -20,9 +20,9 @@ public class Calibration {
     // Rotate PID is now calibrated-don't touch
     public static final double DRIVE_ROTATE_PID_P = 0.003; // 0.003 / 0.005 / 0.01
     public static final double DRIVE_ROTATE_PID_I = 0;
-    public static final double DRIVE_ROTATE_PID_D = 0.00; // 0.005
-    public static final double DRIVE_ROTATE_PID_MAX = 0.55;// was 0.5
-    public static final double DRIVE_ROTATE_TOLERANCE = 100;
+    public static final double DRIVE_ROTATE_PID_D = 0.01; // 0.005
+    public static final double DRIVE_ROTATE_PID_MAX = 0.4;// was 0.5
+    public static final double DRIVE_ROTATE_TOLERANCE = 10;
 
     public static final double DRIVE_PID_AFTER_TIMING = 0.5;
     public static final double DRIVE_PID_SAMPLE_RATE = 0.01;
@@ -40,12 +40,14 @@ public class Calibration {
     public static final AutonMovement.DriveTrainProperties DRIVE_PROPERTIES
     = new AutonMovement.DriveTrainProperties(490, 25.22, 2.5, 20.767, 8.323);//26.05
     // second to last = coefficient, second value = offset
+    // Width was 26.7
     static {
         System.out.println("Clicks over inches is "+DRIVE_PROPERTIES.getClicksOverInches());
         System.out.println("Clicks over degrees is "+DRIVE_PROPERTIES.getDegreesOverClicks());
     }
     
     // Testing targets
+    // 340 degrees in code is 360 degrees irl at low level of rotation
     public static final double DRIVE_ROTATE_LEFT_TARGET
     = AutonMovement.degreesToClicks(DRIVE_PROPERTIES, -90);
     public static final double DRIVE_ROTATE_RIGHT_TARGET
@@ -85,7 +87,7 @@ public class Calibration {
     public static final int ELEVATOR_CLICK_TOLERANCE = 50;
     
     // Prefer to be at the bottom so push into hard stop
-    public static final double ELEVATOR_ENCODER_ZERO = 720;
+    public static final double ELEVATOR_ENCODER_ZERO = 720+2800-1902;
     public static final double ELEVATOR_LOW_TARGET = 0;
     public static final double ELEVATOR_BUMPER_CLEAR = 3000;
     public static final double ELEVATOR_SWITCH_CLEAR = 19100;
@@ -101,7 +103,7 @@ public class Calibration {
     public static final double ARM_D = 0.00002;
     // This is multiplication by a cosine factor
     public static final double ARM_F = 0.2;
-    public static final double ARM_ENCODER_ZERO = -1020;//-2900-1270; // 2080-2900-200;
+    public static final double ARM_ENCODER_ZERO = -1020+1550-4000+100;//+1640;
     public static final double ARM_ENCODER_FULL_ROT=2*4096*54/30;
     /* Arm */
     // Bound I term motor output to 0.15
