@@ -87,7 +87,7 @@ public class Calibration {
     public static final int ELEVATOR_CLICK_TOLERANCE = 50;
     
     // Prefer to be at the bottom so push into hard stop
-    public static final double ELEVATOR_ENCODER_ZERO = 720+2800-1902;
+    public static final double ELEVATOR_ENCODER_ZERO = 720-1618+890;
     public static final double ELEVATOR_LOW_TARGET = 0;
     public static final double ELEVATOR_BUMPER_CLEAR = 3000;
     public static final double ELEVATOR_SWITCH_CLEAR = 19100;
@@ -102,13 +102,13 @@ public class Calibration {
     public static final double ARM_I = 0.00004;
     public static final double ARM_D = 0.00002;
     // This is multiplication by a cosine factor
-    public static final double ARM_F = 0.2;
-    public static final double ARM_ENCODER_ZERO = -1020+1550-4000+100;//+1640;
+    public static final double ARM_F = 0.25;
+    public static final double ARM_ENCODER_ZERO = -1020+2800;//-2900-1270; // 2080-2900-200;
     public static final double ARM_ENCODER_FULL_ROT=2*4096*54/30;
     /* Arm */
     // Bound I term motor output to 0.15
     public static final double ARM_MAX_SUM = 0.08/ARM_I;
-    public static final double ARM_MIN_SUM = -0.04/ARM_I;
+    public static final double ARM_MIN_SUM = -0.06/ARM_I;
     public static final double ARM_PID_PERIOD = 0.02;
     // Lower speed going down due to weight
     public static final double ARM_MIN_SPEED = -0.07;
