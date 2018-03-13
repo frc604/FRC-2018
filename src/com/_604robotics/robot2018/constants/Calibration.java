@@ -87,7 +87,7 @@ public class Calibration {
     public static final int ELEVATOR_CLICK_TOLERANCE = 50;
     
     // Prefer to be at the bottom so push into hard stop
-    public static final double ELEVATOR_ENCODER_ZERO = 720-1618+890;
+    public static final double ELEVATOR_ENCODER_ZERO = 915;
     public static final double ELEVATOR_LOW_TARGET = 0;
     public static final double ELEVATOR_BUMPER_CLEAR = 3000;
     public static final double ELEVATOR_SWITCH_CLEAR = 19100;

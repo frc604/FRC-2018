@@ -302,67 +302,53 @@ public class TeleopMode extends Coordinator {
             setpoint = robot.elevator.new Setpoint();
         }
 
-        public void run() {
-            // Only use when absolutely necessary
-        	/*if( driverStart || manipStart ) {
-        		 robot.elevator.encoder.zero();
-                 setpoint.target_clicks.set(robot.elevator.encoderClicks.get());
-                 setpoint.activate();
-        	} else */
-            if( manipLeftJoystickY != 0 && !manipLeftBumper ) {
-        	    // Scale negative power for safety
-        	    double elevPower = manipLeftJoystickY;
-        	    if (elevPower<0) {
-        	        elevPower*=0.5;
-        	    }
-        		move.liftPower.set(elevPower);
-        		move.activate();
-        		getHoldElevatorClicks = true;
-        	} else if( manipA ) {
-        		setpoint.target_clicks.set(Calibration.ELEVATOR_LOW_TARGET);
-        		setpoint.activate();
-        		getHoldElevatorClicks = true;
-        	} else if( manipB && manipLeftBumper ) {
-        		setpoint.target_clicks.set(Calibration.ELEVATOR_MID_TARGET);
-        		setpoint.activate();
-        		getHoldElevatorClicks = true;
-        	} else if( manipY && manipLeftBumper ) {
-        		setpoint.target_clicks.set(Calibration.ELEVATOR_HIGH_TARGET);
-        		setpoint.activate();
-        		getHoldElevatorClicks = true;
-        	} else if( driverA ) {
-        		setpoint.target_clicks.set(Calibration.ELEVATOR_LOW_TARGET);
-        		setpoint.activate();
-        		getHoldElevatorClicks = true;
-        	} else if( driverB && driverLeftJoystickButton ) {
-        		setpoint.target_clicks.set(Calibration.ELEVATOR_MID_TARGET);
-        		setpoint.activate();
-        		getHoldElevatorClicks = true;
-        	} else if( driverY && driverLeftJoystickButton ) {
-        		setpoint.target_clicks.set(Calibration.ELEVATOR_HIGH_TARGET);
-        		setpoint.activate();
-        		getHoldElevatorClicks = true;
-        	} else {
-        	    test.log("ERROR","Reaching set logic");
-        	    // This should only be called once
-        		if( getHoldElevatorClicks ) {
-        		    test.log("ERROR","Activate elevator hold with setpoint "+robot.elevator.encoderClicks.get());
-        			holdSetpoint=robot.elevator.encoderClicks.get();
-        			robot.elevator.resetIntegral(Calibration.ELEVATOR_RESET_SUM);
-        			getHoldElevatorClicks = false;
-        		}
-        		// No need to hold up at such a low level
-        		// Reduce quiescent current consumption in these cases
-        		if (holdSetpoint<Calibration.ELEVATOR_BUMPER_CLEAR) {
-        			move.liftPower.set(0.0);
-        			move.activate();
-        		} else {
-        			setpoint.target_clicks.set(holdSetpoint);
-        			setpoint.activate();
-        		}
-        	}
-        }
-    }
+		public void run() {
+			// Only use when elevator is at bottom
+			if (driverStart || manipStart) {
+				robot.elevator.encoder.zero();
+				setpoint.target_clicks.set(robot.elevator.encoderClicks.get());
+				setpoint.activate();
+			} else if (manipLeftJoystickY != 0 && !manipLeftBumper) {
+				// Scale negative power for safety
+				double elevPower = manipLeftJoystickY;
+				if (elevPower < 0) {
+					elevPower *= 0.5;
+				}
+				move.liftPower.set(elevPower);
+				move.activate();
+				getHoldElevatorClicks = true;
+			} else if (manipA) {
+				setpoint.target_clicks.set(Calibration.ELEVATOR_LOW_TARGET);
+				setpoint.activate();
+				getHoldElevatorClicks = true;
+			} else if (manipB && manipLeftBumper) {
+				setpoint.target_clicks.set(Calibration.ELEVATOR_MID_TARGET);
+				setpoint.activate();
+				getHoldElevatorClicks = true;
+			} else if (manipY && manipLeftBumper) {
+				setpoint.target_clicks.set(Calibration.ELEVATOR_HIGH_TARGET);
+				setpoint.activate();
+				getHoldElevatorClicks = true;
+			} else if (driverA) {
+				setpoint.target_clicks.set(Calibration.ELEVATOR_LOW_TARGET);
+				setpoint.activate();
+				getHoldElevatorClicks = true;
+			} else if (driverB && driverLeftJoystickButton) {
+				setpoint.target_clicks.set(Calibration.ELEVATOR_MID_TARGET);
+				setpoint.activate();
+				getHoldElevatorClicks = true;
+			} else if (driverY && driverLeftJoystickButton) {
+				setpoint.target_clicks.set(Calibration.ELEVATOR_HIGH_TARGET);
+				setpoint.activate();
+				getHoldElevatorClicks = true;
+			} else {
+				test.log("ERROR", "Activate elevator hold with setpoint " + robot.elevator.encoderClicks.get());
+				holdSetpoint = robot.elevator.encoderClicks.get();
+				robot.elevator.resetIntegral(Calibration.ELEVATOR_RESET_SUM);
+				getHoldElevatorClicks = false;
+			}
+		}
+	}
     
     private enum CurrentDrive {
         IDLE, ARCADE, TANK
