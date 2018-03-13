@@ -50,12 +50,6 @@ public class Drive extends Module {
     
     public final Output<Double> leftClickRate = addOutput("leftClickRate", encoderLeft::getRate);
     public final Output<Double> rightClickRate = addOutput("rightClickRate", encoderRight::getRate);
-    
-    public void updateDashboardSendables() {
-        //SmartDashboard.putData("Drive Base", robotDrive);
-        SmartDashboard.putData("Left Encoder", encoderLeft);
-        SmartDashboard.putData("Right Encoder", encoderRight);
-    }
 
     public class Idle extends Action {
         public Idle () {
