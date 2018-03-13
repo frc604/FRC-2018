@@ -88,11 +88,11 @@ public class Calibration {
     
     // Prefer to be at the bottom so push into hard stop
     public static final double ELEVATOR_ENCODER_ZERO = 915;
-    public static final double ELEVATOR_LOW_TARGET = 915;
-    public static final double ELEVATOR_BUMPER_CLEAR = 4000;
-    public static final double ELEVATOR_SWITCH_CLEAR = 8000;
-    public static final double ELEVATOR_MID_TARGET = 20000;
-    public static final double ELEVATOR_HIGH_TARGET = 34000;
+    public static final double ELEVATOR_LOW_TARGET = 0;
+    public static final double ELEVATOR_BUMPER_CLEAR = 3000;
+    public static final double ELEVATOR_SWITCH_CLEAR = 19100;
+    public static final double ELEVATOR_MID_TARGET = 14000;
+    public static final double ELEVATOR_HIGH_TARGET = 32000;
     //@Unreal("Find more reasonable time or eliminate hold part altogether")
     //public static final double ELEVATOR_PID_CONTINUE = 10;
     public static final double ELEVATOR_PID_TIME_RUN = 5;
