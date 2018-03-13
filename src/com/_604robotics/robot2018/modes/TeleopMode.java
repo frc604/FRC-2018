@@ -304,12 +304,11 @@ public class TeleopMode extends Coordinator {
 
         public void run() {
             // Only use when absolutely necessary
-        	/*if( driverStart || manipStart ) {
+        	if( driverStart || manipStart ) {
         		 robot.elevator.encoder.zero();
                  setpoint.target_clicks.set(robot.elevator.encoderClicks.get());
                  setpoint.activate();
-        	} else */
-            if( manipLeftJoystickY != 0 && !manipLeftBumper ) {
+        	} else if( manipLeftJoystickY != 0 && !manipLeftBumper ) {
         	    // Scale negative power for safety
         	    double elevPower = manipLeftJoystickY;
         	    if (elevPower<0) {
@@ -343,23 +342,25 @@ public class TeleopMode extends Coordinator {
         		setpoint.activate();
         		getHoldElevatorClicks = true;
         	} else {
-        	    test.log("ERROR","Reaching set logic");
+        	    //test.log("ERROR","Reaching set logic");
         	    // This should only be called once
-        		if( getHoldElevatorClicks ) {
+        		//if( getHoldElevatorClicks ) {
         		    test.log("ERROR","Activate elevator hold with setpoint "+robot.elevator.encoderClicks.get());
         			holdSetpoint=robot.elevator.encoderClicks.get();
         			robot.elevator.resetIntegral(Calibration.ELEVATOR_RESET_SUM);
         			getHoldElevatorClicks = false;
-        		}
+        		//}
         		// No need to hold up at such a low level
         		// Reduce quiescent current consumption in these cases
-        		if (holdSetpoint<Calibration.ELEVATOR_BUMPER_CLEAR) {
+        		/*
+        			if (holdSetpoint<Calibration.ELEVATOR_BUMPER_CLEAR) {
         			move.liftPower.set(0.0);
         			move.activate();
         		} else {
         			setpoint.target_clicks.set(holdSetpoint);
         			setpoint.activate();
         		}
+        		*/
         	}
         }
     }

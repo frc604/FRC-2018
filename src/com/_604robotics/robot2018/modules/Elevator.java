@@ -21,10 +21,11 @@ public class Elevator extends Module {
     
     public final Setpoint setpoint = new Setpoint();
     public final PersistentSetpoint persistentSetpoint = new PersistentSetpoint();
-
+    
     public final Output<Double> encoderRate = addOutput("Elevator Rate", encoder::getVelocity);
     public final Output<Double> encoderClicks = addOutput("Elevator Clicks", encoder::getPosition);
 
+    public boolean raised = false;
     public boolean holding = true;
     public double power = 0;
 
@@ -34,7 +35,14 @@ public class Elevator extends Module {
     private final ClampedIntegralPIDController pid;
     
     public final Output<Double> pidError;
-
+    
+    public final Input<Boolean> clear = addInput("Clear", false);
+    public final Output<Boolean> elevatorRaised = addOutput("Elevator Raised", this::getRaised);
+    
+    public boolean getRaised() {
+    	return encoder.getPosition() > Calibration.ELEVATOR_BUMPER_CLEAR - 2000;
+    }
+    
     public boolean getHolding() {
         return holding;
     }
@@ -66,9 +74,10 @@ public class Elevator extends Module {
         
         @Override
         public void run () {
+        	System.out.println("move");
             holding = false;
             power = liftPower.get();
-            motorA.set(liftPower.get());
+            motorA.set(power);
         }
     }
 
@@ -92,6 +101,11 @@ public class Elevator extends Module {
         }
         @Override
         public void run () {
+        	System.out.println("setpoint enabled");
+        	if( clear.get() && encoder.getPosition() < Calibration.ELEVATOR_BUMPER_CLEAR ) {
+        		System.out.println("clear enabled");
+        		target_clicks.set(Calibration.ELEVATOR_BUMPER_CLEAR);
+        	}
             pid.setSetpoint(target_clicks.get());
         }
         @Override
@@ -127,7 +141,13 @@ public class Elevator extends Module {
     	
     	@Override
     	public void run() {
-    		pid.setSetpoint(persistent);
+    		System.out.println("persistent enabled");
+        	if( clear.get() && encoder.getPosition() < Calibration.ELEVATOR_BUMPER_CLEAR ) {
+        		System.out.println("clear enabled");
+        		pid.setSetpoint(Calibration.ELEVATOR_BUMPER_CLEAR);
+        	} else {
+                pid.setSetpoint(persistent);
+        	}
     	}
     	
     	@Override
