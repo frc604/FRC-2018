@@ -14,6 +14,7 @@ public class TandemSystem extends Coordinator {
     public boolean run() {
     	robot.arm.elevatorRaised.set(robot.elevator.elevatorRaised.get());
     	robot.elevator.clear.set(robot.arm.clear.get());
+    	robot.arm.raiseMore.set(robot.elevator.raiseMore.get());
     	return true;
     }
 }

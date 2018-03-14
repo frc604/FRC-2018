@@ -31,6 +31,10 @@ public class Dashboard extends DashboardModule {
     
     public final Input<Boolean> isClamped = addDashboardInput("Is Clamped", false);
     
+    public final Input<Boolean> clear = addDashboardInput("Clear", false);
+    public final Input<Boolean> elevatorRaised = addDashboardInput("Elevator Raised", false);
+    public final Input<Boolean> raiseMore = addDashboardInput("Raise More", false);
+    
     public enum AutonMode {
         OFF,
         // Following are actual strategy selections

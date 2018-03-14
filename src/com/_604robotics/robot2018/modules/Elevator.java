@@ -38,12 +38,16 @@ public class Elevator extends Module {
     
     public final Input<Boolean> clear = addInput("Clear", false);
     public final Output<Boolean> elevatorRaised = addOutput("Elevator Raised", this::getRaised);
+    public final Output<Boolean> raiseMore = addOutput("Raise More", this::raiseMore);
+    
+    public boolean getHoldElevatorClicks = false;
     
     public boolean getRaised() {
-    	if( encoder.getPosition() > Calibration.ELEVATOR_BUMPER_CLEAR ) {
-    		System.out.println("Elevator Raised");
-    	}
     	return encoder.getPosition() > Calibration.ELEVATOR_BUMPER_CLEAR;
+    }
+    
+    public boolean raiseMore() {
+    	return encoder.getPosition() > Calibration.ELEVATOR_BUMPER_CLEAR + 1000;
     }
     
     public boolean getHolding() {
@@ -86,10 +90,7 @@ public class Elevator extends Module {
             	encoder.zero();
             	System.out.println("Elevator zeroed.");
             }
-            if( encoder.getPosition() > Calibration.ELEVATOR_HIGH_TARGET + Calibration.ELEVATOR_RESET_TOLERANCE ) {
-            	encoder.setOffset(encoder.getPosition() - Calibration.ELEVATOR_HIGH_TARGET);
-            	System.out.println("Elevator zeroed.");
-            }
+            getHoldElevatorClicks = true;
         }
     }
 
@@ -113,15 +114,14 @@ public class Elevator extends Module {
         }
         @Override
         public void run () {
-        	System.out.println("setpoint enabled");
-        	if( clear.get() ) {
-        		System.out.println("Clear Active");
-        	}
-        	if( clear.get() && encoder.getPosition() < Calibration.ELEVATOR_BUMPER_CLEAR ) {
+        	if( clear.get() && encoder.getPosition() < Calibration.ELEVATOR_RAISE_TARGET + 1000 ) {
         		System.out.println("Raising");
-        		target_clicks.set(Calibration.ELEVATOR_BUMPER_CLEAR);
+        		target_clicks.set(Calibration.ELEVATOR_RAISE_TARGET);
         	}
+        	System.out.println("setpoint enabled at " + target_clicks.get());
             pid.setSetpoint(target_clicks.get());
+            pid.enable();
+            getHoldElevatorClicks = true;
         }
         @Override
         public void end () {
@@ -157,12 +157,13 @@ public class Elevator extends Module {
     	@Override
     	public void run() {
     		System.out.println("persistent enabled");
-        	if( clear.get() && encoder.getPosition() < Calibration.ELEVATOR_BUMPER_CLEAR ) {
+        	if( clear.get() && encoder.getPosition() < Calibration.ELEVATOR_RAISE_TARGET ) {
         		System.out.println("clear enabled");
-        		pid.setSetpoint(Calibration.ELEVATOR_BUMPER_CLEAR);
+        		pid.setSetpoint(Calibration.ELEVATOR_RAISE_TARGET);
         	} else {
                 pid.setSetpoint(persistent);
         	}
+        	getHoldElevatorClicks = true;
     	}
     	
     	@Override

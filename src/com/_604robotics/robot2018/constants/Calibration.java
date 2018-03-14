@@ -84,12 +84,13 @@ public class Calibration {
     public static final double ELEVATOR_MAX_SPEED = 0.8;
     
     public static final double ELEVATOR_TARGET_SPEED = 0.5;
-    public static final int ELEVATOR_CLICK_TOLERANCE = 50;
+    public static final int ELEVATOR_CLICK_TOLERANCE = 5;
     
     // Prefer to be at the bottom so push into hard stop
     public static final double ELEVATOR_ENCODER_ZERO = 915;
     public static final double ELEVATOR_LOW_TARGET = 0;
     public static final double ELEVATOR_BUMPER_CLEAR = 3000;
+    public static final double ELEVATOR_RAISE_TARGET = 6000;
     public static final double ELEVATOR_SWITCH_CLEAR = 19100;
     public static final double ELEVATOR_MID_TARGET = 14000;
     public static final double ELEVATOR_HIGH_TARGET = 32000;
@@ -104,7 +105,6 @@ public class Calibration {
     public static final double ARM_D = 0.00002;
     // This is multiplication by a cosine factor
     public static final double ARM_F = 0.25;
-    public static final double ARM_ENCODER_ZERO = -1020+2800;//-2900-1270; // 2080-2900-200;
     public static final double ARM_ENCODER_FULL_ROT=2*4096*54/30;
     /* Arm */
     // Bound I term motor output to 0.15
@@ -123,10 +123,12 @@ public class Calibration {
     // Low will be negative, high will be positive, zero is horizontal
     // 4096 clicks/rot * 54/30 is 7372.8
     // Assuming 60 degree increments for now
-    public static final double ARM_LOW_TARGET = -2100;
-    public static final double ARM_MID_TARGET = 200; //0
-    public static final double ARM_BALANCE_TARGET = 900;
-    public static final double ARM_HIGH_TARGET = 4200;
+    public static final double ARM_ENCODER_ZERO = -400;
+    public static final double ARM_LOW_TARGET = 0;
+    public static final double ARM_MID_TARGET = 2300; //0
+    public static final double ARM_BALANCE_TARGET = 3000;
+    public static final double ARM_CLEAR_TARGET = 500;
+    public static final double ARM_HIGH_TARGET = 6300;
     
     /* Intake */
     public static final double INTAKE_PASSIVE_POWER = 0;

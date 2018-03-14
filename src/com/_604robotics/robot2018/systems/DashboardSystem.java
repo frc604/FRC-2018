@@ -30,6 +30,10 @@ public class DashboardSystem extends Coordinator {
         
         robot.dashboard.isClamped.set(robot.clamp.isClamped.get());
         robot.powermonitor.initDashboardSendables();
+        
+        robot.dashboard.elevatorRaised.set(robot.elevator.elevatorRaised.get());
+        robot.dashboard.raiseMore.set(robot.elevator.raiseMore.get());
+        robot.dashboard.clear.set(robot.arm.clear.get());
         return true;
     }
 }

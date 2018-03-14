@@ -61,7 +61,6 @@ public class TeleopMode extends Coordinator {
         clampManager = new ClampManager();
     }
     
-    private boolean getHoldElevatorClicks = false;
     private boolean getHoldArmClicks = false;
     
     private double driverLeftJoystickY = 0.0;
@@ -246,14 +245,13 @@ public class TeleopMode extends Coordinator {
     		} else {
     		    // This should only be called once
                 if( getHoldArmClicks ) {
-                    test.log("INFO","Retrieved arm hold setpoint: "+robot.arm.encoderClicks.get());
                     holdSetpoint=robot.arm.encoderClicks.get();
                     robot.arm.resetIntegral(Calibration.ARM_RESET_SUM);
                     getHoldArmClicks = false;
                 }
-				test.log("INFO", "Holding at " + holdSetpoint);
                 setpoint.target_clicks.set(holdSetpoint);
                 setpoint.activate();
+                robot.arm.launching = false;
     		}
     	}
     }
@@ -317,40 +315,32 @@ public class TeleopMode extends Coordinator {
 				}
 				move.liftPower.set(elevPower);
 				move.activate();
-				getHoldElevatorClicks = true;
 			} else if (manipA) {
 				setpoint.target_clicks.set(Calibration.ELEVATOR_LOW_TARGET);
 				setpoint.activate();
-				getHoldElevatorClicks = true;
 			} else if (manipB && manipLeftBumper) {
 				setpoint.target_clicks.set(Calibration.ELEVATOR_MID_TARGET);
 				setpoint.activate();
-				getHoldElevatorClicks = true;
 			} else if (manipY && manipLeftBumper) {
 				setpoint.target_clicks.set(Calibration.ELEVATOR_HIGH_TARGET);
 				setpoint.activate();
-				getHoldElevatorClicks = true;
 			} else if (driverA) {
 				setpoint.target_clicks.set(Calibration.ELEVATOR_LOW_TARGET);
 				setpoint.activate();
-				getHoldElevatorClicks = true;
 			} else if (driverB && driverLeftJoystickButton) {
 				setpoint.target_clicks.set(Calibration.ELEVATOR_MID_TARGET);
 				setpoint.activate();
-				getHoldElevatorClicks = true;
 			} else if (driverY && driverLeftJoystickButton) {
 				setpoint.target_clicks.set(Calibration.ELEVATOR_HIGH_TARGET);
 				setpoint.activate();
-				getHoldElevatorClicks = true;
 			} else {
-				if( getHoldElevatorClicks ) {
-					test.log("INFO", "Retrieved elevator hold setpoint: " + robot.elevator.encoderClicks.get());
+				if( robot.elevator.getHoldElevatorClicks ) {
 					holdSetpoint = robot.elevator.encoderClicks.get();
 					robot.elevator.resetIntegral(Calibration.ELEVATOR_RESET_SUM);
-					getHoldElevatorClicks = false;
+					robot.elevator.getHoldElevatorClicks = false;
 				}
-				test.log("INFO", "Holding elevator at " + holdSetpoint);
 				setpoint.target_clicks.set(holdSetpoint);
+				System.out.println(holdSetpoint);
 				setpoint.activate();
 			}
 		}

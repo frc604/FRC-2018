@@ -32,6 +32,7 @@ public class Arm extends Module {
     public final Output<Double> pidError;
     
     public final Input<Boolean> elevatorRaised = addInput("Elevator Raised", false);
+    public final Input<Boolean> raiseMore = addInput("Raise More", false);
     public final Output<Boolean> clear = addOutput("Clear", this::getLaunching);
     		
     public boolean getLaunching() {
@@ -63,7 +64,9 @@ public class Arm extends Module {
         public void run () {
         	double power = liftPower.get();
         	if( power > 0 && encoder.getPosition() < Calibration.ARM_BALANCE_TARGET && !elevatorRaised.get() ) {
-        		launching = true;
+        		if( !raiseMore.get() ) {
+        			launching = true;
+        		}
         		motorA.set(0);
         	} else {
         		launching = false;
