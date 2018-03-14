@@ -342,10 +342,14 @@ public class TeleopMode extends Coordinator {
 				setpoint.activate();
 				getHoldElevatorClicks = true;
 			} else {
-				test.log("ERROR", "Activate elevator hold with setpoint " + robot.elevator.encoderClicks.get());
-				holdSetpoint = robot.elevator.encoderClicks.get();
+				if( getHoldElevatorClicks ) {
+					holdSetpoint = robot.elevator.encoderClicks.get();
+					getHoldElevatorClicks = false;
+				}
 				robot.elevator.resetIntegral(Calibration.ELEVATOR_RESET_SUM);
-				getHoldElevatorClicks = false;
+//				test.log("INFO", "Holding at " + holdSetpoint);
+//				setpoint.target_clicks.set(holdSetpoint);
+//				setpoint.activate();
 			}
 		}
 	}

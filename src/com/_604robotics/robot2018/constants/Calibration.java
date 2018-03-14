@@ -96,6 +96,7 @@ public class Calibration {
     //@Unreal("Find more reasonable time or eliminate hold part altogether")
     //public static final double ELEVATOR_PID_CONTINUE = 10;
     public static final double ELEVATOR_PID_TIME_RUN = 5;
+    public static final int ELEVATOR_RESET_TOLERANCE = 300;
     
     
     public static final double ARM_P = 0.0001; // 0.00009

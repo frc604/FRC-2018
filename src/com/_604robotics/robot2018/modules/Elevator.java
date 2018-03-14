@@ -40,7 +40,10 @@ public class Elevator extends Module {
     public final Output<Boolean> elevatorRaised = addOutput("Elevator Raised", this::getRaised);
     
     public boolean getRaised() {
-    	return encoder.getPosition() > Calibration.ELEVATOR_BUMPER_CLEAR - 2000;
+    	if( encoder.getPosition() > Calibration.ELEVATOR_BUMPER_CLEAR ) {
+    		System.out.println("Elevator Raised");
+    	}
+    	return encoder.getPosition() > Calibration.ELEVATOR_BUMPER_CLEAR;
     }
     
     public boolean getHolding() {
@@ -78,6 +81,15 @@ public class Elevator extends Module {
             holding = false;
             power = liftPower.get();
             motorA.set(power);
+            
+            if( encoder.getPosition() < -Calibration.ELEVATOR_RESET_TOLERANCE ) {
+            	encoder.zero();
+            	System.out.println("Elevator zeroed.");
+            }
+            if( encoder.getPosition() > Calibration.ELEVATOR_HIGH_TARGET + Calibration.ELEVATOR_RESET_TOLERANCE ) {
+            	encoder.setOffset(encoder.getPosition() + Calibration.ELEVATOR_HIGH_TARGET);
+            	System.out.println("Elevator zeroed.");
+            }
         }
     }
 
@@ -102,8 +114,11 @@ public class Elevator extends Module {
         @Override
         public void run () {
         	System.out.println("setpoint enabled");
+        	if( clear.get() ) {
+        		System.out.println("Clear Active");
+        	}
         	if( clear.get() && encoder.getPosition() < Calibration.ELEVATOR_BUMPER_CLEAR ) {
-        		System.out.println("clear enabled");
+        		System.out.println("Raising");
         		target_clicks.set(Calibration.ELEVATOR_BUMPER_CLEAR);
         	}
             pid.setSetpoint(target_clicks.get());
