@@ -87,7 +87,7 @@ public class Elevator extends Module {
             	System.out.println("Elevator zeroed.");
             }
             if( encoder.getPosition() > Calibration.ELEVATOR_HIGH_TARGET + Calibration.ELEVATOR_RESET_TOLERANCE ) {
-            	encoder.setOffset(encoder.getPosition() + Calibration.ELEVATOR_HIGH_TARGET);
+            	encoder.setOffset(encoder.getPosition() - Calibration.ELEVATOR_HIGH_TARGET);
             	System.out.println("Elevator zeroed.");
             }
         }

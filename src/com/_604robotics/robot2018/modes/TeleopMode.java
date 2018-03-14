@@ -246,11 +246,12 @@ public class TeleopMode extends Coordinator {
     		} else {
     		    // This should only be called once
                 if( getHoldArmClicks ) {
-                    test.log("WARN","Activate arm hold with setpoint "+robot.arm.encoderClicks.get());
+                    test.log("INFO","Retrieved arm hold setpoint: "+robot.arm.encoderClicks.get());
                     holdSetpoint=robot.arm.encoderClicks.get();
                     robot.arm.resetIntegral(Calibration.ARM_RESET_SUM);
                     getHoldArmClicks = false;
                 }
+				test.log("INFO", "Holding at " + holdSetpoint);
                 setpoint.target_clicks.set(holdSetpoint);
                 setpoint.activate();
     		}
@@ -343,13 +344,14 @@ public class TeleopMode extends Coordinator {
 				getHoldElevatorClicks = true;
 			} else {
 				if( getHoldElevatorClicks ) {
+					test.log("INFO", "Retrieved elevator hold setpoint: " + robot.elevator.encoderClicks.get());
 					holdSetpoint = robot.elevator.encoderClicks.get();
+					robot.elevator.resetIntegral(Calibration.ELEVATOR_RESET_SUM);
 					getHoldElevatorClicks = false;
 				}
-				robot.elevator.resetIntegral(Calibration.ELEVATOR_RESET_SUM);
-//				test.log("INFO", "Holding at " + holdSetpoint);
-//				setpoint.target_clicks.set(holdSetpoint);
-//				setpoint.activate();
+				test.log("INFO", "Holding elevator at " + holdSetpoint);
+				setpoint.target_clicks.set(holdSetpoint);
+				setpoint.activate();
 			}
 		}
 	}
