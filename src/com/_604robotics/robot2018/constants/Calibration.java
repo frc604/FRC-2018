@@ -125,7 +125,7 @@ public class Calibration {
     // Assuming 60 degree increments for now
     public static final double ARM_ENCODER_ZERO = -400;
     public static final double ARM_LOW_TARGET = 0;
-    public static final double ARM_MID_TARGET = 2300; //0
+    public static final double ARM_MID_TARGET = 2300; // this is correct, but pid tolerances make it go ~500 beneath
     public static final double ARM_BALANCE_TARGET = 3000;
     public static final double ARM_CLEAR_TARGET = 500;
     public static final double ARM_HIGH_TARGET = 6300;

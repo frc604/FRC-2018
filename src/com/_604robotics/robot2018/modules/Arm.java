@@ -98,7 +98,15 @@ public class Arm extends Module {
         }
         @Override
         public void run () {
-            pid.setSetpoint(target_clicks.get());
+        	if( encoder.getPosition() < target_clicks.get() && encoder.getPosition() < Calibration.ARM_BALANCE_TARGET && !elevatorRaised.get() ) {
+        		if( !raiseMore.get() ) {
+        			launching = true;
+        		}
+        		motorA.set(0);
+        	} else {
+        		launching = false;
+                pid.setSetpoint(target_clicks.get());
+        	}
         }
         @Override
         public void end () {
