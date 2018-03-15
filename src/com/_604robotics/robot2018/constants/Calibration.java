@@ -38,7 +38,7 @@ public class Calibration {
      * XXX: Empirical parameters have not been updated AT ALL because they have been unnecessary so far
      */
     public static final AutonMovement.DriveTrainProperties DRIVE_PROPERTIES
-    = new AutonMovement.DriveTrainProperties(490, 26.7, 2.5, 20.767, 8.323);//26.05
+    = new AutonMovement.DriveTrainProperties(490, 25.22, 2.5, 20.767, 8.323);//26.05
     // second to last = coefficient, second value = offset
     static {
         System.out.println("Clicks over inches is "+DRIVE_PROPERTIES.getClicksOverInches());
@@ -96,17 +96,17 @@ public class Calibration {
     public static final double ELEVATOR_PID_TIME_RUN = 5;
     
     
-    public static final double ARM_P = 0.00009;
+    public static final double ARM_P = 0.0001; // 0.00009
     public static final double ARM_I = 0.00004;
     public static final double ARM_D = 0.00002;
     // This is multiplication by a cosine factor
-    public static final double ARM_F = 0.2;
+    public static final double ARM_F = 0.25;
     public static final double ARM_ENCODER_ZERO = -1020;//-2900-1270; // 2080-2900-200;
     public static final double ARM_ENCODER_FULL_ROT=2*4096*54/30;
     /* Arm */
     // Bound I term motor output to 0.15
     public static final double ARM_MAX_SUM = 0.08/ARM_I;
-    public static final double ARM_MIN_SUM = -0.04/ARM_I;
+    public static final double ARM_MIN_SUM = -0.06/ARM_I;
     public static final double ARM_PID_PERIOD = 0.02;
     // Lower speed going down due to weight
     public static final double ARM_MIN_SPEED = -0.07;

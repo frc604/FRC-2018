@@ -12,19 +12,12 @@ public class DashboardSystem extends Coordinator {
 
     @Override
     public boolean run () {
-        //@Janky("Will soon be replacable with initDashboardSendables")
-        robot.drive.updateDashboardSendables();
         robot.dashboard.leftDriveClicks.set(robot.drive.leftClicks.get());
         robot.dashboard.rightDriveClicks.set(robot.drive.rightClicks.get());
         robot.dashboard.leftDriveRate.set(robot.drive.leftClickRate.get());
         robot.dashboard.rightDriveRate.set(robot.drive.rightClickRate.get());
-        //robot.dashboard.gyroAngle.set(robot.drive.gyroAngle.get());
-        //robot.dashboard.totalCurrent.set(robot.powermonitor.totalPortCurrent.get());  
-        
-        /*robot.dashboard.elevatorOffset.set(robot.elevator.getOffset.get());
-        robot.dashboard.elevatorUpwardsRange.set(robot.elevator.getUpwardsRange.get());
-        robot.dashboard.elevatorDownwardsRange.set(robot.elevator.getDownwardsRange.get());
-        robot.dashboard.elevatorFailsafed.set(robot.elevator.getFailsafe.get());*/
+
+        robot.dashboard.totalCurrent.set(robot.powermonitor.totalPortCurrent.get());
         
         robot.dashboard.elevatorRate.set(robot.elevator.encoderRate.get());
         robot.dashboard.elevatorClicks.set(robot.elevator.encoderClicks.get());

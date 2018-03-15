@@ -24,7 +24,9 @@ public class GameDataCoordinator extends Coordinator {
 
     @Override
     protected void end() {
+        timeout.stop();
         logGameData.info("Game data is "+gameData);
+        logGameData.info("Game data retrieved after "+timeout.get()+" seconds");
         timeout.reset();
     }
 
