@@ -86,6 +86,8 @@ public class TeleopMode extends Coordinator {
     private boolean driverX = false;
     private boolean driverY = false;
     
+    private boolean driverDPad = false;
+    
     private double manipLeftJoystickY = 0.0;
     private double manipLeftJoystickX = 0.0;
     private double manipLeftTrigger = 0.0;
@@ -108,6 +110,8 @@ public class TeleopMode extends Coordinator {
     private boolean manipB= false;
     private boolean manipX= false;
     private boolean manipY= false;
+    
+    private boolean manipDPad = false;
     
     @Override
     public boolean run () {
@@ -140,6 +144,8 @@ public class TeleopMode extends Coordinator {
         driverX = driver.buttons.x.get();
         driverY = driver.buttons.y.get();
         
+        driverDPad = driver.dpad.pressed.get();
+        
         manipLeftJoystickY = manip.leftStick.y.get();
         manipLeftJoystickX = manip.leftStick.x.get();
         manipLeftTrigger = manip.triggers.left.get();
@@ -162,6 +168,8 @@ public class TeleopMode extends Coordinator {
         manipB = manip.buttons.b.get();
         manipX = manip.buttons.x.get();
         manipY = manip.buttons.y.get();
+        
+        manipDPad = manip.dpad.pressed.get();
         /*System.out.println("driverLeftY: "+driverLeftJoystickY+", driverRightX"+driverRightJoystickX
                 +", driverRightY"+driverRightJoystickY);*/
     }
@@ -271,20 +279,28 @@ public class TeleopMode extends Coordinator {
     	public void run() {
     		if( driverLeftTrigger != 0 || driverRightTrigger != 0 ) {
     			double output = 0;
-    			if( driverLeftTrigger != 0 ) {
-    				output = -0.8*(driverLeftTrigger*driverLeftTrigger);
-    			} else if( driverRightTrigger != 0 ) {
-    				output = 0.7*driverRightTrigger;
+    			if( driverRightTrigger != 0 ) {
+    				output = -0.8*(driverRightTrigger*driverRightTrigger);
+    			} else if( driverLeftTrigger != 0 ) {
+    			    if( driverDPad ) {
+    			        output = driverLeftTrigger;
+    			    } else {
+    			        output = 0.4*(driverLeftTrigger*driverLeftTrigger);
+    			    }
     			}
     			run.runPower.set(output);
     			run.activate();
     		} else if( manipRightBumper || manipRightTrigger != 0 ) {
     			double output = 0;
-    		    if( manipRightBumper ) {
-    		    	output = -0.8;
-    		    } else if( manipRightTrigger != 0 ) {
-    		    	output = 0.7*manipRightTrigger;
-    		    }
+    			if( manipRightTrigger != 0 ) {
+                    output = -0.8*(manipRightTrigger*manipRightTrigger);
+                } else if( manipLeftTrigger != 0 ) {
+                    if( driverDPad ) {
+                        output = manipLeftTrigger;
+                    } else {
+                        output = 0.4*(manipLeftTrigger*manipLeftTrigger);
+                    }
+                }
     		    run.runPower.set(output);
     		    run.activate();
     		} else {
