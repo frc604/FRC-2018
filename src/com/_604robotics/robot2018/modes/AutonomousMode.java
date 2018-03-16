@@ -76,9 +76,9 @@ public class AutonomousMode extends Coordinator {
             case BACKWARD_12:
                 selectedModeMacro = new BackTempMacro();
                 break;
-//            case DEMO_NEW_AUTON:
-//                selectedModeMacro = new DemoStateMacro();
-//                break;
+            case DEMO_NEW_AUTON:
+                selectedModeMacro = new DemoStateMacro();
+                break;
             case FORWARD_SWITCH:
                 selectedModeMacro = forwardSwitchMacro;
                 break;
@@ -88,12 +88,12 @@ public class AutonomousMode extends Coordinator {
 //            case CENTER_SWITCH_RIGHT:
 //                selectedModeMacro = new CenterMacroRight();
 //                break;
-            case SWERVE_SCALE_OPPOSITE_LEFT:
-                selectedModeMacro = new NewScaleOppositeMacroLeft();
-                break;
-            case SWITCH_FORWARD:
-                selectedModeMacro = new SwitchForwardBackupMacro();
-                break;
+//            case SWERVE_SCALE_OPPOSITE_LEFT:
+//                selectedModeMacro = new NewScaleOppositeMacroLeft();
+//                break;
+//            case SWITCH_FORWARD:
+//                selectedModeMacro = new SwitchForwardBackupMacro();
+//                break;
             case SCALE_BACKWARD:
                 selectedModeMacro = new ScaleBackwardMacro();
                 break;
