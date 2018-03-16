@@ -116,7 +116,7 @@ public class Elevator extends Module {
         		System.out.println("Raising");
         		target_clicks.set(Calibration.ELEVATOR_RAISE_TARGET);
         	}
-        	System.out.println("setpoint enabled at " + target_clicks.get());
+        	System.out.println("WARN: setpoint enabled at " + target_clicks.get());
             pid.setSetpoint(target_clicks.get());
             pid.enable();
             getHoldElevatorClicks = true;
