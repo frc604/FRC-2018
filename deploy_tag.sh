@@ -8,10 +8,11 @@ git diff --staged --quiet
 hasdiff=$?
 if [ $hasdiff -eq 0 ]; then
   echo "No changes exist on the index"
-  exit
+  #exit
+else
+  git commit -m "Tag WPILib deploying on $(date)"
 fi
 
-git commit -m "Tag WPILib deploying on $(date)"
 git tag $1
 if hash ant; then
   ant
