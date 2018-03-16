@@ -18,7 +18,6 @@ public class Arm extends Module {
     private WPI_TalonSRX motorB = new WPI_TalonSRX(Ports.ARM_MOTOR_B);
     public TalonPWMEncoder encoder = new TalonPWMEncoder(motorB);
 
-    public boolean clear = false;
     public double persistent = 0;
     
     public final Setpoint setpoint = new Setpoint(Calibration.ARM_LOW_TARGET);
@@ -30,15 +29,6 @@ public class Arm extends Module {
     private final RotatingArmPIDController pid;
     
     public final Output<Double> pidError;
-    
-    public final Output<Boolean> getClear = addOutput("Get Clear", this::getClear);
-    
-    public final Input<Boolean> elevatorCleared = addInput("Elevator Cleared", false);
-    public final Input<Boolean> elevatorRaised = addInput("Elevator Raised", false);
-    
-    public boolean getClear() {
-    	return clear;
-    }
     
     public void resetIntegral(double sum) {
         pid.setErrorSum(sum);

@@ -34,21 +34,8 @@ public class Elevator extends Module {
     private final ClampedIntegralPIDController pid;
     
     public final Output<Double> pidError;
-
-    public final Output<Boolean> elevatorCleared = addOutput("Elevator Cleared", this::getElevatorCleared);
-    public final Output<Boolean> elevatorRaised = addOutput("Elevator Raised", this::getElevatorRaised);
-    
-    public final Input<Boolean> getClear = addInput("Get Clear", false);
     
     public boolean getHoldElevatorClicks = false;
-    
-    public boolean getElevatorCleared() {
-    	return encoder.getPosition() > Calibration.ELEVATOR_BUMPER_CLEAR;
-    }
-    
-    public boolean getElevatorRaised() {
-    	return encoder.getPosition() > Calibration.ELEVATOR_RAISE_TARGET;
-    }
     
     public boolean getHolding() {
         return holding;
@@ -83,8 +70,7 @@ public class Elevator extends Module {
         public void run () {
             holding = false;
             power = liftPower.get();
-            motorA.set(liftPower.get());
-            
+            motorA.set(liftPower.get());            
 //            if( encoder.getPosition() < -Calibration.ELEVATOR_RESET_TOLERANCE ) {
 //            	encoder.zero();
 //            }
@@ -112,10 +98,6 @@ public class Elevator extends Module {
         }
         @Override
         public void run () {
-        	if( getClear.get() && encoder.getPosition() < Calibration.ELEVATOR_RAISE_TARGET + 1000 ) {
-        		System.out.println("Raising");
-        		target_clicks.set(Calibration.ELEVATOR_RAISE_TARGET);
-        	}
         	System.out.println("WARN: setpoint enabled at " + target_clicks.get());
             pid.setSetpoint(target_clicks.get());
             pid.enable();
