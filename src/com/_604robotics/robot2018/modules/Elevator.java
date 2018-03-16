@@ -71,9 +71,9 @@ public class Elevator extends Module {
             holding = false;
             power = liftPower.get();
             motorA.set(liftPower.get());            
-//            if( encoder.getPosition() < -Calibration.ELEVATOR_RESET_TOLERANCE ) {
-//            	encoder.zero();
-//            }
+            if( encoder.getPosition() < -Calibration.ELEVATOR_RESET_TOLERANCE ) {
+            	encoder.zero();
+            }
             getHoldElevatorClicks = true;
         }
     }
