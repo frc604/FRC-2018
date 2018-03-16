@@ -85,7 +85,7 @@ public class AutonomousMode extends Coordinator {
                 selectedModeMacro = new CenterMacroRight();
                 break;
             case SWERVE_SCALE_OPPOSITE_LEFT:
-                selectedModeMacro = new SwerveScaleOppositeMacroLeft();
+                selectedModeMacro = new NewScaleOppositeMacroLeft();
                 break;
             case SWITCH_FORWARD:
                 selectedModeMacro = new SwitchForwardBackupMacro();
@@ -583,7 +583,7 @@ public class AutonomousMode extends Coordinator {
     		super(LeftScaleChooserMacro.class);
     		addDefault(new SleepCoordinator(0.1));
     		addCase(new String[]{"LLL", "LLR", "RLL", "RLR"}, new NewScaleBackwardMacroLeft());
-    		addCase(new String[]{"LRL", "LRR", "RRL", "RRR"}, new SwerveScaleOppositeMacroLeft());
+    		addCase(new String[]{"LRL", "LRR", "RRL", "RRR"}, new NewScaleOppositeMacroLeft());
     	}
     }
     
@@ -591,7 +591,7 @@ public class AutonomousMode extends Coordinator {
     	public RightScaleChooserMacro() {
     		super(RightScaleChooserMacro.class);
     		addDefault(new SleepCoordinator(0.1));
-    		addCase(new String[]{"LLL", "LLR", "RLL", "RLR"}, new SwerveScaleOppositeMacroRight());
+    		addCase(new String[]{"LLL", "LLR", "RLL", "RLR"}, new NewScaleOppositeMacroRight());
     		addCase(new String[]{"LRL", "LRR", "RRL", "RRR"}, new NewScaleBackwardMacroRight());
     	}
     }
@@ -718,9 +718,9 @@ public class AutonomousMode extends Coordinator {
         }
     }
     
-    private class SwerveScaleOppositeMacroLeft extends StatefulCoordinator {
-        public SwerveScaleOppositeMacroLeft() {
-            super(SwerveScaleOppositeMacroLeft.class);
+    private class NewScaleOppositeMacroLeft extends StatefulCoordinator {
+        public NewScaleOppositeMacroLeft() {
+            super(NewScaleOppositeMacroLeft.class);
             //addStates(new IntakeMacro());
             //addState("Set Elevator Persistent", new ElevatorSetPersistent(Calibration.ELEVATOR_MID_TARGET));
             //addState("Backward 185 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(185+1)), 0));
@@ -741,9 +741,9 @@ public class AutonomousMode extends Coordinator {
         }
     }
     
-    private class SwerveScaleOppositeMacroRight extends StatefulCoordinator {
-        public SwerveScaleOppositeMacroRight() {
-            super(SwerveScaleOppositeMacroRight.class);
+    private class NewScaleOppositeMacroRight extends StatefulCoordinator {
+        public NewScaleOppositeMacroRight() {
+            super(NewScaleOppositeMacroRight.class);
             //addStates(new IntakeMacro());
             //addState("Set Elevator Persistent", new ElevatorSetPersistent(Calibration.ELEVATOR_MID_TARGET));
             //addState("Backward 185 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(185+1)), 0));
@@ -885,12 +885,8 @@ public class AutonomousMode extends Coordinator {
     private class SwitchEjectMacro extends StatefulCoordinator {
         public SwitchEjectMacro() {
             super(SwitchEjectMacro.class);
-            //addState("Move elevator", new ElevatorMove(Calibration.ELEVATOR_SWITCH_CLEAR, 1));
-            //addState("Move arm", new ArmSetPersistent(Calibration.ARM_MID_TARGET));
-            //addState("Wait", new SleepCoordinator(0.8));
             addState("Eject cube", new IntakeMove(-0.5,0.5));
-            // addState("Move elevator", new ElevatorMove(Calibration.ELEVATOR_BUMPER_CLEAR, 1));
-            // Arm falls down
+            // Move back to avoid arm hitting switch fence
             addState("Move back", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -12), 0));
             addState("Move arm", new ArmSetPersistent(Calibration.ARM_LOW_TARGET));
             addState("Wait", new SleepCoordinator(0.2));
