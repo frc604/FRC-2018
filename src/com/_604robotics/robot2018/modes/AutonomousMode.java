@@ -52,15 +52,18 @@ public class AutonomousMode extends Coordinator {
     @Override
     public void begin () {
         switch (robot.dashboard.autonMode.get()) {
-	        case CENTER_SWITCH:
-	        	selectedModeMacro = new CenterSwitchMacro();
-	        	break;
-	        case LEFT_SCALE:
-	        	selectedModeMacro = new LeftScaleMacro();
-	        	break;
-	        case RIGHT_SCALE:
-	        	selectedModeMacro = new RightScaleMacro();
-	        	break;
+            case CENTER_SWITCH:
+            	selectedModeMacro = new CenterSwitchMacro();
+            	break;
+            case BACKWARD_CENTER_SWITCH:
+                selectedModeMacro = new BackwardsCenterSwitchMacro();
+                break;
+            case LEFT_SCALE:
+            	selectedModeMacro = new LeftScaleMacro();
+            	break;
+            case RIGHT_SCALE:
+            	selectedModeMacro = new RightScaleMacro();
+            	break;
             case ROTATE_LEFT_TEST:
                 selectedModeMacro = rotateLeftStateMacro;
                 break;
@@ -122,9 +125,9 @@ public class AutonomousMode extends Coordinator {
 //            	selectedModeMacro = new BalancedSweptRightTurnMacro();
 //            	break;
             case OFF:
+            default:
                 selectedModeMacro = null;
                 break;
-            // DO NOT ADD A DEFAULT CASE SO THAT ECLIPSE WILL THROW A PROPER WARNING!
         }
 
         if (selectedModeMacro != null) {
@@ -553,6 +556,7 @@ public class AutonomousMode extends Coordinator {
         }
     }
     
+    // Comment me out
     private class BackwardsCenterSwitchMacro extends StatefulCoordinator {
         public BackwardsCenterSwitchMacro() {
             super(BackwardsCenterSwitchMacro.class);

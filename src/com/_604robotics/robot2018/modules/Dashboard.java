@@ -35,6 +35,7 @@ public class Dashboard extends DashboardModule {
         OFF,
         // Following are actual strategy selections
         CENTER_SWITCH,
+        BACKWARD_CENTER_SWITCH,
         LEFT_SCALE,
         RIGHT_SCALE,
         // Calibration autons to verify angles and distances
