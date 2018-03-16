@@ -893,7 +893,8 @@ public class AutonomousMode extends Coordinator {
             // Arm falls down
             addState("Move back", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -12), 0));
             addState("Move arm", new ArmSetPersistent(Calibration.ARM_LOW_TARGET));
-            addState("Wait", new SleepCoordinator(0.5));
+            addState("Wait", new SleepCoordinator(0.2));
+            addState("Move elevator", new ElevatorSetPersistent(Calibration.ELEVATOR_LOW_TARGET));
             addState("Unclamp", new ClampExtend());
         }
     }
