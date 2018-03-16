@@ -279,13 +279,13 @@ public class TeleopMode extends Coordinator {
     	public void run() {
     		if( driverLeftTrigger != 0 || driverRightTrigger != 0 ) {
     			double output = 0;
-    			if( driverRightTrigger != 0 ) {
-    				output = -0.8*(driverRightTrigger*driverRightTrigger);
-    			} else if( driverLeftTrigger != 0 ) {
+    			if( driverRightTrigger >= driverLeftTrigger ) {
+    				output = 0.8*(driverRightTrigger*driverRightTrigger);
+    			} else if( driverLeftTrigger > driverRightTrigger ) {
     			    if( driverDPad ) {
-    			        output = driverLeftTrigger;
+    			        output = -driverLeftTrigger;
     			    } else {
-    			        output = 0.4*(driverLeftTrigger*driverLeftTrigger);
+    			        output = -0.4*(driverLeftTrigger*driverLeftTrigger);
     			    }
     			}
     			run.runPower.set(output);
@@ -293,13 +293,13 @@ public class TeleopMode extends Coordinator {
     		} else if( manipRightBumper || manipRightTrigger != 0 ) {
     			double output = 0;
     			if( manipRightTrigger != 0 ) {
-                    output = -0.8*(manipRightTrigger*manipRightTrigger);
-                } else if( manipLeftTrigger != 0 ) {
-                    if( driverDPad ) {
-                        output = manipLeftTrigger;
+    			    if( manipDPad ) {
+                        output = -1;
                     } else {
-                        output = 0.4*(manipLeftTrigger*manipLeftTrigger);
+                        output = -0.4*(manipRightTrigger*manipRightTrigger);
                     }
+                } else if( manipRightBumper ) {
+                    output = 0.8;
                 }
     		    run.runPower.set(output);
     		    run.activate();
@@ -320,8 +320,8 @@ public class TeleopMode extends Coordinator {
     		clamping = new Toggle(false);
     	}
     	
-    	public void run() {
-    		clamping.update(driverX || manipX);
+    	public void run() { //testme
+    		clamping.update(manipX);
             if (clamping.isInOnState()) {
                 retract.activate();
             } else if (clamping.isInOffState()) {
@@ -407,31 +407,23 @@ public class TeleopMode extends Coordinator {
     	}
     	
     	public void run() {
-    		if( manipLeftJoystickY != 0 ) {
+    		if( manipRightJoystickY != 0 ) {
     			if( robot.elevator.encoder.getPosition() < Calibration.ELEVATOR_BUMPER_CLEAR && 
         				robot.arm.encoder.getPosition() < Calibration.ARM_RAISE_TARGET  && 
-        				manipLeftJoystickY > 0 ) {
+        				manipRightJoystickY > 0 ) {
         			elevatorOverride = true;
         			setpoint.target_clicks.set(holdSetpoint);
                     setpoint.activate();
         		} else {
         			elevatorOverride = false;
-        			move.liftPower.set(manipLeftJoystickY/2);
+        			move.liftPower.set(manipRightJoystickY/2);
         			move.activate();
         		}
     			getHoldArmClicks = true;
     		} else if( manipA ) {
-    			if( robot.elevator.encoder.getPosition() < Calibration.ELEVATOR_BUMPER_CLEAR && 
-        				robot.arm.encoder.getPosition() < Calibration.ARM_RAISE_TARGET  && 
-        				robot.arm.encoder.getPosition() < Calibration.ARM_LOW_TARGET ) {
-        			elevatorOverride = true;
-        			setpoint.target_clicks.set(holdSetpoint);
-                    setpoint.activate();
-        		} else {
-        			elevatorOverride = false;
-        			setpoint.target_clicks.set(Calibration.ARM_LOW_TARGET);
-        			setpoint.activate();
-        		}
+    			elevatorOverride = false;
+    			setpoint.target_clicks.set(Calibration.ARM_LOW_TARGET);
+    			setpoint.activate();
     			getHoldArmClicks = true;
     		} else if( manipB ) {
     		    if (manipLeftBumper) {
@@ -474,17 +466,9 @@ public class TeleopMode extends Coordinator {
         		}
     			getHoldArmClicks = true;
     		} else if( driverA ) {
-    			if( robot.elevator.encoder.getPosition() < Calibration.ELEVATOR_BUMPER_CLEAR && 
-        				robot.arm.encoder.getPosition() < Calibration.ARM_RAISE_TARGET  && 
-        				robot.arm.encoder.getPosition() < Calibration.ARM_LOW_TARGET ) {
-        			elevatorOverride = true;
-        			setpoint.target_clicks.set(holdSetpoint);
-                    setpoint.activate();
-        		} else {
-        			elevatorOverride = false;
-        			setpoint.target_clicks.set(Calibration.ARM_LOW_TARGET);
-        			setpoint.activate();
-        		}
+    			elevatorOverride = false;
+    			setpoint.target_clicks.set(Calibration.ARM_LOW_TARGET);
+    			setpoint.activate();
     			getHoldArmClicks = true;
     		} else if( driverB ) {
                 if (driverLeftJoystickButton) {

@@ -29,7 +29,7 @@ public class Dashboard extends DashboardModule {
     public final Input<Double> armRate = addDashboardInput("Arm Rate", 0.0);
     public final Input<Double> armClicks = addDashboardInput("Arm Clicks", 0.0);
     
-    public final Input<Boolean> isClamped = addDashboardInput("Is Clamped", false);
+    public final Input<String> isClamped = addDashboardInput("Is Clamped", "CLAMPED");
     
     public enum AutonMode {
         OFF,
@@ -40,8 +40,8 @@ public class Dashboard extends DashboardModule {
         // Calibration autons to verify angles and distances
         ROTATE_LEFT_TEST,
         ROTATE_RIGHT_TEST,
-        FORWARD_6,
-        BACKWARD_6,
+        FORWARD_12,
+        BACKWARD_12,
         // Demo auton into which arbitrary stuff can be stashed for testing
         DEMO_NEW_AUTON,
         // Remnants of various tests

@@ -51,9 +51,9 @@ public class Calibration {
     public static final double DRIVE_ROTATE_RIGHT_TARGET
     = AutonMovement.degreesToClicks(DRIVE_PROPERTIES, 90);
     public static final double DRIVE_MOVE_FORWARD_TARGET
-    = AutonMovement.inchesToClicks(DRIVE_PROPERTIES, 72);
+    = AutonMovement.inchesToClicks(DRIVE_PROPERTIES, 144);
     public static final double DRIVE_MOVE_BACKWARD_TARGET
-    = AutonMovement.inchesToClicks(DRIVE_PROPERTIES, -72);
+    = AutonMovement.inchesToClicks(DRIVE_PROPERTIES, -144);
     
     // Initial forward direction for switch
     public static final double DRIVE_MOVE_FORWARD_SWITCH_INCHES
@@ -85,10 +85,10 @@ public class Calibration {
     public static final int ELEVATOR_CLICK_TOLERANCE = 50;
     public static final int ELEVATOR_RESET_TOLERANCE = 500;
     // Prefer to be at the bottom so push into hard stop
-    public static final double ELEVATOR_ENCODER_ZERO = 720;
+    public static final double ELEVATOR_ENCODER_ZERO = 720-70;
     public static final double ELEVATOR_LOW_TARGET = 0;
     public static final double ELEVATOR_BUMPER_CLEAR = 3000;
-    public static final double ELEVATOR_RAISE_TARGET = 6000;
+    public static final double ELEVATOR_RAISE_TARGET = 5000;
     public static final double ELEVATOR_SWITCH_CLEAR = 19100;
     public static final double ELEVATOR_MID_TARGET = 14000;
     public static final double ELEVATOR_HIGH_TARGET = 32000;
@@ -102,7 +102,7 @@ public class Calibration {
     public static final double ARM_D = 0.00002;
     // This is multiplication by a cosine factor
     public static final double ARM_F = 0.25;
-    public static final double ARM_ENCODER_ZERO = -1020;//-2900-1270; // 2080-2900-200;
+    public static final double ARM_ENCODER_ZERO = -1020+990+2170-4200;//-2900-1270; // 2080-2900-200;
     public static final double ARM_ENCODER_FULL_ROT=2*4096*54/30;
     /* Arm */
     // Bound I term motor output to 0.15
@@ -121,7 +121,7 @@ public class Calibration {
     // Low will be negative, high will be positive, zero is horizontal
     // 4096 clicks/rot * 54/30 is 7372.8
     // Assuming 60 degree increments for now
-    public static final double ARM_LOW_TARGET = -2100;
+    public static final double ARM_LOW_TARGET = -2500;
     public static final double ARM_MID_TARGET = 200; //0
     public static final double ARM_BALANCE_TARGET = 900;
     public static final double ARM_HIGH_TARGET = 4200;
