@@ -350,6 +350,7 @@ public class TeleopMode extends Coordinator {
                  setpoint.activate();
         	} 
         	if( elevatorOverride ) {
+        	    System.out.println("Warning: overriding elevator");
         		setpoint.target_clicks.set(Calibration.ELEVATOR_RAISE_TARGET);
         		setpoint.activate();
         	} else if( manipLeftJoystickY != 0 ) {
@@ -411,6 +412,7 @@ public class TeleopMode extends Coordinator {
     			if( robot.elevator.encoder.getPosition() < Calibration.ELEVATOR_BUMPER_CLEAR && 
         				robot.arm.encoder.getPosition() < Calibration.ARM_RAISE_TARGET  && 
         				manipRightJoystickY > 0 ) {
+    			    System.out.println("Warning: activating tandem");
         			elevatorOverride = true;
         			setpoint.target_clicks.set(holdSetpoint);
                     setpoint.activate();
@@ -430,6 +432,7 @@ public class TeleopMode extends Coordinator {
     		    	if( robot.elevator.encoder.getPosition() < Calibration.ELEVATOR_BUMPER_CLEAR && 
             				robot.arm.encoder.getPosition() < Calibration.ARM_RAISE_TARGET  && 
             				robot.arm.encoder.getPosition() < Calibration.ARM_HIGH_TARGET ) {
+    		    	    System.out.println("Warning: activating tandem");
             			elevatorOverride = true;
             			setpoint.target_clicks.set(holdSetpoint);
                         setpoint.activate();
@@ -442,6 +445,7 @@ public class TeleopMode extends Coordinator {
     		    	if( robot.elevator.encoder.getPosition() < Calibration.ELEVATOR_BUMPER_CLEAR && 
             				robot.arm.encoder.getPosition() < Calibration.ARM_RAISE_TARGET  && 
             				robot.arm.encoder.getPosition() < Calibration.ARM_MID_TARGET ) {
+    		    	    System.out.println("Warning: activating tandem");
             			elevatorOverride = true;
             			setpoint.target_clicks.set(holdSetpoint);
                         setpoint.activate();
@@ -456,6 +460,7 @@ public class TeleopMode extends Coordinator {
     			if( robot.elevator.encoder.getPosition() < Calibration.ELEVATOR_BUMPER_CLEAR && 
         				robot.arm.encoder.getPosition() < Calibration.ARM_RAISE_TARGET  && 
         				robot.arm.encoder.getPosition() < Calibration.ARM_HIGH_TARGET ) {
+    			    System.out.println("Warning: activating tandem");
         			elevatorOverride = true;
         			setpoint.target_clicks.set(holdSetpoint);
                     setpoint.activate();
