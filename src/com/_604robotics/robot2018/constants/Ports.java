@@ -28,6 +28,8 @@ public class Ports {
     public static final int ENCODER_RIGHT_A = 2;
     public static final int ENCODER_RIGHT_B = 3;
     
+    public static final int ARM_BOTTOM_SWITCH = 4;
+    
     /* CAN Motors */
     public static final int COMPRESSOR = 0;
     public static final int PDP_MODULE = 51;
