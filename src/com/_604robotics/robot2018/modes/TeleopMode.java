@@ -408,6 +408,11 @@ public class TeleopMode extends Coordinator {
     	}
     	
     	public void run() {
+    	    if (manipStart) {
+    	        // offset -= (lowtarget - current)
+    	        // TODO: VERIFY ME!!!!
+    	        robot.arm.encoder.setOffset(robot.arm.encoder.getOffset() + robot.arm.encoder.getPosition() - Calibration.ARM_LOW_TARGET);
+    	    }
     		if( manipRightJoystickY != 0 ) {
     			if( robot.elevator.encoder.getPosition() < Calibration.ELEVATOR_BUMPER_CLEAR && 
         				robot.arm.encoder.getPosition() < Calibration.ARM_RAISE_TARGET  && 
