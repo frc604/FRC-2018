@@ -408,7 +408,7 @@ public class TeleopMode extends Coordinator {
     	}
     	
     	public void run() {
-    	    if (manipStart) {
+    	    if (manipStart /*|| robot.arm.getBottomLimit()*/) {
     	        // offset -= (lowtarget - current)
     	        // TODO: VERIFY ME!!!!
     	        robot.arm.encoder.setOffset(robot.arm.encoder.getOffset() + robot.arm.encoder.getPosition() - Calibration.ARM_LOW_TARGET);
