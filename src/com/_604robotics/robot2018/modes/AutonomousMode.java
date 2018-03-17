@@ -51,6 +51,9 @@ public class AutonomousMode extends Coordinator {
 
     @Override
     public void begin () {
+        // reset arm encoder
+        robot.arm.encoder.zero(-2170);
+        
         switch (robot.dashboard.autonMode.get()) {
             case CENTER_SWITCH:
             	selectedModeMacro = new CenterSwitchMacro();

@@ -97,7 +97,7 @@ public class Calibration {
     // public static final double ELEVATOR_PID_TIME_RUN = 5;
     
     
-    public static final double ARM_P = 0.00015; // 0.0001
+    public static final double ARM_P = 0.00014; // 0.0001
     public static final double ARM_I = 0.00004;
     public static final double ARM_D = 0.000022;
     // This is multiplication by a cosine factor
@@ -110,7 +110,7 @@ public class Calibration {
     public static final double ARM_MIN_SUM = -0.06/ARM_I;
     public static final double ARM_PID_PERIOD = 0.02;
     // Lower speed going down due to weight
-    public static final double ARM_MIN_SPEED = -0.07;
+    public static final double ARM_MIN_SPEED = -0.09;
     public static final double ARM_MAX_SPEED = 0.8;
 
     public static final double ARM_RESET_SUM = 0.02/ARM_I;

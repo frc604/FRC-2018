@@ -17,7 +17,7 @@ public class DashboardSystem extends Coordinator {
         robot.dashboard.leftDriveRate.set(robot.drive.leftClickRate.get());
         robot.dashboard.rightDriveRate.set(robot.drive.rightClickRate.get());
 
-        robot.dashboard.totalCurrent.set(robot.powermonitor.totalPortCurrent.get());
+        //robot.dashboard.totalCurrent.set(robot.powermonitor.totalPortCurrent.get());
         
         robot.dashboard.elevatorRate.set(robot.elevator.encoderRate.get());
         robot.dashboard.elevatorClicks.set(robot.elevator.encoderClicks.get());
@@ -30,7 +30,7 @@ public class DashboardSystem extends Coordinator {
         
         robot.dashboard.isClamped.set(robot.clamp.isClamped.get() ? "CLAMPED" : "NOT CLAMPED");
         robot.dashboard.armEncoderBroken.set(robot.arm.encoderClicks.get()>4700 || robot.arm.encoderClicks.get() < -2500);
-        robot.powermonitor.initDashboardSendables();
+        //robot.powermonitor.initDashboardSendables();
         return true;
     }
 }
