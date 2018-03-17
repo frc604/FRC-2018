@@ -85,6 +85,7 @@ public class Calibration {
     public static final int ELEVATOR_CLICK_TOLERANCE = 50;
     public static final int ELEVATOR_RESET_TOLERANCE = 500;
     // Prefer to be at the bottom so push into hard stop
+    @Unreal("Now using zero function so could have drifted arbitrarily") @Deprecated
     public static final double ELEVATOR_ENCODER_ZERO = 720-70;
     public static final double ELEVATOR_LOW_TARGET = 0;
     public static final double ELEVATOR_BUMPER_CLEAR = 3000;
@@ -102,7 +103,8 @@ public class Calibration {
     public static final double ARM_D = 0.000021;
     // This is multiplication by a cosine factor
     public static final double ARM_F = 0.25;
-    //public static final double ARM_ENCODER_ZERO = 3030-2900;
+    @Unreal("Now using zero function so could have drifted arbitrarily") @Deprecated
+    public static final double ARM_ENCODER_ZERO = 3030-2900;
     public static final double ARM_ENCODER_FULL_ROT=2*4096*54/30;
     /* Arm */
     // Bound I term motor output to 0.15
