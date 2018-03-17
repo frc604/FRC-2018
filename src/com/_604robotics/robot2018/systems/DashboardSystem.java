@@ -29,6 +29,7 @@ public class DashboardSystem extends Coordinator {
         robot.dashboard.armClicks.set(robot.arm.encoderClicks.get());
         
         robot.dashboard.isClamped.set(robot.clamp.isClamped.get() ? "CLAMPED" : "NOT CLAMPED");
+        robot.dashboard.armEncoderBroken.set(robot.arm.encoderClicks.get()>4700 || robot.arm.encoderClicks.get() < -2500);
         robot.powermonitor.initDashboardSendables();
         return true;
     }
