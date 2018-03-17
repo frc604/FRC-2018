@@ -135,7 +135,8 @@ public class Arm extends Module {
     public Arm() {
         super(Arm.class);
         encoder.setInverted(true);
-        encoder.setOffset(Calibration.ARM_ENCODER_ZERO);
+        encoder.zero(-2170);
+        //encoder.setOffset(Calibration.ARM_ENCODER_ZERO);
         motorA.setInverted(true);
         motorB.setInverted(false);
         motorB.set(ControlMode.Follower,Ports.ARM_MOTOR_A);

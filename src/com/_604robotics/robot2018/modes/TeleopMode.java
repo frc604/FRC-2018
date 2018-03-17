@@ -410,8 +410,11 @@ public class TeleopMode extends Coordinator {
     	public void run() {
     	    if (manipStart /*|| robot.arm.getBottomLimit()*/) {
     	        // offset -= (lowtarget - current)
-    	        // TODO: VERIFY ME!!!!
-    	        robot.arm.encoder.setOffset(robot.arm.encoder.getOffset() + robot.arm.encoder.getPosition() - Calibration.ARM_LOW_TARGET);
+    	        // TODO: Remeber to properly handle inversion
+    	        // System.out.println( robot.arm.encoder.isInverted() ? "Safe" : "ERROR: Not Inverted");
+    	        // robot.arm.encoder.setOffset(robot.arm.encoder.getOffset() - robot.arm.encoder.getPosition() + Calibration.ARM_LOW_TARGET);
+    	        // System.out.println("Warning: " + (robot.arm.encoder.getOffset() - robot.arm.encoder.getPosition() + Calibration.ARM_LOW_TARGET));
+    	        robot.arm.encoder.zero(-2170);
     	    }
     		if( manipRightJoystickY != 0 ) {
     			if( robot.elevator.encoder.getPosition() < Calibration.ELEVATOR_BUMPER_CLEAR && 
