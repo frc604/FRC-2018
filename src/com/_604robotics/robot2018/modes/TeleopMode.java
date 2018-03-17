@@ -9,6 +9,7 @@ import com._604robotics.robot2018.modules.Elevator;
 import com._604robotics.robot2018.modules.Intake;
 import com._604robotics.robotnik.Coordinator;
 import com._604robotics.robotnik.Logger;
+import com._604robotics.robotnik.prefabs.flow.Pulse;
 import com._604robotics.robotnik.prefabs.flow.Toggle;
 import com._604robotics.robotnik.prefabs.inputcontroller.xbox.XboxController;
 
@@ -401,14 +402,17 @@ public class TeleopMode extends Coordinator {
     	private final Arm.Move move;
     	private final Arm.Setpoint setpoint;
     	private double holdSetpoint = Calibration.ARM_LOW_TARGET;
+    	private final Pulse bottomPulse = new Pulse();
     	
     	public ArmManager() {
     		move = robot.arm.new Move();
     		setpoint = robot.arm.new Setpoint(Calibration.ARM_LOW_TARGET);
+    		bottomPulse.update(false);
     	}
     	
     	public void run() {
-    	    if (manipStart /*|| robot.arm.getBottomLimit()*/) {
+    	    bottomPulse.update(robot.arm.getBottomLimit());
+    	    if (manipStart || bottomPulse.isRisingEdge()) {
     	        // offset -= (lowtarget - current)
     	        // TODO: Remeber to properly handle inversion
     	        // System.out.println( robot.arm.encoder.isInverted() ? "Safe" : "ERROR: Not Inverted");
