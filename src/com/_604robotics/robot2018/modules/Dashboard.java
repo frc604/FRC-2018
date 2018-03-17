@@ -41,8 +41,8 @@ public class Dashboard extends DashboardModule {
         // Calibration autons to verify angles and distances
         ROTATE_LEFT_TEST,
         ROTATE_RIGHT_TEST,
-        FORWARD_12,
-        BACKWARD_12,
+        FAILSAFE_FORWARD_12,
+        FAILSAFE_BACKWARD_12,
         // Demo auton into which arbitrary stuff can be stashed for testing
         DEMO_NEW_AUTON,
         // Remnants of various tests

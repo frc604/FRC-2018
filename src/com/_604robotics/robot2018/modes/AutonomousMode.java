@@ -70,11 +70,11 @@ public class AutonomousMode extends Coordinator {
             case ROTATE_RIGHT_TEST:
                 selectedModeMacro = rotateRightStateMacro;
                 break;
-            case FORWARD_12:
-                selectedModeMacro = forwardStateMacro;
+            case FAILSAFE_FORWARD_12:
+                selectedModeMacro = new FallForwardMacro();
                 break;
-            case BACKWARD_12:
-                selectedModeMacro = new BackTempMacro();
+            case FAILSAFE_BACKWARD_12:
+                selectedModeMacro = new FallBackMacro();
                 break;
             case DEMO_NEW_AUTON:
                 selectedModeMacro = new DemoStateMacro();
@@ -376,11 +376,19 @@ public class AutonomousMode extends Coordinator {
     	}
     }
     
-    private class BackTempMacro extends StatefulCoordinator {
-        public BackTempMacro() {
-            super(BackTempMacro.class);
+    private class FallBackMacro extends StatefulCoordinator {
+        public FallBackMacro() {
+            super(FallBackMacro.class);
             addStates(new IntakeMacro());
             addState("Backward 144 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(144+1)), 0));
+        }
+    }
+    
+    private class FallForwardMacro extends StatefulCoordinator {
+        public FallForwardMacro() {
+            super(FallForwardMacro.class);
+            addStates(new IntakeMacro());
+            addState("Forward 144 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, (144+1)), 0));
         }
     }
     
