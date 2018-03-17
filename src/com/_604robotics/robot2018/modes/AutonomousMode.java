@@ -560,6 +560,7 @@ public class AutonomousMode extends Coordinator {
             super(CenterSwitchMacro.class);
             addStates(new IntakeMacro());
             addState("Raise elevator", new ElevatorSetPersistent(Calibration.ELEVATOR_RAISE_TARGET));
+            addState("Wait for elevator", new SleepCoordinator(0.3));
             addState("Raise arm", new ArmSetPersistent(Calibration.ARM_MID_TARGET));
             // Forward distance between front bumper and scale -76 XX
             addState("Forward 22 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, 22+1),0));
@@ -623,7 +624,7 @@ public class AutonomousMode extends Coordinator {
         public LeftScaleMacro() {
             super(LeftScaleMacro.class);
             addStates(new IntakeMacro());
-            //addState("Set Elevator Persistent", new ElevatorSetPersistent(Calibration.ELEVATOR_MID_TARGET));
+            addState("Set Elevator Persistent", new ElevatorSetPersistent(Calibration.ELEVATOR_MID_TARGET));
             addState("Backward 210 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(210+1)), 0));
             //addState("Set Arm Persistent", new ArmSetPersistent(Calibration.ARM_BALANCE_TARGET));
             addState("Sleep 0.5 seconds", new SleepCoordinator(0.5));
@@ -635,7 +636,7 @@ public class AutonomousMode extends Coordinator {
         public LeftScaleSameOnlyMacro() {
             super(LeftScaleSameOnlyMacro.class);
             addStates(new IntakeMacro());
-            //addState("Set Elevator Persistent", new ElevatorSetPersistent(Calibration.ELEVATOR_MID_TARGET));
+            addState("Set Elevator Persistent", new ElevatorSetPersistent(Calibration.ELEVATOR_MID_TARGET));
             addState("Backward 210 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(210+1)), 0));
             //addState("Set Arm Persistent", new ArmSetPersistent(Calibration.ARM_BALANCE_TARGET));
             addState("Sleep 0.5 seconds", new SleepCoordinator(0.5));
@@ -647,7 +648,7 @@ public class AutonomousMode extends Coordinator {
         public RightScaleMacro() {
             super(RightScaleMacro.class);
             addStates(new IntakeMacro());
-            //addState("Set Elevator Persistent", new ElevatorSetPersistent(Calibration.ELEVATOR_MID_TARGET));
+            addState("Set Elevator Persistent", new ElevatorSetPersistent(Calibration.ELEVATOR_MID_TARGET));
             addState("Backward 210 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(210+1)), 0));
             //addState("Set Arm Persistent", new ArmSetPersistent(Calibration.ARM_BALANCE_TARGET));
             addState("Sleep 0.5 seconds", new SleepCoordinator(0.5));
@@ -659,7 +660,7 @@ public class AutonomousMode extends Coordinator {
         public RightScaleSameOnlyMacro() {
             super(RightScaleSameOnlyMacro.class);
             addStates(new IntakeMacro());
-            //addState("Set Elevator Persistent", new ElevatorSetPersistent(Calibration.ELEVATOR_MID_TARGET));
+            addState("Set Elevator Persistent", new ElevatorSetPersistent(Calibration.ELEVATOR_MID_TARGET));
             addState("Backward 210 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(210+1)), 0));
             //addState("Set Arm Persistent", new ArmSetPersistent(Calibration.ARM_BALANCE_TARGET));
             addState("Sleep 0.5 seconds", new SleepCoordinator(0.5));
