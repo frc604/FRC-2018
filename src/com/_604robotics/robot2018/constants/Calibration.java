@@ -97,12 +97,12 @@ public class Calibration {
     public static final double ELEVATOR_PID_TIME_RUN = 5;
     
     
-    public static final double ARM_P = 0.0001; // 0.00009
+    public static final double ARM_P = 0.00011; // 0.00009 // 0.0001
     public static final double ARM_I = 0.00004;
     public static final double ARM_D = 0.00002;
     // This is multiplication by a cosine factor
     public static final double ARM_F = 0.25;
-    public static final double ARM_ENCODER_ZERO = -1020+990+2170-4200;//-2900-1270; // 2080-2900-200;
+    public static final double ARM_ENCODER_ZERO = -1020+990+2170-4200+230;//-2900-1270; // 2080-2900-200;
     public static final double ARM_ENCODER_FULL_ROT=2*4096*54/30;
     /* Arm */
     // Bound I term motor output to 0.15
