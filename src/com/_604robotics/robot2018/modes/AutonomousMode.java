@@ -562,10 +562,10 @@ public class AutonomousMode extends Coordinator {
             addState("Raise elevator", new ElevatorSetPersistent(Calibration.ELEVATOR_RAISE_TARGET));
             addState("Raise arm", new ArmSetPersistent(Calibration.ARM_MID_TARGET));
             // Forward distance between front bumper and scale -76 XX
-            addState("Forward 24 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, 24+1),0));
+            addState("Forward 22 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, 22+1),0));
             // Choose based on FMS Game Data
             addState("Switch choosing", new CenterSwitchChooserMacro());
-            addState("Forward 24 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, 24+1),0));
+            addState("Forward 22 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, 22+1),0));
             addStates(new SwitchEjectMacro());
         }
     }
