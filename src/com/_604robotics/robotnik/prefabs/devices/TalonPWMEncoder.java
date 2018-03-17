@@ -93,6 +93,8 @@ public class TalonPWMEncoder implements PIDSource {
         }
     }
 
+    // Use zeroing things instead of setting the offset directly
+    @Deprecated
     public void setOffset(double offset) {
         if (encoderType==EncoderType.ABSOLUTE) {
             int multfactor = inverted ? -1 : 1;
