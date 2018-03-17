@@ -64,6 +64,12 @@ public class AutonomousMode extends Coordinator {
             case RIGHT_SCALE:
             	selectedModeMacro = new RightScaleMacro();
             	break;
+            case LEFT_SCALE_SAME_ONLY:
+                selectedModeMacro = new LeftScaleSameOnlyMacro();
+                break;
+            case RIGHT_SCALE_SAME_ONLY:
+                selectedModeMacro = new RightScaleSameOnlyMacro();
+                break;
             case ROTATE_LEFT_TEST:
                 selectedModeMacro = rotateLeftStateMacro;
                 break;
@@ -625,6 +631,18 @@ public class AutonomousMode extends Coordinator {
         }
     }
     
+    private class LeftScaleSameOnlyMacro extends StatefulCoordinator {
+        public LeftScaleSameOnlyMacro() {
+            super(LeftScaleSameOnlyMacro.class);
+            addStates(new IntakeMacro());
+            //addState("Set Elevator Persistent", new ElevatorSetPersistent(Calibration.ELEVATOR_MID_TARGET));
+            addState("Backward 210 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(210+1)), 0));
+            //addState("Set Arm Persistent", new ArmSetPersistent(Calibration.ARM_BALANCE_TARGET));
+            addState("Sleep 0.5 seconds", new SleepCoordinator(0.5));
+            addState("Scale chooser", new LeftScaleChooserSameOnlyMacro());
+        }
+    }
+    
     private class RightScaleMacro extends StatefulCoordinator {
         public RightScaleMacro() {
             super(RightScaleMacro.class);
@@ -637,6 +655,18 @@ public class AutonomousMode extends Coordinator {
         }
     }
     
+    private class RightScaleSameOnlyMacro extends StatefulCoordinator {
+        public RightScaleSameOnlyMacro() {
+            super(RightScaleSameOnlyMacro.class);
+            addStates(new IntakeMacro());
+            //addState("Set Elevator Persistent", new ElevatorSetPersistent(Calibration.ELEVATOR_MID_TARGET));
+            addState("Backward 210 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(210+1)), 0));
+            //addState("Set Arm Persistent", new ArmSetPersistent(Calibration.ARM_BALANCE_TARGET));
+            addState("Sleep 0.5 seconds", new SleepCoordinator(0.5));
+            addState("Scale chooser", new RightScaleChooserSameOnlyMacro());
+        }
+    }
+    
     private class LeftScaleChooserMacro extends SwitchCoordinator {
     	public LeftScaleChooserMacro() {
     		super(LeftScaleChooserMacro.class);
@@ -646,6 +676,15 @@ public class AutonomousMode extends Coordinator {
     	}
     }
     
+    private class LeftScaleChooserSameOnlyMacro extends SwitchCoordinator {
+        public LeftScaleChooserSameOnlyMacro() {
+            super(LeftScaleChooserSameOnlyMacro.class);
+            addDefault(new SleepCoordinator(0.1));
+            addCase(new String[]{"LLL", "LLR", "RLL", "RLR"}, new NewScaleBackwardMacroLeft());
+            addCase(new String[]{"LRL", "LRR", "RRL", "RRR"}, new SleepCoordinator(1)); // Do nothing
+        }
+    }
+    
     private class RightScaleChooserMacro extends SwitchCoordinator {
     	public RightScaleChooserMacro() {
     		super(RightScaleChooserMacro.class);
@@ -653,6 +692,15 @@ public class AutonomousMode extends Coordinator {
     		addCase(new String[]{"LLL", "LLR", "RLL", "RLR"}, new NewScaleOppositeMacroRight());
     		addCase(new String[]{"LRL", "LRR", "RRL", "RRR"}, new NewScaleBackwardMacroRight());
     	}
+    }
+    
+    private class RightScaleChooserSameOnlyMacro extends SwitchCoordinator {
+        public RightScaleChooserSameOnlyMacro() {
+            super(RightScaleChooserSameOnlyMacro.class);
+            addDefault(new SleepCoordinator(0.1));
+            addCase(new String[]{"LLL", "LLR", "RLL", "RLR"}, new SleepCoordinator(1)); // Do nothing 
+            addCase(new String[]{"LRL", "LRR", "RRL", "RRR"}, new NewScaleBackwardMacroRight());
+        }
     }
     
     /* Auton Modes */

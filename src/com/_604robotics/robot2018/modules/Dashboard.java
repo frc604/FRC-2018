@@ -37,7 +37,9 @@ public class Dashboard extends DashboardModule {
         CENTER_SWITCH,
         BACKWARD_CENTER_SWITCH,
         LEFT_SCALE,
+        LEFT_SCALE_SAME_ONLY,
         RIGHT_SCALE,
+        RIGHT_SCALE_SAME_ONLY,
         // Calibration autons to verify angles and distances
         ROTATE_LEFT_TEST,
         ROTATE_RIGHT_TEST,
