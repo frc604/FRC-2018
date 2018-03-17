@@ -344,7 +344,7 @@ public class TeleopMode extends Coordinator {
 
         public void run() {
             // Only use when absolutely necessary
-        	if( driverStart || manipStart ) {
+        	if( manipBack ) {
         		 robot.elevator.encoder.zero();
                  setpoint.target_clicks.set(robot.elevator.encoderClicks.get());
                  setpoint.activate();
