@@ -32,6 +32,7 @@ public class Dashboard extends DashboardModule {
     public final Input<String> isClamped = addDashboardInput("Is Clamped", "CLAMPED");
     
     public final Input<Boolean> armEncoderBroken = addDashboardInput("Arm Encoder Broken", false);
+    public final Input<Boolean> limitPressed = addDashboardInput("LimitPressed", false);
     
     public enum AutonMode {
         OFF,
