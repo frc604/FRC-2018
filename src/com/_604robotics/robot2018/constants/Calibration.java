@@ -94,15 +94,15 @@ public class Calibration {
     public static final double ELEVATOR_HIGH_TARGET = 32000;
     //@Unreal("Find more reasonable time or eliminate hold part altogether")
     //public static final double ELEVATOR_PID_CONTINUE = 10;
-    public static final double ELEVATOR_PID_TIME_RUN = 5;
+    // public static final double ELEVATOR_PID_TIME_RUN = 5;
     
     
-    public static final double ARM_P = 0.00011; // 0.00009 // 0.0001
+    public static final double ARM_P = 0.00015; // 0.0001
     public static final double ARM_I = 0.00004;
-    public static final double ARM_D = 0.00002;
+    public static final double ARM_D = 0.000022;
     // This is multiplication by a cosine factor
     public static final double ARM_F = 0.25;
-    public static final double ARM_ENCODER_ZERO = -1020+990+2170-4200+230;//-2900-1270; // 2080-2900-200;
+    public static final double ARM_ENCODER_ZERO = -1020+990+2170-4200+230;
     public static final double ARM_ENCODER_FULL_ROT=2*4096*54/30;
     /* Arm */
     // Bound I term motor output to 0.15
@@ -115,13 +115,13 @@ public class Calibration {
 
     public static final double ARM_RESET_SUM = 0.02/ARM_I;
     public static final double ARM_CLICK_TOLERANCE = 50;
-    @Untested("Verify after using SimultaneousCoordinator")
-    public static final double ARM_PID_TIME_RUN = 5;
+    //@Untested("Verify after using SimultaneousCoordinator")
+    //public static final double ARM_PID_TIME_RUN = 5;
     
     // Low will be negative, high will be positive, zero is horizontal
-    // 4096 clicks/rot * 54/30 is 7372.8
-    // Assuming 60 degree increments for now
-    public static final double ARM_LOW_TARGET = -2500;
+    // 4096 clicks/rot * 54/30 * 2 = 14745.6
+    // Arm bottom is -2170 so push into the foam
+    public static final double ARM_LOW_TARGET = -2400;
     public static final double ARM_MID_TARGET = 200; //0
     public static final double ARM_BALANCE_TARGET = 900;
     public static final double ARM_HIGH_TARGET = 4200;

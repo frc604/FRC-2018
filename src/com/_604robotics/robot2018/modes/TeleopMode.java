@@ -379,7 +379,7 @@ public class TeleopMode extends Coordinator {
         		setpoint.target_clicks.set(Calibration.ELEVATOR_HIGH_TARGET);
         		setpoint.activate();
         	} else {
-        	    test.log("ERROR","Reaching set logic");
+        	    // test.log("ERROR","Reaching set logic");
         	    // This should only be called once
         		if( robot.elevator.getHoldElevatorClicks ) {
         			holdSetpoint=robot.elevator.encoderClicks.get();
@@ -416,7 +416,7 @@ public class TeleopMode extends Coordinator {
                     setpoint.activate();
         		} else {
         			elevatorOverride = false;
-        			move.liftPower.set(manipRightJoystickY/2);
+        			move.liftPower.set(manipRightJoystickY*0.6);
         			move.activate();
         		}
     			getHoldArmClicks = true;
