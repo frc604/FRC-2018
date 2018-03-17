@@ -527,6 +527,7 @@ public class TeleopMode extends Coordinator {
                     robot.arm.resetIntegral(Calibration.ARM_RESET_SUM);
                     getHoldArmClicks = false;
                 }
+                elevatorOverride = false;
                 setpoint.target_clicks.set(holdSetpoint);
                 setpoint.activate();
     		}
