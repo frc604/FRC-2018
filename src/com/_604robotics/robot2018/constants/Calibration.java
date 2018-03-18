@@ -98,9 +98,9 @@ public class Calibration {
     // public static final double ELEVATOR_PID_TIME_RUN = 5;
     
     
-    public static final double ARM_P = 0.00012; // 0.0001
+    public static final double ARM_P = 0.00015; // 0.0001
     public static final double ARM_I = 0.00004;
-    public static final double ARM_D = 0.000021;
+    public static final double ARM_D = 0.000022;
     // This is multiplication by a cosine factor
     public static final double ARM_F = 0.25;
     @Unreal("Now using zero function so could have drifted arbitrarily") @Deprecated
