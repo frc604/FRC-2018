@@ -30,8 +30,10 @@ public class Dashboard extends DashboardModule {
     public final Input<Double> armClicks = addDashboardInput("Arm Clicks", 0.0);
     
     public final Input<String> isClamped = addDashboardInput("Is Clamped", "CLAMPED");
+    public final Input<Boolean> clampLightA = addDashboardInput("Clamp Light A", false);
+    public final Input<Boolean> clampLightB = addDashboardInput("Clamp Light B", false);
     
-    public final Input<Boolean> armEncoderBroken = addDashboardInput("Arm Encoder Broken", false);
+    public final Input<Boolean> armEncoderStatus = addDashboardInput("Arm Encoder Status", false);
     public final Input<Boolean> limitPressed = addDashboardInput("LimitPressed", false);
     
     public enum AutonMode {
