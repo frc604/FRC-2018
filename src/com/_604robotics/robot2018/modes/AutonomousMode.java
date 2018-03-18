@@ -596,7 +596,7 @@ public class AutonomousMode extends Coordinator {
         public CenterSwitchMacro() {
             super(CenterSwitchMacro.class);
             addStates(new IntakeMacro());
-            addState("Raise elevator", new ElevatorSetPersistent(Calibration.ELEVATOR_RAISE_TARGET));
+            addState("Raise elevator", new ElevatorSetPersistent(Calibration.ELEVATOR_SWITCH_CLEAR));
             addState("Wait for elevator", new SleepCoordinator(0.3));
             addState("Raise arm", new ArmSetPersistent(Calibration.ARM_MID_TARGET));
             // Forward distance between front bumper and scale -76 XX
@@ -1044,7 +1044,7 @@ public class AutonomousMode extends Coordinator {
     private class SwitchEjectMacro extends StatefulCoordinator {
         public SwitchEjectMacro() {
             super(SwitchEjectMacro.class);
-            addState("Eject cube", new IntakeMove(-0.5,0.5));
+            addState("Eject cube", new IntakeMove(-0.3,1.5));
             // Move back to avoid arm hitting switch fence
             addState("Move back", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -12), 0));
             addState("Move arm", new ArmSetPersistent(Calibration.ARM_LOW_TARGET));

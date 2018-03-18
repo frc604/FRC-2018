@@ -90,7 +90,7 @@ public class Calibration {
     public static final double ELEVATOR_LOW_TARGET = 0;
     public static final double ELEVATOR_BUMPER_CLEAR = 3000;
     public static final double ELEVATOR_RAISE_TARGET = 5000;
-    public static final double ELEVATOR_SWITCH_CLEAR = 19100;
+    public static final double ELEVATOR_SWITCH_CLEAR = 10000;
     public static final double ELEVATOR_MID_TARGET = 14000;
     public static final double ELEVATOR_HIGH_TARGET = 32000;
     //@Unreal("Find more reasonable time or eliminate hold part altogether")
@@ -98,7 +98,7 @@ public class Calibration {
     // public static final double ELEVATOR_PID_TIME_RUN = 5;
     
     
-    public static final double ARM_P = 0.00015; // 0.0001
+    public static final double ARM_P = 0.00014; // 0.0001
     public static final double ARM_I = 0.00004;
     public static final double ARM_D = 0.000022;
     // This is multiplication by a cosine factor
