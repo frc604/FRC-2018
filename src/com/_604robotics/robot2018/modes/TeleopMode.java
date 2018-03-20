@@ -421,14 +421,14 @@ public class TeleopMode extends Coordinator {
     	        robot.arm.encoder.zero(-2170);//getholdelclick true
     	    }
     		if( manipRightJoystickY != 0 ) {
-    			/*if( robot.elevator.encoder.getPosition() < Calibration.ELEVATOR_BUMPER_CLEAR && 
+    			if( Calibration.TANDEM_ACTIVE && robot.elevator.encoder.getPosition() < Calibration.ELEVATOR_BUMPER_CLEAR && 
         				robot.arm.encoder.getPosition() < Calibration.ARM_RAISE_TARGET  && 
         				manipRightJoystickY > 0 ) {
     			    
         			elevatorOverride = true;
         			setpoint.target_clicks.set(holdSetpoint);
                     setpoint.activate();
-        		} else*/ {
+        		} else {
         			elevatorOverride = false;
         			move.liftPower.set(manipRightJoystickY*0.6);
         			move.activate();
@@ -441,27 +441,27 @@ public class TeleopMode extends Coordinator {
     			getHoldArmClicks = true;
     		} else if( manipB ) {
     		    if (manipLeftBumper) {
-    		    	/*if( robot.elevator.encoder.getPosition() < Calibration.ELEVATOR_BUMPER_CLEAR && 
+    		    	if( Calibration.TANDEM_ACTIVE && robot.elevator.encoder.getPosition() < Calibration.ELEVATOR_BUMPER_CLEAR && 
             				robot.arm.encoder.getPosition() < Calibration.ARM_RAISE_TARGET  && 
             				robot.arm.encoder.getPosition() < Calibration.ARM_HIGH_TARGET ) {
     		    	    
             			elevatorOverride = true;
             			setpoint.target_clicks.set(holdSetpoint);
                         setpoint.activate();
-            		} else*/ {
+            		} else {
             			elevatorOverride = false;
             			setpoint.target_clicks.set(Calibration.ARM_HIGH_TARGET);
             			setpoint.activate();
             		}
     		    } else {
-    		    	/*if( robot.elevator.encoder.getPosition() < Calibration.ELEVATOR_BUMPER_CLEAR && 
+    		    	if( Calibration.TANDEM_ACTIVE && robot.elevator.encoder.getPosition() < Calibration.ELEVATOR_BUMPER_CLEAR && 
             				robot.arm.encoder.getPosition() < Calibration.ARM_RAISE_TARGET  && 
             				robot.arm.encoder.getPosition() < Calibration.ARM_MID_TARGET ) {
     		    	    
             			elevatorOverride = true;
             			setpoint.target_clicks.set(holdSetpoint);
                         setpoint.activate();
-            		} else*/ {
+            		} else {
             			elevatorOverride = false;
             			setpoint.target_clicks.set(Calibration.ARM_MID_TARGET);
             			setpoint.activate();
@@ -469,14 +469,14 @@ public class TeleopMode extends Coordinator {
     		    }
     			getHoldArmClicks = true;
     		} else if( manipY ) {
-    			/*if( robot.elevator.encoder.getPosition() < Calibration.ELEVATOR_BUMPER_CLEAR && 
+    			if( Calibration.TANDEM_ACTIVE && robot.elevator.encoder.getPosition() < Calibration.ELEVATOR_BUMPER_CLEAR && 
         				robot.arm.encoder.getPosition() < Calibration.ARM_RAISE_TARGET  && 
         				robot.arm.encoder.getPosition() < Calibration.ARM_HIGH_TARGET ) {
     			    System.out.println("Warning: activating tandem");
         			elevatorOverride = true;
         			setpoint.target_clicks.set(holdSetpoint);
                     setpoint.activate();
-        		} else*/ {
+        		} else {
         			elevatorOverride = false;
         			setpoint.target_clicks.set(Calibration.ARM_HIGH_TARGET);
         			setpoint.activate();
@@ -489,25 +489,25 @@ public class TeleopMode extends Coordinator {
     			getHoldArmClicks = true;
     		} else if( driverB ) {
                 if (driverLeftJoystickButton) {
-                	/*if( robot.elevator.encoder.getPosition() < Calibration.ELEVATOR_BUMPER_CLEAR && 
+                	if( Calibration.TANDEM_ACTIVE && robot.elevator.encoder.getPosition() < Calibration.ELEVATOR_BUMPER_CLEAR && 
             				robot.arm.encoder.getPosition() < Calibration.ARM_RAISE_TARGET  && 
             				robot.arm.encoder.getPosition() < Calibration.ARM_HIGH_TARGET ) {
             			elevatorOverride = true;
             			setpoint.target_clicks.set(holdSetpoint);
                         setpoint.activate();
-            		} else */{
+            		} else {
             			elevatorOverride = false;
             			setpoint.target_clicks.set(Calibration.ARM_HIGH_TARGET);
             			setpoint.activate();
             		}
                 } else {
-                	/*if( robot.elevator.encoder.getPosition() < Calibration.ELEVATOR_BUMPER_CLEAR && 
+                	if( Calibration.TANDEM_ACTIVE && robot.elevator.encoder.getPosition() < Calibration.ELEVATOR_BUMPER_CLEAR && 
             				robot.arm.encoder.getPosition() < Calibration.ARM_RAISE_TARGET  && 
             				robot.arm.encoder.getPosition() < Calibration.ARM_MID_TARGET ) {
             			elevatorOverride = true;
             			setpoint.target_clicks.set(holdSetpoint);
                         setpoint.activate();
-            		} else*/ {
+            		} else {
             			elevatorOverride = false;
             			setpoint.target_clicks.set(Calibration.ARM_MID_TARGET);
             			setpoint.activate();
@@ -515,13 +515,13 @@ public class TeleopMode extends Coordinator {
                 }
     			getHoldArmClicks = true;
     		} else if( driverY ) {
-    			/*if( robot.elevator.encoder.getPosition() < Calibration.ELEVATOR_BUMPER_CLEAR && 
+    			if( Calibration.TANDEM_ACTIVE && robot.elevator.encoder.getPosition() < Calibration.ELEVATOR_BUMPER_CLEAR && 
         				robot.arm.encoder.getPosition() < Calibration.ARM_RAISE_TARGET  && 
         				robot.arm.encoder.getPosition() < Calibration.ARM_HIGH_TARGET ) {
         			elevatorOverride = true;
         			setpoint.target_clicks.set(holdSetpoint);
                     setpoint.activate();
-        		} else*/ {
+        		} else {
         			elevatorOverride = false;
         			setpoint.target_clicks.set(Calibration.ARM_HIGH_TARGET);
         			setpoint.activate();
