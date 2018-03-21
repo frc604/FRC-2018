@@ -3,10 +3,9 @@ package com._604robotics.robot2018;
 import com._604robotics.robot2018.constants.Ports;
 import com._604robotics.robot2018.modes.*;
 import com._604robotics.robot2018.modules.*;
+import com._604robotics.robotnik.prefabs.modules.*;
 import com._604robotics.robot2018.systems.*;
 import com._604robotics.robotnik.Robot;
-import com._604robotics.robotnik.prefabs.modules.PowerMonitor;
-import com._604robotics.robotnik.prefabs.modules.Shifter;
 
 public class Robot2018 extends Robot {
     public final Dashboard dashboard = addModule(new Dashboard());
