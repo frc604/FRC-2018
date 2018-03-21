@@ -88,7 +88,7 @@ public class Calibration {
     // Tolerance for PID controller
     public static final int ELEVATOR_CLICK_TOLERANCE = 50;
     // Reset elevator encoder if it goes below this value
-    public static final int ELEVATOR_RESET_TOLERANCE = 500;
+    public static final int ELEVATOR_RESET_TOLERANCE = 200;
     // Prefer to be at the bottom so push into hard stop
     @Unreal("Now using zero function so could have drifted arbitrarily") @Deprecated
     public static final double ELEVATOR_ENCODER_ZERO = 720-70;
