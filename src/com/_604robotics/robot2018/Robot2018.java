@@ -23,6 +23,5 @@ public class Robot2018 extends Robot {
         setTeleopMode(new TeleopMode(this));
                 
         addSystem(DashboardSystem.class, new DashboardSystem(this));
-        addSystem(TandemSystem.class, new TandemSystem(this));
     }
 }
