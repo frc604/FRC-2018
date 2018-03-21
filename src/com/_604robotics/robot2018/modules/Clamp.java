@@ -82,6 +82,6 @@ public class Clamp extends Module {
 	
 	public Clamp() {
 		super(Clamp.class);
-		this.setDefaultAction(extend);
+		this.setDefaultAction(retract);
 	}
 }

@@ -6,7 +6,9 @@ import com._604robotics.robotnik.utils.annotations.Untested;
 
 public class Calibration {
     private Calibration () {}
-
+    
+    public static final boolean TANDEM_ACTIVE = true;
+    
     public static final double TELEOP_DRIVE_DEADBAND = 0.3;
     public static final double TELEOP_MANIP_DEADBAND = 0.11;
     public static final double TELEOP_FACTOR = -1;
@@ -53,9 +55,9 @@ public class Calibration {
     public static final double DRIVE_ROTATE_RIGHT_TARGET
     = AutonMovement.degreesToClicks(DRIVE_PROPERTIES, 90);
     public static final double DRIVE_MOVE_FORWARD_TARGET
-    = AutonMovement.inchesToClicks(DRIVE_PROPERTIES, 72);
+    = AutonMovement.inchesToClicks(DRIVE_PROPERTIES, 144);
     public static final double DRIVE_MOVE_BACKWARD_TARGET
-    = AutonMovement.inchesToClicks(DRIVE_PROPERTIES, -72);
+    = AutonMovement.inchesToClicks(DRIVE_PROPERTIES, -144);
     
     // Initial forward direction for switch
     public static final double DRIVE_MOVE_FORWARD_SWITCH_INCHES
@@ -71,64 +73,64 @@ public class Calibration {
     public static final double ELEVATOR_P = 0.00008;
     public static final double ELEVATOR_I = 0.00002;
     public static final double ELEVATOR_D = 0.00000;
+    public static final double ELEVATOR_PID_PERIOD = 0.02;
     
-    // Bound I term motor output to 1
-    public static final double ELEVATOR_MAX_SUM = 0.25/ELEVATOR_I;
+    // Bound I term motor output
     // I term which props up elevator should never be negative
     // Needs to be positive as well to counter the weight
-    public static final double ELEVATOR_RESET_SUM = 0.2/ELEVATOR_I;
     public static final double ELEVATOR_MIN_SUM = 0.12/ELEVATOR_I;
-    public static final double ELEVATOR_PID_PERIOD = 0.02;
+    public static final double ELEVATOR_MAX_SUM = 0.25/ELEVATOR_I;
+    public static final double ELEVATOR_RESET_SUM = 0.2/ELEVATOR_I;
     // Lower speed going down due to weight
     public static final double ELEVATOR_MIN_SPEED = -0.1;
     public static final double ELEVATOR_MAX_SPEED = 0.8;
     
-    public static final double ELEVATOR_TARGET_SPEED = 0.5;
-    public static final int ELEVATOR_CLICK_TOLERANCE = 5;
-    
+    // Tolerance for PID controller
+    public static final int ELEVATOR_CLICK_TOLERANCE = 50;
+    // Reset elevator encoder if it goes below this value
+    public static final int ELEVATOR_RESET_TOLERANCE = 200;
     // Prefer to be at the bottom so push into hard stop
-    public static final double ELEVATOR_ENCODER_ZERO = 915;
+    @Unreal("Now using zero function so could have drifted arbitrarily") @Deprecated
+    public static final double ELEVATOR_ENCODER_ZERO = 720-70;
     public static final double ELEVATOR_LOW_TARGET = 0;
     public static final double ELEVATOR_BUMPER_CLEAR = 3000;
-    public static final double ELEVATOR_RAISE_TARGET = 6000;
-    public static final double ELEVATOR_SWITCH_CLEAR = 19100;
+    public static final double ELEVATOR_RAISE_TARGET = 5000;
+    public static final double ELEVATOR_SWITCH_CLEAR = 10000;
     public static final double ELEVATOR_MID_TARGET = 14000;
     public static final double ELEVATOR_HIGH_TARGET = 32000;
-    //@Unreal("Find more reasonable time or eliminate hold part altogether")
-    //public static final double ELEVATOR_PID_CONTINUE = 10;
-    public static final double ELEVATOR_PID_TIME_RUN = 5;
-    public static final int ELEVATOR_RESET_TOLERANCE = 300;
     
-    
-    public static final double ARM_P = 0.0001; // 0.00009
+    /* Arm */
+    public static final double ARM_P = 0.00014; // 0.0001
     public static final double ARM_I = 0.00004;
-    public static final double ARM_D = 0.00002;
+    public static final double ARM_D = 0.000022;
     // This is multiplication by a cosine factor
     public static final double ARM_F = 0.25;
-    public static final double ARM_ENCODER_FULL_ROT=2*4096*54/30;
-    /* Arm */
-    // Bound I term motor output to 0.15
-    public static final double ARM_MAX_SUM = 0.08/ARM_I;
-    public static final double ARM_MIN_SUM = -0.06/ARM_I;
     public static final double ARM_PID_PERIOD = 0.02;
+    
+    @Unreal("Now using zero function so could have drifted arbitrarily") @Deprecated
+    public static final double ARM_ENCODER_ZERO = 3030-2900;
+    public static final double ARM_ENCODER_FULL_ROT=2*4096*54/30;
+    
     // Lower speed going down due to weight
-    public static final double ARM_MIN_SPEED = -0.07;
+    public static final double ARM_MIN_SPEED = -0.09;
     public static final double ARM_MAX_SPEED = 0.8;
-
+    // Bound I term motor output
+    public static final double ARM_MIN_SUM = -0.06/ARM_I;
+    public static final double ARM_MAX_SUM = 0.08/ARM_I;
     public static final double ARM_RESET_SUM = 0.02/ARM_I;
+    
     public static final double ARM_CLICK_TOLERANCE = 50;
-    @Untested("Verify after using SimultaneousCoordinator")
-    public static final double ARM_PID_TIME_RUN = 5;
     
     // Low will be negative, high will be positive, zero is horizontal
-    // 4096 clicks/rot * 54/30 is 7372.8
-    // Assuming 60 degree increments for now
-    public static final double ARM_ENCODER_ZERO = -400;
-    public static final double ARM_LOW_TARGET = 0;
-    public static final double ARM_MID_TARGET = 2300; // this is correct, but pid tolerances make it go ~500 beneath
-    public static final double ARM_BALANCE_TARGET = 3000;
-    public static final double ARM_CLEAR_TARGET = 500;
-    public static final double ARM_HIGH_TARGET = 6300;
+    // 4096 clicks/rot * 54/30 * 2 = 14745.6
+    // Arm low target should push into the foam
+    public static final double ARM_LOW_TARGET = -2400;
+    public static final double ARM_BOTTOM_LOCATION = -2170;
+    public static final double ARM_MID_TARGET = 200; //0
+    @Unreal("Remnants from using arm to facilitate turning") @Deprecated
+    public static final double ARM_BALANCE_TARGET = 900;
+    public static final double ARM_HIGH_TARGET = 4200;
+    public static final double ARM_RAISE_TARGET = 0;
     
     /* Intake */
     public static final double INTAKE_PASSIVE_POWER = 0;

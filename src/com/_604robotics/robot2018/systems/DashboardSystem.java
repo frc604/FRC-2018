@@ -17,7 +17,7 @@ public class DashboardSystem extends Coordinator {
         robot.dashboard.leftDriveRate.set(robot.drive.leftClickRate.get());
         robot.dashboard.rightDriveRate.set(robot.drive.rightClickRate.get());
 
-        robot.dashboard.totalCurrent.set(robot.powermonitor.totalPortCurrent.get());
+        //robot.dashboard.totalCurrent.set(robot.powermonitor.totalPortCurrent.get());
         
         robot.dashboard.elevatorRate.set(robot.elevator.encoderRate.get());
         robot.dashboard.elevatorClicks.set(robot.elevator.encoderClicks.get());
@@ -27,13 +27,13 @@ public class DashboardSystem extends Coordinator {
         
         robot.dashboard.armRate.set(robot.arm.encoderRate.get());
         robot.dashboard.armClicks.set(robot.arm.encoderClicks.get());
-        
-        robot.dashboard.isClamped.set(robot.clamp.isClamped.get());
-        robot.powermonitor.initDashboardSendables();
-        
-        robot.dashboard.elevatorRaised.set(robot.elevator.elevatorRaised.get());
-        robot.dashboard.raiseMore.set(robot.elevator.raiseMore.get());
-        robot.dashboard.clear.set(robot.arm.clear.get());
+
+        robot.dashboard.isClamped.set(robot.clamp.isClamped.get() ? "CLAMPED" : "NOT CLAMPED");
+        robot.dashboard.clampLightA.set(robot.clamp.isClamped.get());
+        robot.dashboard.clampLightB.set(robot.clamp.isClamped.get());
+        robot.dashboard.armEncoderStatus.set(robot.arm.encoderClicks.get()>4700 || robot.arm.encoderClicks.get() < -2500);
+        robot.dashboard.limitPressed.set(robot.arm.getBottomLimit());
+        //robot.powermonitor.initDashboardSendables();
         return true;
     }
 }
