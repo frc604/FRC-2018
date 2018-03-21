@@ -124,8 +124,9 @@ public class Calibration {
     
     // Low will be negative, high will be positive, zero is horizontal
     // 4096 clicks/rot * 54/30 * 2 = 14745.6
-    // Arm bottom is -2170 so push into the foam
+    // Arm low target should push into the foam
     public static final double ARM_LOW_TARGET = -2400;
+    public static final double ARM_BOTTOM_LOCATION = -2170;
     public static final double ARM_MID_TARGET = 200; //0
     public static final double ARM_BALANCE_TARGET = 900;
     public static final double ARM_HIGH_TARGET = 4200;

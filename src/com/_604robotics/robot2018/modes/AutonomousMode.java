@@ -52,7 +52,7 @@ public class AutonomousMode extends Coordinator {
     @Override
     public void begin () {
         // reset arm encoder
-        robot.arm.encoder.zero(-2170);
+        robot.arm.encoder.zero(Calibration.ARM_BOTTOM_LOCATION);
         
         switch (robot.dashboard.autonMode.get()) {
             case CENTER_SWITCH:

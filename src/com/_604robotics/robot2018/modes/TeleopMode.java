@@ -418,7 +418,8 @@ public class TeleopMode extends Coordinator {
     	        // System.out.println( robot.arm.encoder.isInverted() ? "Safe" : "ERROR: Not Inverted");
     	        // robot.arm.encoder.setOffset(robot.arm.encoder.getOffset() - robot.arm.encoder.getPosition() + Calibration.ARM_LOW_TARGET);
     	        // System.out.println("Warning: " + (robot.arm.encoder.getOffset() - robot.arm.encoder.getPosition() + Calibration.ARM_LOW_TARGET));
-    	        robot.arm.encoder.zero(-2170);//getholdelclick true
+    	        robot.arm.encoder.zero(Calibration.ARM_BOTTOM_LOCATION);
+    	        getHoldArmClicks = true; // Need to get hold setpoint again
     	    }
     		if( manipRightJoystickY != 0 ) {
     			if( Calibration.TANDEM_ACTIVE && robot.elevator.encoder.getPosition() < Calibration.ELEVATOR_BUMPER_CLEAR && 
