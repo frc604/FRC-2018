@@ -36,6 +36,11 @@ public class Dashboard extends DashboardModule {
     public final Input<Boolean> armEncoderStatus = addDashboardInput("Arm Encoder Status", false);
     public final Input<Boolean> limitPressed = addDashboardInput("LimitPressed", false);
     
+    public final Input<Double> objectX = addDashboardInput("Object X", 0D);
+    public final Input<Double> objectY = addDashboardInput("Object Y", 0D);
+    public final Input<Double> objectHeight = addDashboardInput("Object Height", 0D);
+    public final Input<Double> objectWidth = addDashboardInput("Object Width", 0D);
+    
     public enum AutonMode {
         OFF,
         // Following are actual strategy selections

@@ -33,6 +33,11 @@ public class DashboardSystem extends Coordinator {
         robot.dashboard.clampLightB.set(robot.clamp.isClamped.get());
         robot.dashboard.armEncoderStatus.set(robot.arm.encoderClicks.get()>4700 || robot.arm.encoderClicks.get() < -2500);
         robot.dashboard.limitPressed.set(robot.arm.getBottomLimit());
+        
+        robot.dashboard.objectX.set(robot.pixyTest.getX());
+        robot.dashboard.objectY.set(robot.pixyTest.getY());
+        robot.dashboard.objectHeight.set(robot.pixyTest.getHeight());
+        robot.dashboard.objectWidth.set(robot.pixyTest.getWidth());
         //robot.powermonitor.initDashboardSendables();
         return true;
     }

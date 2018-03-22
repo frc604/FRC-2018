@@ -1,11 +1,18 @@
 package com._604robotics.robot2018;
 
 import com._604robotics.robot2018.constants.Ports;
-import com._604robotics.robot2018.modes.*;
-import com._604robotics.robot2018.modules.*;
-import com._604robotics.robot2018.systems.*;
+import com._604robotics.robot2018.modes.AutonomousMode;
+import com._604robotics.robot2018.modes.TeleopMode;
+import com._604robotics.robot2018.modules.Arm;
+import com._604robotics.robot2018.modules.Camera;
+import com._604robotics.robot2018.modules.Clamp;
+import com._604robotics.robot2018.modules.Dashboard;
+import com._604robotics.robot2018.modules.Drive;
+import com._604robotics.robot2018.modules.Elevator;
+import com._604robotics.robot2018.modules.Intake;
+import com._604robotics.robot2018.modules.PixyTest;
+import com._604robotics.robot2018.systems.DashboardSystem;
 import com._604robotics.robotnik.Robot;
-import com._604robotics.robotnik.prefabs.modules.PowerMonitor;
 import com._604robotics.robotnik.prefabs.modules.Shifter;
 
 public class Robot2018 extends Robot {
@@ -17,6 +24,7 @@ public class Robot2018 extends Robot {
     public final Clamp clamp = addModule(new Clamp());
     public final Arm arm = addModule(new Arm());
     public final Camera camera = addModule(new Camera());
+    public final PixyTest pixyTest = addModule(new PixyTest());
     //public final PowerMonitor powermonitor = addModule(new PowerMonitor(Ports.PDP_MODULE, Ports.COMPRESSOR));
     
     public Robot2018() {
