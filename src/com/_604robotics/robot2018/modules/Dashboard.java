@@ -41,6 +41,8 @@ public class Dashboard extends DashboardModule {
     public final Input<Double> objectHeight = addDashboardInput("Object Height", 0D);
     public final Input<Double> objectWidth = addDashboardInput("Object Width", 0D);
     
+    public final Input<Boolean> onTarget = addDashboardInput("On Target", false);
+    
     public enum AutonMode {
         OFF,
         // Following are actual strategy selections

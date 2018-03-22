@@ -38,6 +38,7 @@ public class DashboardSystem extends Coordinator {
         robot.dashboard.objectY.set(robot.pixyTest.getY());
         robot.dashboard.objectHeight.set(robot.pixyTest.getHeight());
         robot.dashboard.objectWidth.set(robot.pixyTest.getWidth());
+        robot.dashboard.onTarget.set(Math.abs(robot.pixyTest.getX()) < 20 && Math.abs(robot.pixyTest.getY()) < 20);
         //robot.powermonitor.initDashboardSendables();
         return true;
     }
