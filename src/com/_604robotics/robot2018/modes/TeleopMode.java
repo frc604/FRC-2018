@@ -431,7 +431,11 @@ public class TeleopMode extends Coordinator {
                     setpoint.activate();
         		} else {
         			elevatorOverride = false;
-        			move.liftPower.set(manipRightJoystickY*0.6);
+        			double motorPower = manipRightJoystickY;
+        			if (motorPower<0 && !manipRightJoystickButton) {
+        			    motorPower*=0.6;
+        			}
+        			move.liftPower.set(motorPower);
         			move.activate();
         		}
     			getHoldArmClicks = true;
