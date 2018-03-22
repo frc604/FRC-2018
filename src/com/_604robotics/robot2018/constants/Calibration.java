@@ -7,7 +7,7 @@ import com._604robotics.robotnik.utils.annotations.Untested;
 public class Calibration {
     private Calibration () {}
     
-    public static final boolean TANDEM_ACTIVE = true;
+    public static final boolean TANDEM_ACTIVE = false;
     
     public static final double TELEOP_DRIVE_DEADBAND = 0.3;
     public static final double TELEOP_MANIP_DEADBAND = 0.11;
