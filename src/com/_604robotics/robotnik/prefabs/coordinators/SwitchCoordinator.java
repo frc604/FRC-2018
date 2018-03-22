@@ -1,6 +1,7 @@
 package com._604robotics.robotnik.prefabs.coordinators;
 
 import java.util.HashMap;
+import java.util.concurrent.ExecutionException;
 
 import com._604robotics.robotnik.Coordinator;
 import com._604robotics.robotnik.Logger;
@@ -8,7 +9,7 @@ import com._604robotics.robotnik.Logger;
 // TODO: use regex
 public class SwitchCoordinator extends Coordinator {
 	private final Logger logger;
-	private GameDataCoordinator gdc;
+	private AsynchronousGameDataRetriever gdc;
 	private HashMap<String, Coordinator> cases;
 	private String gameData;
 	private boolean gotData;
@@ -17,17 +18,16 @@ public class SwitchCoordinator extends Coordinator {
 	private Coordinator active;
 	private Coordinator defaultCoordinator;
 	
-    public SwitchCoordinator (String name) {
+    public SwitchCoordinator (String name, AsynchronousGameDataRetriever ret) {
     	logger = new Logger(SwitchCoordinator.class, name);
-    	gdc = new GameDataCoordinator();
     	cases = new HashMap<String, Coordinator>();
     	gotData = false;
     	gameData = "";
-    	endedGameDataCoordinator = false;
     	started = false;
+    	gdc = ret;
     }
-    public SwitchCoordinator (Class<?> klass) {
-    	this(klass.getSimpleName());
+    public SwitchCoordinator (Class<?> klass, AsynchronousGameDataRetriever ret) {
+    	this(klass.getSimpleName(), ret);
     }
     
     public void addCase( String[] conditions, Coordinator coordinator ) {
@@ -42,7 +42,6 @@ public class SwitchCoordinator extends Coordinator {
     @Override
     public void begin() {
     	logger.info("Begin");
-    	gdc.start();
     	gameData = "";
     	gotData = false;
     	endedGameDataCoordinator = false;
@@ -51,16 +50,21 @@ public class SwitchCoordinator extends Coordinator {
     
     @Override
     public boolean run() {
-    	if( !gotData ) {
-    		if( !gdc.execute() ) {
-        		gameData = gdc.getGameData();
-        		gotData = true;
-        	}
-    	} else if( !endedGameDataCoordinator ) {
-    		gdc.stop();
-    		endedGameDataCoordinator = true;
-    	} else if( !started ) {
-    		active = cases.getOrDefault(gameData, defaultCoordinator);
+        if (!gdc.isReady()) {
+            return true;
+        } else if (!started) {
+            try {
+                gameData = gdc.get();
+            } catch (InterruptedException e) {
+                // Should never happen
+                gameData = "";
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                // Should never happen
+                gameData = "";
+                e.printStackTrace();
+            }
+    	    active = cases.getOrDefault(gameData, defaultCoordinator);
     		active.start();
     		started = true;
     	} else {
