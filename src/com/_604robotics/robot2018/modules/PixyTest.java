@@ -2,39 +2,20 @@ package com._604robotics.robot2018.modules;
 
 import com._604robotics.robotnik.Action;
 import com._604robotics.robotnik.Module;
-import com._604robotics.robotnik.Output;
-import com._604robotics.robotnik.prefabs.devices.pixy.Pixy;
+import com._604robotics.robotnik.prefabs.devices.pixy.PixyException;
+import com._604robotics.robotnik.prefabs.devices.pixy.PixyI2C;
+import com._604robotics.robotnik.prefabs.devices.pixy.PixyPacketI2C;
+
+import edu.wpi.first.wpilibj.I2C;
+import edu.wpi.first.wpilibj.I2C.Port;
 
 public class PixyTest extends Module {
-	private Pixy pixy = new Pixy();
-	
-	private double x;
-	private double y;
-	private double height;
-	private double width;
-	
-	public Output<Double> objectX = addOutput("Object X", this::getX);
-	public Output<Double> objectY = addOutput("Object Y", this::getY);
-	public Output<Double> objectHeight = addOutput("Object Height", this::getHeight);
-	public Output<Double> objectWidth = addOutput("Object Width", this::getWidth);
+	// private PixyMXP pixy = new PixyMXP();
+	public String print;
+	public PixyPacketI2C[] packet = new PixyPacketI2C[7];
+	public PixyI2C pixy = new PixyI2C("Pixy", new I2C(Port.kOnboard, 0x54), packet, new PixyException(print), new PixyPacketI2C());
 	
 	public Action stream = new Stream();
-	
-	public double getX() {
-		return x;
-	}
-	
-	public double getY() {
-		return y;
-	}
-	
-	public double getHeight() {
-		return height;
-	}
-	
-	public double getWidth() {
-		return width;
-	}
 	
 	public class Stream extends Action {
 		public Stream() {
@@ -43,11 +24,7 @@ public class PixyTest extends Module {
 		
 		@Override
 		public void run() {
-			pixy.update();
-			x = pixy.getX();
-			y = pixy.getY();
-			height = pixy.getHeight();
-			width = pixy.getWidth();
+			pixy.readBlocks();
 		}
 	}
 	

@@ -5,17 +5,17 @@ package com._604robotics.robotnik.prefabs.devices.pixy;
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.SerialPort.Port;
 
-public class Pixy {
+public class PixyMXP {
 	public final SerialPort pixy;
 	public final Port port = Port.kMXP;
 	public int objectID;
 
-	private PixyPacket[] packets;
+	private PixyPacketMXP[] packets;
 	
-	public Pixy() {
+	public PixyMXP() {
 		pixy = new SerialPort(19200, port);
 		pixy.setReadBufferSize(14);
-		packets = new PixyPacket[7];
+		packets = new PixyPacketMXP[7];
 		objectID = 1;
 	}
 
@@ -53,7 +53,7 @@ public class Pixy {
 					if(Sig <= 0 || Sig > packets.length){
 						break;
 					}
-					packets[Sig - 1] = new PixyPacket();
+					packets[Sig - 1] = new PixyPacketMXP();
 					packets[Sig - 1].X = cvt(rawData[i+9], rawData[i+8]);
 					packets[Sig - 1].Y = cvt(rawData[i+11], rawData[i+10]);
 					packets[Sig - 1].Width = cvt(rawData[i+13], rawData[i+12]);
@@ -86,7 +86,7 @@ public class Pixy {
 		return readPacket().Width;
 	}
 	
-	public PixyPacket readPacket() {
+	public PixyPacketMXP readPacket() {
 		return packets[objectID-1];
 	}
 }
