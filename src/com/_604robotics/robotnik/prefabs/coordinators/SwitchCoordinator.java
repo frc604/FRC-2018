@@ -12,8 +12,6 @@ public class SwitchCoordinator extends Coordinator {
 	private AsynchronousGameDataRetriever gdc;
 	private HashMap<String, Coordinator> cases;
 	private String gameData;
-	private boolean gotData;
-	private boolean endedGameDataCoordinator;
 	private boolean started;
 	private Coordinator active;
 	private Coordinator defaultCoordinator;
@@ -21,7 +19,6 @@ public class SwitchCoordinator extends Coordinator {
     public SwitchCoordinator (String name, AsynchronousGameDataRetriever ret) {
     	logger = new Logger(SwitchCoordinator.class, name);
     	cases = new HashMap<String, Coordinator>();
-    	gotData = false;
     	gameData = "";
     	started = false;
     	gdc = ret;
@@ -43,8 +40,6 @@ public class SwitchCoordinator extends Coordinator {
     public void begin() {
     	logger.info("Begin");
     	gameData = "";
-    	gotData = false;
-    	endedGameDataCoordinator = false;
     	started = false;
     }
     
