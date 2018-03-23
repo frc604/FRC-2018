@@ -65,13 +65,14 @@ public class Arm extends Module {
 
         @Override
         public void begin() {
+            System.out.println("Switching to move");
             setDefaultAction(setpoint);
         }
         
         @Override
         public void run () {
         	double power = liftPower.get();
-        	if( power > 0 && encoder.getPosition() < Calibration.ARM_BALANCE_TARGET && !elevatorRaised.get() ) {
+        	if( Calibration.TANDEM_ACTIVE && power > 0 && encoder.getPosition() < Calibration.ARM_BALANCE_TARGET && !elevatorRaised.get() ) {
         		if( !raiseMore.get() ) {
         			launching = true;
         		}
@@ -101,6 +102,7 @@ public class Arm extends Module {
 
         @Override
         public void begin() {
+            System.out.println("Switching to setpoint");
             pid.enable();
             setDefaultAction(setpoint);
         }
@@ -161,6 +163,7 @@ public class Arm extends Module {
     public Arm() {
         super(Arm.class);
         encoder.setInverted(true);
+        encoder.zero(Calibration.ARM_BOTTOM_LOCATION);
         encoder.setOffset(Calibration.ARM_ENCODER_ZERO);
         motorA.setInverted(true);
         motorB.setInverted(false);
