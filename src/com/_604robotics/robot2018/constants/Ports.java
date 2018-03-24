@@ -2,7 +2,6 @@ package com._604robotics.robot2018.constants;
 
 public class Ports {
     private Ports () {}
-    //WARNING: INTAKE ID MIXUP
     
     /* Solenoids */
     public static final int SHIFTER_A = 6;
