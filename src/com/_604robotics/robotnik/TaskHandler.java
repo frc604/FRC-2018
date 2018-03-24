@@ -53,7 +53,6 @@ public class TaskHandler {
 	public Object getResult( Object name ) {
 		if( isDone( name ) ) {
 			try {
-				log.info("Getting value for future task: " + name.toString());
 				return getFuture( name ).get();
 			} catch (InterruptedException | ExecutionException e) {
 				log.error("Failed to get result from future for task " + name.toString(), e);
@@ -97,18 +96,28 @@ public class TaskHandler {
 	public void stop( Object name ) {
 		if( inFutures( name ) ) {
 			getFuture( name ).cancel( true ); // Assume that whatever it is, force stop it
+			futures.remove( tasks.get( name ) ); // Then remove it from running futures
 		}
 	}
 
 	public void startAll() {
-
+		// If there is a task that is not running, make it run
+		for( Callable<?> f : tasks.values() ) {
+			if( !futures.containsKey( f ) ) {
+				futures.put( f, exe.submit( f ) );
+			}
+		}
 	}
 
 	public void stopAll() {
+		for( Callable<?> c : futures.keySet() ) {
+			futures.get( c ).cancel( true ); // Force stop the task, even if it is still running
+			futures.remove( c ); // Remove it from running callables
+		}
 
 	}
 
-	private boolean exists( Object name ) {
+	private boolean inTasks( Object name ) {
 		if( tasks.containsKey( name ) ) {
 			return true;
 		}
@@ -116,7 +125,7 @@ public class TaskHandler {
 	}
 
 	private boolean inFutures( Object name ) {
-		if( exists( name ) && futures.containsKey( tasks.get( name ) ) ) {
+		if( inTasks( name ) && futures.containsKey( tasks.get( name ) ) ) {
 			return true;
 		}
 
