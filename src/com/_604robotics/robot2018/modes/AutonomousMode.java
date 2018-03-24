@@ -562,7 +562,7 @@ public class AutonomousMode extends Coordinator {
         @Override
         protected synchronized boolean run() {
             arcadeDrive.activate();
-            System.out.println("Move error is " + getMoveError() + ", Rot error is " + getRotError());
+            // System.out.println("Move error is " + getMoveError() + ", Rot error is " + getRotError());
             return timeElapsed.runUntil(Calibration.DRIVE_PID_AFTER_TIMING, new Runnable() {
                 @Override
                 public void run() {

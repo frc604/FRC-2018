@@ -435,7 +435,6 @@ public class TeleopMode extends Coordinator {
         			if (motorPower<0 && !manipRightJoystickButton) {
         			    motorPower*=0.6;
         			}
-        			System.out.println("Motor power is "+motorPower);
         			move.liftPower.set(motorPower);
         			move.activate();
         		}
