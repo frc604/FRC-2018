@@ -71,16 +71,7 @@ public class Arm extends Module {
         
         @Override
         public void run () {
-        	double power = liftPower.get();
-        	if( Calibration.TANDEM_ACTIVE && power > 0 && encoder.getPosition() < Calibration.ARM_BALANCE_TARGET && !elevatorRaised.get() ) {
-        		if( !raiseMore.get() ) {
-        			launching = true;
-        		}
-        		motorA.set(0);
-        	} else {
-        		launching = false;
-                motorA.set(power);
-        	}
+            motorA.set(liftPower.get());
         }
     }
 
@@ -108,15 +99,7 @@ public class Arm extends Module {
         }
         @Override
         public void run () {
-        	if( encoder.getPosition() < target_clicks.get() && encoder.getPosition() < Calibration.ARM_BALANCE_TARGET && !elevatorRaised.get() ) {
-        		if( !raiseMore.get() ) {
-        			launching = true;
-        		}
-        		motorA.set(0);
-        	} else {
-        		launching = false;
-                pid.setSetpoint(target_clicks.get());
-        	}
+            pid.setSetpoint(target_clicks.get());
         }
         @Override
         public void end () {
@@ -164,7 +147,7 @@ public class Arm extends Module {
         super(Arm.class);
         encoder.setInverted(true);
         encoder.zero(Calibration.ARM_BOTTOM_LOCATION);
-        encoder.setOffset(Calibration.ARM_ENCODER_ZERO);
+        //encoder.setOffset(Calibration.ARM_ENCODER_ZERO);
         motorA.setInverted(true);
         motorB.setInverted(false);
         motorB.set(ControlMode.Follower,Ports.ARM_MOTOR_A);
