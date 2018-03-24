@@ -100,7 +100,7 @@ public class Elevator extends Module {
         }
         @Override
         public void run () {
-            System.out.println("WARN: setpoint enabled at " + target_clicks.get());
+            // System.out.println("WARN: setpoint enabled at " + target_clicks.get());
             pid.setSetpoint(target_clicks.get());
             pid.enable();
             getHoldElevatorClicks = true;
