@@ -3,6 +3,8 @@ package com._604robotics.robot2018.systems;
 import com._604robotics.robot2018.Robot2018;
 import com._604robotics.robotnik.Coordinator;
 
+import edu.wpi.first.wpilibj.DriverStation;
+
 public class DashboardSystem extends Coordinator {
     private final Robot2018 robot;
 

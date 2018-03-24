@@ -36,6 +36,8 @@ public class Dashboard extends DashboardModule {
     public final Input<Boolean> armEncoderStatus = addDashboardInput("Arm Encoder Status", false);
     public final Input<Boolean> limitPressed = addDashboardInput("LimitPressed", false);
     
+    public final Input<String> gameData = addDashboardInput("Game Data", "");
+    
     public enum AutonMode {
         OFF,
         // Following are actual strategy selections
