@@ -10,7 +10,6 @@ import com._604robotics.robot2018.modules.Elevator;
 import com._604robotics.robot2018.modules.Intake;
 import com._604robotics.robotnik.Coordinator;
 import com._604robotics.robotnik.Logger;
-import com._604robotics.robotnik.prefabs.coordinators.AsynchronousGameDataRetriever;
 import com._604robotics.robotnik.prefabs.coordinators.SimultaneousCoordinator;
 import com._604robotics.robotnik.prefabs.coordinators.SleepCoordinator;
 import com._604robotics.robotnik.prefabs.coordinators.StatefulCoordinator;
@@ -33,8 +32,6 @@ public class AutonomousMode extends Coordinator {
     private final Coordinator forwardStateMacro;
     private final Coordinator forwardSwitchMacro;
     private final Coordinator backwardStateMacro;
-    
-    private AsynchronousGameDataRetriever retriever;
 
     private Coordinator selectedModeMacro;
 
@@ -56,7 +53,6 @@ public class AutonomousMode extends Coordinator {
     public void begin () {
         // reset arm encoder
         robot.arm.encoder.zero(Calibration.ARM_BOTTOM_LOCATION);
-        retriever = new AsynchronousGameDataRetriever(); // start running
         
         switch (robot.dashboard.autonMode.get()) {
             case CENTER_SWITCH:
@@ -168,7 +164,6 @@ public class AutonomousMode extends Coordinator {
         if (selectedModeMacro != null) {
             selectedModeMacro.stop();
         }
-        retriever.close();
     }
     
     protected final class ClampExtend extends Coordinator {
@@ -655,7 +650,7 @@ public class AutonomousMode extends Coordinator {
     /* Modular Modes */
     private class CenterSwitchChooserMacro extends SwitchCoordinator {
     	public CenterSwitchChooserMacro() {
-    		super(CenterSwitchChooserMacro.class, retriever);
+    		super(CenterSwitchChooserMacro.class);
     		addDefault(new CenterMacroLeft()); // Lucky randomness guaranteed by coin flip
     		addCase(new String[]{"LLL", "LLR", "LRL", "LRR"}, new CenterMacroLeft());
     		addCase(new String[]{"RLL", "RLR", "RRL", "RRR"}, new CenterMacroRight());
@@ -664,7 +659,7 @@ public class AutonomousMode extends Coordinator {
     
     private class LeftSideSwitchDecisionMacro extends SwitchCoordinator {
         public LeftSideSwitchDecisionMacro() {
-            super(LeftSideSwitchDecisionMacro.class, retriever);
+            super(LeftSideSwitchDecisionMacro.class);
             addDefault(new LowerMacro());
             addCase(new String[]{"LLL", "LLR", "LRL", "LRR"}, new SwitchEjectMacro());
             addCase(new String[]{"RLL", "RLR", "RRL", "RRR"}, new LowerMacro());
@@ -673,7 +668,7 @@ public class AutonomousMode extends Coordinator {
     
     private class RightSideSwitchDecisionMacro extends SwitchCoordinator {
         public RightSideSwitchDecisionMacro() {
-            super(RightSideSwitchDecisionMacro.class, retriever);
+            super(RightSideSwitchDecisionMacro.class);
             addDefault(new LowerMacro());
             addCase(new String[]{"LLL", "LLR", "LRL", "LRR"}, new LowerMacro());
             addCase(new String[]{"RLL", "RLR", "RRL", "RRR"}, new SwitchEjectMacro());
@@ -740,7 +735,7 @@ public class AutonomousMode extends Coordinator {
     
     private class LeftScaleChooserMacro extends SwitchCoordinator {
     	public LeftScaleChooserMacro() {
-    		super(LeftScaleChooserMacro.class, retriever);
+    		super(LeftScaleChooserMacro.class);
     		addDefault(new SleepCoordinator(0.1));
     		addCase(new String[]{"LLL", "LLR", "RLL", "RLR"}, new NewScaleBackwardMacroLeft());
     		addCase(new String[]{"LRL", "LRR", "RRL", "RRR"}, new NewScaleOppositeMacroLeft());
@@ -749,7 +744,7 @@ public class AutonomousMode extends Coordinator {
     
     private class LeftScaleChooserSameOnlyMacro extends SwitchCoordinator {
         public LeftScaleChooserSameOnlyMacro() {
-            super(LeftScaleChooserSameOnlyMacro.class, retriever);
+            super(LeftScaleChooserSameOnlyMacro.class);
             addDefault(new SleepCoordinator(0.1));
             addCase(new String[]{"LLL", "LLR", "RLL", "RLR"}, new NewScaleBackwardMacroLeft());
             addCase(new String[]{"LRL", "LRR", "RRL", "RRR"}, new SleepCoordinator(1)); // Do nothing
@@ -758,7 +753,7 @@ public class AutonomousMode extends Coordinator {
     
     private class RightScaleChooserMacro extends SwitchCoordinator {
     	public RightScaleChooserMacro() {
-    		super(RightScaleChooserMacro.class, retriever);
+    		super(RightScaleChooserMacro.class);
     		addDefault(new SleepCoordinator(0.1));
     		addCase(new String[]{"LLL", "LLR", "RLL", "RLR"}, new NewScaleOppositeMacroRight());
     		addCase(new String[]{"LRL", "LRR", "RRL", "RRR"}, new NewScaleBackwardMacroRight());
@@ -767,7 +762,7 @@ public class AutonomousMode extends Coordinator {
     
     private class RightScaleChooserSameOnlyMacro extends SwitchCoordinator {
         public RightScaleChooserSameOnlyMacro() {
-            super(RightScaleChooserSameOnlyMacro.class, retriever);
+            super(RightScaleChooserSameOnlyMacro.class);
             addDefault(new SleepCoordinator(0.1));
             addCase(new String[]{"LLL", "LLR", "RLL", "RLR"}, new SleepCoordinator(1)); // Do nothing 
             addCase(new String[]{"LRL", "LRR", "RRL", "RRR"}, new NewScaleBackwardMacroRight());
