@@ -12,6 +12,8 @@ public class SwitchCoordinator extends Coordinator {
 	private HashMap<String, Coordinator> cases;
 	private String gameData;
 	private boolean started;
+	private boolean endedGameDataCoordinator;
+	private boolean gotData;
 	private Coordinator active;
 	private Coordinator defaultCoordinator;
 	
@@ -21,6 +23,7 @@ public class SwitchCoordinator extends Coordinator {
     	cases = new HashMap<String, Coordinator>();
     	gameData = "";
     	endedGameDataCoordinator = false;
+    	gotData = false;
     	started = false;
     }
     public SwitchCoordinator (Class<?> klass) {
