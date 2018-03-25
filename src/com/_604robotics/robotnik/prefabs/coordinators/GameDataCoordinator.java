@@ -18,8 +18,10 @@ public class GameDataCoordinator extends Coordinator {
 
     @Override
     protected boolean run() {
+    	logGameData.log("Warning", "Retrieving GameData");
         gameData = DriverStation.getInstance().getGameSpecificMessage();
-        return (gameData==null) || (gameData.length()==0) || (timeout.get()<2);
+        logGameData.log("Warning", "GameData Retrieved: " + gameData);
+        return (gameData==null) || (gameData.length()==0) || (timeout.get()>2);
     }
 
     @Override
