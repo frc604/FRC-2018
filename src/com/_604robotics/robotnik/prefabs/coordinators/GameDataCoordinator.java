@@ -19,7 +19,7 @@ public class GameDataCoordinator extends Coordinator {
     @Override
     protected boolean run() {
         gameData = DriverStation.getInstance().getGameSpecificMessage();
-        return (gameData==null) || (gameData.length()==0) || (timeout.get()<2);
+        return (gameData==null) || (gameData.length()==0) || (timeout.get()>2);
     }
 
     @Override
