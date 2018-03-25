@@ -435,6 +435,16 @@ public class TeleopMode extends Coordinator {
         			if (motorPower<0 && !manipRightJoystickButton) {
         			    motorPower*=0.6;
         			}
+        	        // Calculate cosine for torque factor
+        	        double angle = robot.arm.encoder.getPosition();
+        	        // Cosine is periodic so sawtooth wraparound is not a concern
+        	        angle/=Calibration.ARM_ENCODER_FULL_ROT;
+        	        angle*=(2*Math.PI);
+        	        double cosine = Math.cos(angle);
+        	        if (robot.arm.encoderClicks.get()<4700 && robot.arm.encoderClicks.get()> -2500
+        	                && motorPower<0) {
+        	            motorPower+=Calibration.ARM_F*cosine;
+        	        }
         			move.liftPower.set(motorPower);
         			move.activate();
         		}
