@@ -18,16 +18,27 @@ public class SwitchCoordinator extends Coordinator {
 	private Coordinator defaultCoordinator;
 	
     public SwitchCoordinator (String name) {
+    	this(name, "");
+    }
+    public SwitchCoordinator (String name, String inputGameData) {
     	logger = new Logger(SwitchCoordinator.class, name);
     	gdc = new GameDataCoordinator();
     	cases = new HashMap<String, Coordinator>();
-    	gotData = false;
-    	gameData = "";
+    	if( inputGameData == null || inputGameData.isEmpty() ) {
+    		gotData = false;
+        	gameData = "";
+    	} else {
+    		gotData = true;
+    		gameData = inputGameData;
+    	}
     	endedGameDataCoordinator = false;
     	started = false;
     }
     public SwitchCoordinator (Class<?> klass) {
     	this(klass.getSimpleName());
+    }
+    public SwitchCoordinator (Class<?> klass, String inputGameData) {
+    	this(klass.getSimpleName(), inputGameData);
     }
     
     public void addCase( String[] conditions, Coordinator coordinator ) {
@@ -43,8 +54,6 @@ public class SwitchCoordinator extends Coordinator {
     public void begin() {
     	logger.info("Begin");
     	gdc.start();
-    	gameData = "";
-    	gotData = false;
     	endedGameDataCoordinator = false;
     	started = false;
     }
