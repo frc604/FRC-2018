@@ -21,7 +21,7 @@ public class GameDataCoordinator extends Coordinator {
     	logGameData.log("Warning", "Retrieving GameData");
         gameData = DriverStation.getInstance().getGameSpecificMessage();
         logGameData.log("Warning", "GameData Retrieved: " + gameData);
-        return (gameData==null) || (gameData.length()==0) || (timeout.get()>2);
+        return !(gameData!=null && !gameData.isEmpty() || timeout.get()>2);
     }
 
     @Override
