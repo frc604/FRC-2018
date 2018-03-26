@@ -676,16 +676,6 @@ public class AutonomousMode extends Coordinator {
         }
     }
     
-    private class LowerMacro extends StatefulCoordinator {
-        public LowerMacro() {
-            super(LowerMacro.class);
-            addState("Back away 24 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -24), 0));
-            addState("Retract arm", new ArmSetPersistent(Calibration.ARM_LOW_TARGET));
-            addState("Retract elevator", new ElevatorSetPersistent(Calibration.ELEVATOR_LOW_TARGET));
-            addState("Unclamp", new ClampExtend());
-        }
-    }
-    
     private class LeftScaleMacro extends StatefulCoordinator {
         public LeftScaleMacro() {
             super(LeftScaleMacro.class);
@@ -1030,6 +1020,16 @@ public class AutonomousMode extends Coordinator {
             addState("Move arm", new ArmSetPersistent(Calibration.ARM_LOW_TARGET));
             addState("Wait", new SleepCoordinator(0.2));
             addState("Move elevator", new ElevatorSetPersistent(Calibration.ELEVATOR_LOW_TARGET));
+            addState("Unclamp", new ClampExtend());
+        }
+    }
+    
+    private class LowerMacro extends StatefulCoordinator {
+        public LowerMacro() {
+            super(LowerMacro.class);
+            addState("Back away 24 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -24), 0));
+            addState("Retract arm", new ArmSetPersistent(Calibration.ARM_LOW_TARGET));
+            addState("Retract elevator", new ElevatorSetPersistent(Calibration.ELEVATOR_LOW_TARGET));
             addState("Unclamp", new ClampExtend());
         }
     }
