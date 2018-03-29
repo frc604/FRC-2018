@@ -36,6 +36,10 @@ public class Dashboard extends DashboardModule {
     public final Input<Boolean> armEncoderStatus = addDashboardInput("Arm Encoder Status", false);
     public final Input<Boolean> limitPressed = addDashboardInput("LimitPressed", false);
     
+    public final Input<Boolean> clear = addDashboardInput("Clear", false);
+    public final Input<Boolean> elevatorRaised = addDashboardInput("Elevator Raised", false);
+    public final Input<Boolean> raiseMore = addDashboardInput("Raise More", false);
+    
     public enum AutonMode {
         OFF,
         // Following are actual strategy selections
@@ -59,10 +63,7 @@ public class Dashboard extends DashboardModule {
         // CENTER_SWITCH_LEFT,
         // CENTER_SWITCH_RIGHT,
 //        SWITCH_FORWARD,
-        SCALE_BACKWARD,
-        SCALE_BACKWARD_2,
         NEW_SCALE_BACKWARD,
-        SCALE_OPPOSITE,
 //        SWERVE_SCALE_OPPOSITE_LEFT,
 //        BALANCED_LEFT_TURN_TEST,
 //        SWEPT_LEFT_TURN_TEST,

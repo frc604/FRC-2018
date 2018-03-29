@@ -281,12 +281,12 @@ public class TeleopMode extends Coordinator {
     		if( driverLeftTrigger != 0 || driverRightTrigger != 0 ) {
     			double output = 0;
     			if( driverRightTrigger >= driverLeftTrigger ) {
-    				output = 0.8*(driverRightTrigger*driverRightTrigger);
+    				output = (driverRightTrigger*driverRightTrigger);
     			} else if( driverLeftTrigger > driverRightTrigger ) {
     			    if( driverDPad ) {
     			        output = -driverLeftTrigger;
     			    } else {
-    			        output = -0.4*(driverLeftTrigger*driverLeftTrigger);
+    			        output = -0.6*(driverLeftTrigger*driverLeftTrigger);
     			    }
     			}
     			run.runPower.set(output);
@@ -297,10 +297,10 @@ public class TeleopMode extends Coordinator {
     			    if( manipDPad ) {
                         output = -1;
                     } else {
-                        output = -0.4*(manipRightTrigger*manipRightTrigger);
+                        output = -0.6*(manipRightTrigger*manipRightTrigger);
                     }
                 } else if( manipRightBumper ) {
-                    output = 0.8;
+                    output = 1;
                 }
     		    run.runPower.set(output);
     		    run.activate();
@@ -350,11 +350,11 @@ public class TeleopMode extends Coordinator {
                  setpoint.target_clicks.set(robot.elevator.encoderClicks.get());
                  setpoint.activate();
         	} 
-        	/*if( elevatorOverride ) {
+        	if( Calibration.TANDEM_ACTIVE && elevatorOverride ) {
         	    System.out.println("Warning: overriding elevator");
         		setpoint.target_clicks.set(Calibration.ELEVATOR_RAISE_TARGET);
         		setpoint.activate();
-        	} else */if( manipLeftJoystickY != 0 ) {
+        	} else if( manipLeftJoystickY != 0 ) {
         	    // Scale negative power for safety
         	    double elevPower = manipLeftJoystickY;
         	    if (elevPower<0) {
@@ -431,7 +431,21 @@ public class TeleopMode extends Coordinator {
                     setpoint.activate();
         		} else {
         			elevatorOverride = false;
-        			move.liftPower.set(manipRightJoystickY*0.6);
+        			double motorPower = manipRightJoystickY;
+        			if (motorPower<0 && !manipRightJoystickButton) {
+        			    motorPower*=0.6;
+        			}
+        	        // Calculate cosine for torque factor
+        	        double angle = robot.arm.encoder.getPosition();
+        	        // Cosine is periodic so sawtooth wraparound is not a concern
+        	        angle/=Calibration.ARM_ENCODER_FULL_ROT;
+        	        angle*=(2*Math.PI);
+        	        double cosine = Math.cos(angle);
+        	        if (robot.arm.encoderClicks.get()<4700 && robot.arm.encoderClicks.get()> -2500
+        	                && motorPower<0) {
+        	            motorPower+=Calibration.ARM_F*cosine;
+        	        }
+        			move.liftPower.set(motorPower);
         			move.activate();
         		}
     			getHoldArmClicks = true;
