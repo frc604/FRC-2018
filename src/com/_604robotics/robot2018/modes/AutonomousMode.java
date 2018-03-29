@@ -67,16 +67,16 @@ public class AutonomousMode extends Coordinator {
             case RIGHT_SWITCH:
                 selectedModeMacro = new RightSwitchMacro();
                 break;
-            case LEFT_SCALE:
+            case LEFT_SCALE_WITH_CROSS:
                 selectedModeMacro = new LeftScaleMacro();
                 break;
-            case RIGHT_SCALE:
+            case RIGHT_SCALE_WITH_CROSS:
                 selectedModeMacro = new RightScaleMacro();
                 break;
-            case LEFT_SCALE_SAME_ONLY:
+            case LEFT_SCALE_WITHOUT_CROSS:
                 selectedModeMacro = new LeftScaleSameOnlyMacro();
                 break;
-            case RIGHT_SCALE_SAME_ONLY:
+            case RIGHT_SCALE_WITHOUT_CROSS:
                 selectedModeMacro = new RightScaleSameOnlyMacro();
                 break;
             case ROTATE_LEFT_TEST:
