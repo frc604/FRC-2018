@@ -77,14 +77,6 @@ public class TeleopMode extends Coordinator {
         clampManager = new ClampManager();
     }
 
-    public void startPlayback (InputRecording recording) {
-        inputPlayer.startPlayback(recording);
-    }
-
-    public void stopPlayback () {
-        inputPlayer.stopPlayback();
-    }
-    
     private boolean getHoldArmClicks = false;
     
     private double driverLeftJoystickY = 0.0;
@@ -135,7 +127,15 @@ public class TeleopMode extends Coordinator {
     private boolean manipX= false;
     private boolean manipY= false;
     private boolean manipDPad = false;
-    
+
+    public void startPlayback (InputRecording recording) {
+        inputPlayer.startPlayback(recording);
+    }
+
+    public void stopPlayback () {
+        inputPlayer.stopPlayback();
+    }
+
     @Override
     protected void begin () {
         if (inputPlayer.isPlaying()) {
