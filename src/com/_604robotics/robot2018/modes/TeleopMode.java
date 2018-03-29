@@ -7,6 +7,7 @@ import com._604robotics.robot2018.modules.Clamp;
 import com._604robotics.robot2018.modules.Drive;
 import com._604robotics.robot2018.modules.Elevator;
 import com._604robotics.robot2018.modules.Intake;
+import com._604robotics.robot2018.modules.Intake.Passive;
 import com._604robotics.robotnik.Coordinator;
 import com._604robotics.robotnik.Logger;
 import com._604robotics.robotnik.prefabs.flow.Pulse;
@@ -268,13 +269,17 @@ public class TeleopMode extends Coordinator {
         }
     }
     
+    private boolean clampingOverride = false;
+    
     private class IntakeManager {
     	private final Intake.Idle idle;
     	private final Intake.Run run;
+    	private final Intake.Passive passive;
     	
     	public IntakeManager() {
     		idle = robot.intake.new Idle();
     		run = robot.intake.new Run();
+    		passive = robot.intake.new Passive();
     	}
     	
     	public void run() {
@@ -304,6 +309,8 @@ public class TeleopMode extends Coordinator {
                 }
     		    run.runPower.set(output);
     		    run.activate();
+    		} else if(clampingOverride) {
+    		    passive.activate();
     		} else {
     			idle.activate();
     		}
@@ -325,8 +332,10 @@ public class TeleopMode extends Coordinator {
     		clamping.update(manipX);
             if (clamping.isInOnState()) {
                 retract.activate();
+                clampingOverride = true;
             } else if (clamping.isInOffState()) {
                 extend.activate();
+                clampingOverride = false;
             }
     	}
     }
