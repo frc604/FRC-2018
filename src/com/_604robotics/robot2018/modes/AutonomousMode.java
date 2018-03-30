@@ -55,6 +55,9 @@ public class AutonomousMode extends Coordinator {
         robot.arm.encoder.zero(Calibration.ARM_BOTTOM_LOCATION);
         
         switch (robot.dashboard.autonMode.get()) {
+            case DELAYED_BASELINE_CROSS:
+                selectedModeMacro = new DelayedCrossMacro();
+                break;
             case CENTER_SWITCH:
                 selectedModeMacro = new CenterSwitchMacro();
                 break;
@@ -382,6 +385,18 @@ public class AutonomousMode extends Coordinator {
     	public void end() {
     		timeElapsed.stopAndReset();
     	}
+    }
+    
+    private class DelayedCrossMacro extends StatefulCoordinator {
+        public DelayedCrossMacro() {
+            super(DelayedCrossMacro.class);
+            addStates(new IntakeMacro());
+            addState("Raise elevator", new ElevatorSetPersistent(Calibration.ELEVATOR_RAISE_TARGET));
+            addState("Wait for elevator", new SleepCoordinator(0.3));
+            addState("Raise arm", new ArmSetPersistent(Calibration.ARM_MID_TARGET));
+            addState("Wait for 7 seconds", new SleepCoordinator(7));
+            addState("Forward 144 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, (144+1)), 0));
+        }
     }
     
     private class FallBackMacro extends StatefulCoordinator {
