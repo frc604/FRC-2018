@@ -72,6 +72,8 @@ public class Intake extends Module {
 	
 	public Intake () {
         super(Intake.class);
+        innerMotorA.setNeutralMode(com.ctre.phoenix.motorcontrol.NeutralMode.Coast);
+        innerMotorB.setNeutralMode(com.ctre.phoenix.motorcontrol.NeutralMode.Coast);
         innerMotorA.setInverted(true);
         innerMotorB.setInverted(true);
         outerMotorB.setInverted(true);
