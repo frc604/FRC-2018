@@ -133,7 +133,7 @@ public class Calibration {
     public static final double ARM_RAISE_TARGET = 0;
     
     /* Intake */
-    public static final double INTAKE_OUTAKE_MODIFIER = 0.4;
+    public static final double INTAKE_OUTAKE_MODIFIER = 0.35;
     public static final double INTAKE_OUTAKE_OVERDRIVE_MODIFIER = 0.6;
     public static final double INTAKE_PASSIVE_POWER = 0.1;
     
