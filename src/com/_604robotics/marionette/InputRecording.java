@@ -64,7 +64,7 @@ public class InputRecording {
     }
 
     private int getAxisIndex (final int frame, final int joystick, int axis) {
-        return frame * totalAxisCount + axisOffsets[joystick] + axis - 1;
+        return frame * totalAxisCount + axisOffsets[joystick] + axis;
     }
 
     public double getRawAxis (final int frame, final int joystick, final int axis) {
@@ -90,12 +90,14 @@ public class InputRecording {
     public static InputRecording load (final String path) throws IOException {
         try (final DataInputStream in = new DataInputStream(new FileInputStream(path))) {
             final int frameCount = in.readInt();
+            System.out.println("frameCount = " + frameCount);
             final int joystickCount = in.readInt();
+            System.out.println("joystickCount = " + joystickCount);
             final JoystickDescriptor[] joystickDescriptors = new JoystickDescriptor[joystickCount];
             for (int i = 0; i < joystickCount; ++i) {
                 final int axisCount = in.readInt();
                 final int buttonCount = in.readInt();
-                final JoystickDescriptor descriptor = new JoystickDescriptor(axisCount, buttonCount);
+                joystickDescriptors[i] = new JoystickDescriptor(axisCount, buttonCount);
             }
 
             final InputRecording recording = new InputRecording(frameCount, joystickDescriptors);
@@ -116,6 +118,7 @@ public class InputRecording {
     public void save (final String path) throws IOException {
         try (final DataOutputStream out = new DataOutputStream(new FileOutputStream(path))) {
             out.writeInt(frameCount);
+            out.writeInt(joystickDescriptors.length);
             for (JoystickDescriptor descriptor : joystickDescriptors) {
                 out.writeInt(descriptor.getAxisCount());
                 out.writeInt(descriptor.getButtonCount());

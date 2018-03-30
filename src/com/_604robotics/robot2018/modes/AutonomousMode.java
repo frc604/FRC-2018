@@ -61,7 +61,7 @@ public class AutonomousMode extends Coordinator {
                 logger.info("Loading Marionette recording from \"autonomous.marionette\"");
                 final InputRecording recording;
                 try {
-                    recording = InputRecording.load("autonomous.marionette");
+                    recording = InputRecording.load("/home/lvuser/autonomous.marionette");
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
