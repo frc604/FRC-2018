@@ -129,7 +129,7 @@ public class Calibration {
     public static final double ARM_MID_TARGET = 200; //0
     @Unreal("Remnants from using arm to facilitate turning") @Deprecated
     public static final double ARM_BALANCE_TARGET = 900;
-    public static final double ARM_HIGH_TARGET = 4200;
+    public static final double ARM_HIGH_TARGET = 4370;
     public static final double ARM_RAISE_TARGET = 0;
     
     /* Intake */
