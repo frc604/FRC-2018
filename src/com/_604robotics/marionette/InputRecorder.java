@@ -34,7 +34,7 @@ public class InputRecorder implements Closeable {
 
                 recording.setTimestamp(frame, System.currentTimeMillis() - startTimestamp);
                 for (int i = 0; i < recording.getJoystickCount(); ++i) {
-                    for (int j = 1; j <= recording.getAxisCount(i); ++j) {
+                    for (int j = 0; j < recording.getAxisCount(i); ++j) {
                         recording.setRawAxis(frame, i, j, sources[i].getRawAxis(j));
                     }
                     for (int j = 1; j <= recording.getButtonCount(i); ++j) {

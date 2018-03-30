@@ -164,7 +164,7 @@ public class TeleopMode extends Coordinator {
                 oldInputRecorder.close();
 
                 logger.info("Saving Marionette recording to \"autonomous.marionette\"");
-                oldInputRecorder.getRecording().save("autonomous.marionette");
+                oldInputRecorder.getRecording().save("/home/lvuser/autonomous.marionette");
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

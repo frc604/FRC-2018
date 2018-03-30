@@ -20,9 +20,13 @@ public class InputPlayer {
     public boolean isPlaying () {
         return advanceFrame();
     }
+    
+    private double getRawPlaybackTime () {
+        return System.currentTimeMillis() - playbackTimestamp;
+    }
 
     public double getPlaybackTime () {
-        return advanceFrame() ? System.currentTimeMillis() - playbackTimestamp : 0;
+        return advanceFrame() ? getRawPlaybackTime() : 0;
     }
 
     public int getAxisCount (final int joystick, final int defaultValue) {
@@ -52,7 +56,7 @@ public class InputPlayer {
             return false;
         }
 
-        final double elapsedTime = getPlaybackTime();
+        final double elapsedTime = getRawPlaybackTime();
         while (playbackFrame < playbackRecording.getFrameCount() && elapsedTime >= playbackRecording.getTimestamp(playbackFrame + 1)) {
             ++playbackFrame;
         }
