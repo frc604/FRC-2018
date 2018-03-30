@@ -36,6 +36,7 @@ public class Intake extends Module {
     	@Override
     	public void run() {
     		innerMotorA.set(runPower.get());
+            innerMotorB.set(runPower.get());
     		outerMotorA.set(runPower.get());
     		outerMotorB.set(runPower.get());
     	}
@@ -49,6 +50,7 @@ public class Intake extends Module {
         @Override
         public void run() {
             innerMotorA.set(Calibration.INTAKE_PASSIVE_POWER);
+            innerMotorB.set(Calibration.INTAKE_PASSIVE_POWER);
             outerMotorA.set(0);
             outerMotorB.set(0);
         }
@@ -62,6 +64,7 @@ public class Intake extends Module {
 		@Override
 		public void run() {
 			innerMotorA.set(0);
+	        innerMotorB.set(0);
 			outerMotorA.set(0);
 			outerMotorB.set(0);
 		}
@@ -72,7 +75,6 @@ public class Intake extends Module {
         innerMotorA.setInverted(true);
         innerMotorB.setInverted(true);
         outerMotorB.setInverted(true);
-        innerMotorB.set(ControlMode.Follower, Ports.INTAKE_INNER_MOTOR_A);
         setDefaultAction(idle);
     }
 	
