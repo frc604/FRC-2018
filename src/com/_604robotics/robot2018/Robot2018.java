@@ -16,7 +16,7 @@ public class Robot2018 extends Robot {
     public final Clamp clamp = addModule(new Clamp());
     public final Arm arm = addModule(new Arm());
     public final Camera camera = addModule(new Camera());
-    //public final PowerMonitor powermonitor = addModule(new PowerMonitor(Ports.PDP_MODULE, Ports.COMPRESSOR));
+    //public final PowerMonitor powerMonitor = addModule(new PowerMonitor(Ports.PDP_MODULE, Ports.COMPRESSOR));
     
     public Robot2018() {
         setAutonomousMode(new AutonomousMode(this));
