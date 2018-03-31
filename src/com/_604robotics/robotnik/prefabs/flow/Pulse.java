@@ -33,4 +33,11 @@ public class Pulse {
 
         lastInput = input;
     }
+
+    public void reset () {
+        lastInput = false;
+
+        risingEdge = false;
+        fallingEdge = false;
+    }
 }

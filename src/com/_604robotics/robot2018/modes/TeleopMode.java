@@ -192,92 +192,95 @@ public class TeleopMode extends Coordinator {
                 +", driverRightY"+driverRightJoystickY);*/
     }
     
-    private enum CurrentDrive {
+    private enum DriveMode {
         IDLE, ARCADE, TANK
     }
 
     private class DriveManager extends Coordinator {
-        private final Drive.ArcadeDrive arcade;
-        private final Drive.TankDrive tank;
-        private final Drive.Idle idle;
-        private CurrentDrive currentDrive;
-        private Toggle inverted;
-        private Toggle gearState;
+        private final Drive.ArcadeDrive arcadeDrive = robot.drive.new ArcadeDrive();
+        private final Drive.TankDrive tankDrive = robot.drive.new TankDrive();
 
-        public DriveManager () {
-            idle=robot.drive.idle;
-            arcade=robot.drive.new ArcadeDrive();
-            tank=robot.drive.new TankDrive();
-            // TODO: Expose on dashboard
-            currentDrive=CurrentDrive.ARCADE;
-            // TODO: Expose on dashboard
-            inverted=new Toggle(false);
-            gearState=new Toggle(false);
+        private final Toggle invertedToggle = new Toggle(false);
+        private final Toggle highGearToggle = new Toggle(false);
+
+        private DriveMode currentDriveMode;
+
+        @Override
+        protected void begin () {
+            currentDriveMode = DriveMode.ARCADE;
         }
 
         @Override
         protected boolean run () {
-        	double leftY = driver.leftStick.y.get();
-        	double rightY = driver.rightStick.y.get();
-        	double rightX = driver.rightStick.x.get();
+            double leftY = driverLeftJoystickY;
+            double rightX = driverRightJoystickX;
+            double rightY = driverRightJoystickY;
+
             // Set gears
-            gearState.update(driverRightBumper);
-            // Will probably be double solenoid but waiting
-            if (gearState.isInOnState()) {
+            highGearToggle.update(driverRightBumper);
+            if (highGearToggle.isInOnState()) {
                 robot.shifter.highGear.activate();
-            } else if (gearState.isInOffState()) {
-                robot.shifter.lowGear.activate();
             }
+
             // Flip values if xbox inverted
-            inverted.update(driverLeftBumper);
-            robot.dashboard.XboxFlipped.set(inverted.isInOnState());
-            if (inverted.isInOnState()) {
-                leftY*=-1;
-                rightY*=-1;
+            invertedToggle.update(driverLeftBumper);
+            robot.dashboard.xboxFlipped.set(invertedToggle.isInOnState());
+            if (invertedToggle.isInOnState()) {
+                leftY *= -1;
+                rightY *= -1;
             }
+
             // Get Dashboard option for drive
             switch (robot.dashboard.driveMode.get()){
-                case OFF:
-                    currentDrive=CurrentDrive.IDLE;
+                case OFF: {
+                    currentDriveMode = DriveMode.IDLE;
                     break;
-                case ARCADE:
-                    currentDrive=CurrentDrive.ARCADE;
+                }
+                case ARCADE: {
+                    currentDriveMode = DriveMode.ARCADE;
                     break;
-                case TANK:
-                    currentDrive=CurrentDrive.TANK;
+                }
+                case TANK: {
+                    currentDriveMode = DriveMode.TANK;
                     break;
-                case DYNAMIC:
+                }
+                case DYNAMIC: {
                     // Dynamic Drive mode detection logic
-                    if (currentDrive == CurrentDrive.TANK) {
+                    if (currentDriveMode == DriveMode.TANK) {
                         if (Math.abs(rightY) <= 0.2 && Math.abs(rightX) > 0.3) {
-                            currentDrive = CurrentDrive.ARCADE;
+                            currentDriveMode = DriveMode.ARCADE;
                         }
-                    } else { // currentDrive == CurrentDrive.ARCADE
+                    } else { // currentDrive == DriveMode.ARCADE
                         if (Math.abs(rightX) <= 0.2 && Math.abs(rightY) > 0.3) {
-                            currentDrive = CurrentDrive.TANK;
+                            currentDriveMode = DriveMode.TANK;
                         }
                     }
                     break;
-                default:
+                }
+                default: {
                     logger.warn("Unrecognized driveMode! Current value: " + robot.dashboard.driveMode.get());
                     break;
+                }
             }
 
             // Set appropriate drive mode depending on dashboard option
-            switch (currentDrive) {
-                case IDLE:
-                    idle.activate();
+            switch (currentDriveMode) {
+                case IDLE: {
+                    robot.drive.idle.activate();
                     break;
-                case ARCADE:
-                    arcade.movePower.set(leftY);
-                    arcade.rotatePower.set(rightX);
-                    arcade.activate();
+                }
+                case ARCADE: {
+                    arcadeDrive.movePower.set(leftY);
+                    arcadeDrive.rotatePower.set(rightX);
+                    arcadeDrive.activate();
                     break;
-                case TANK:
-                    tank.leftPower.set(leftY);
-                    tank.rightPower.set(rightY);
-                    tank.activate();
+                }
+                case TANK: {
+                    tankDrive.leftPower.set(leftY);
+                    tankDrive.rightPower.set(rightY);
+                    tankDrive.activate();
                     break;
+                }
             }
 
             return true;
@@ -327,9 +330,14 @@ public class TeleopMode extends Coordinator {
     }
     
     private class ClampManager extends Coordinator {
-    	private final Toggle toggle = new Toggle(false);
+    	private final Toggle toggle = new Toggle();
 
-    	@Override
+        @Override
+        protected void begin () {
+            toggle.reset(false);
+        }
+
+        @Override
     	protected boolean run () {
     		toggle.update(manipX);
 

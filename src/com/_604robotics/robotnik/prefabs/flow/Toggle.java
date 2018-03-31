@@ -7,6 +7,10 @@ public class Toggle {
     private final Pulse pulse = new Pulse();
     private boolean state;
 
+    public Toggle () {
+        this(false);
+    }
+
     public Toggle (boolean startInOnState) {
         state = startInOnState;
     }
@@ -40,5 +44,10 @@ public class Toggle {
         if (pulse.isRisingEdge()) {
             state = !state;
         }
+    }
+
+    public void reset (boolean resetToOnState) {
+        pulse.reset();
+        state = resetToOnState;
     }
 }

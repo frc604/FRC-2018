@@ -13,7 +13,7 @@ public class Dashboard extends DashboardModule {
 
     //public final Input<Double> totalCurrent = addDashboardInput("Current Drawn",0.0);
 
-    public final Input<Boolean> XboxFlipped = addDashboardInput("XboxFlipped", false);
+    public final Input<Boolean> xboxFlipped = addDashboardInput("xboxFlipped", false);
     
     //public final Input<Double> elevatorOffset = addDashboardInput("Elevator Offset", 0.0);
     //public final Input<Double> elevatorUpwardsRange = addDashboardInput("Upwards Range", 0.0);
@@ -25,7 +25,7 @@ public class Dashboard extends DashboardModule {
     
     //public final Input<Boolean> holding = addDashboardInput("Holding", true);
     //public final Input<Double> power = addDashboardInput("Elevator Power", 0.0);
-    
+
     public final Input<Double> armRate = addDashboardInput("Arm Rate", 0.0);
     public final Input<Double> armClicks = addDashboardInput("Arm Clicks", 0.0);
     
