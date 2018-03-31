@@ -421,7 +421,7 @@ public class TeleopMode extends Coordinator {
     	
     	public void run() {
     	    bottomPulse.update(robot.arm.getBottomLimit());
-    	    if (manipStart /*|| bottomPulse.isRisingEdge()*/) {
+    	    if (manipStart || bottomPulse.isRisingEdge()) {
     	        // offset -= (lowtarget - current)
     	        // TODO: Remeber to properly handle inversion
     	        // System.out.println( robot.arm.encoder.isInverted() ? "Safe" : "ERROR: Not Inverted");
