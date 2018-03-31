@@ -112,7 +112,7 @@ public class Calibration {
     public static final double ARM_ENCODER_FULL_ROT=2*4096*54/30;
     
     // Lower speed going down due to weight
-    public static final double ARM_MIN_SPEED = -0.09;
+    public static final double ARM_MIN_SPEED = -0.15;
     public static final double ARM_MAX_SPEED = 0.8;
     // Bound I term motor output
     public static final double ARM_MIN_SUM = -0.06/ARM_I;
@@ -129,7 +129,7 @@ public class Calibration {
     public static final double ARM_MID_TARGET = 200; //0
     @Unreal("Remnants from using arm to facilitate turning") @Deprecated
     public static final double ARM_BALANCE_TARGET = 900;
-    public static final double ARM_HIGH_TARGET = 4370;
+    public static final double ARM_HIGH_TARGET = 4500;
     public static final double ARM_RAISE_TARGET = 0;
     
     /* Intake */
