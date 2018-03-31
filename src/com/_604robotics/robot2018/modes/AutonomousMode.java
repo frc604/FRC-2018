@@ -744,7 +744,7 @@ public class AutonomousMode extends StatefulCoordinator {
 
             addState("Cross to other side", new Coordinator() {
                 private final Drive.ArcadeServo arcadeServo = robot.drive.new ArcadeServo(
-                        AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(196+1)), 0);
+                        AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(193+1)), 0);
 
                 @Override
                 protected boolean run () {
@@ -824,7 +824,7 @@ public class AutonomousMode extends StatefulCoordinator {
 
             addState("Cross to other side", new Coordinator() {
                 private final Drive.ArcadeServo arcadeServo = robot.drive.new ArcadeServo(
-                        AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(196+1)), 0);
+                        AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(193+1)), 0);
 
                 @Override
                 protected boolean run () {
