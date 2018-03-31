@@ -874,7 +874,7 @@ public class AutonomousMode extends StatefulCoordinator {
             });
         }
     }
-    
+
 
     private class NewScaleOppositeLeftMacro extends StatefulCoordinator {
         public NewScaleOppositeLeftMacro () {

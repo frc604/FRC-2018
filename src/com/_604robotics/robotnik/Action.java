@@ -36,11 +36,7 @@ public abstract class Action {
         return running;
     }
 
-    protected <T> Input<T> addInput (String name, T defaultValue) {
-        return addInput(name, defaultValue, false);
-    }
-
-    synchronized protected <T> Input<T> addInput (String name, T defaultValue, boolean persistent) {
+    synchronized protected <T> Input<T> addInput (String name, T defaultValue) {
         if (name.isEmpty()) {
             throw new IllegalArgumentException("Input names may not be empty");
         }
@@ -48,7 +44,7 @@ public abstract class Action {
             throw new IllegalArgumentException("Input names may not contain commas");
         }
 
-        final Input<T> input = new Input<>(parent, name, defaultValue, persistent);
+        final Input<T> input = new Input<>(parent, name, defaultValue);
         inputs.add(input);
         inputListValue = inputListValue.isEmpty() ? input.getName() : inputListValue + "," + input.getName();
         return input;
