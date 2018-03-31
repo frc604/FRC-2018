@@ -43,6 +43,7 @@ public class Dashboard extends DashboardModule {
     public enum AutonMode {
         OFF,
         // Following are actual strategy selections
+        DELAYED_BASELINE_CROSS,
         CENTER_SWITCH,
         LEFT_SWITCH,
         RIGHT_SWITCH,

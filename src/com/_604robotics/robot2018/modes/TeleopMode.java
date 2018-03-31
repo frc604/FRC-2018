@@ -296,34 +296,31 @@ public class TeleopMode extends Coordinator {
 
     	@Override
     	protected boolean run() {
-            double output = 0;
+    	    runIntake.activate();
 
     		if (driverLeftTrigger != 0 || driverRightTrigger != 0) {
     			if (driverRightTrigger >= driverLeftTrigger) {
-    				output = driverRightTrigger*driverRightTrigger;
+    				runIntake.power.set(driverRightTrigger * driverRightTrigger);
     			} else if (driverLeftTrigger > driverRightTrigger) {
     			    if (driverDPad) {
-    			        output = -Calibration.INTAKE_OUTAKE_OVERDRIVE_MODIFIER * driverLeftTrigger;
+    			        runIntake.power.set(-Calibration.INTAKE_OUTAKE_OVERDRIVE_MODIFIER * driverLeftTrigger);
     			    } else {
-    			        output = -Calibration.INTAKE_OUTAKE_MODIFIER * driverLeftTrigger;
+    			        runIntake.power.set(-Calibration.INTAKE_OUTAKE_MODIFIER * driverLeftTrigger);
     			    }
     			}
     		} else if (manipRightBumper || manipRightTrigger != 0) {
     			if (manipRightTrigger != 0) {
     			    if (manipDPad) {
-                        output = -Calibration.INTAKE_OUTAKE_OVERDRIVE_MODIFIER;
+                        runIntake.power.set(-Calibration.INTAKE_OUTAKE_OVERDRIVE_MODIFIER);
                     } else {
-                        output = -Calibration.INTAKE_OUTAKE_MODIFIER * manipRightTrigger;
+                        runIntake.power.set(-Calibration.INTAKE_OUTAKE_MODIFIER * manipRightTrigger);
                     }
                 } else if (manipRightBumper) {
-                    output = 1;
+    			    runIntake.power.set(1d);
                 }
     		} else if (robot.clamp.engage.isRunning()) {
-    		    output = Calibration.INTAKE_PASSIVE_POWER;
+    		    robot.intake.passive.activate();
     		}
-
-            runIntake.power.set(output);
-            runIntake.activate();
 
             return true;
     	}
@@ -351,6 +348,7 @@ public class TeleopMode extends Coordinator {
     	}
     }
 
+<<<<<<< HEAD
     private class ElevatorArmManager extends Coordinator {
         private final Elevator.Manual elevatorManual = robot.elevator.new Manual();
         private final Arm.Manual armManual = robot.arm.new Manual();
@@ -440,7 +438,7 @@ public class TeleopMode extends Coordinator {
             }
 
             if (goingUp &&
-                    Calibration.TANDEM_ACTIVE && !manipLeftTriggerButton &&
+                    Calibration.TANDEM_ACTIVE && manipLeftTrigger == 0 &&
                     !robot.elevator.bumperClear.get() && !robot.arm.raised.get()) {
                 robot.elevator.raise.activate();
                 robot.arm.hold.activate();

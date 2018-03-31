@@ -18,6 +18,8 @@ public class AutonomousMode extends StatefulCoordinator {
 
         this.robot = robot;
 
+        autonModes.put(Dashboard.AutonMode.DELAYED_BASELINE_CROSS, new DelayedBaselineCrossMacro());
+
         autonModes.put(Dashboard.AutonMode.CENTER_SWITCH, new CenterSwitchMacro());
 
         autonModes.put(Dashboard.AutonMode.LEFT_SWITCH, new LeftSwitchMacro());
@@ -90,6 +92,51 @@ public class AutonomousMode extends StatefulCoordinator {
         protected boolean run () {
             arcadeServo.activate();
             return arcadeServo.onTarget.get();
+        }
+    }
+
+    private class HoldElevatorArmMacro extends Coordinator {
+        @Override
+        protected boolean run () {
+            robot.elevator.hold.activate();
+            robot.arm.hold.activate();
+            return true;
+        }
+    }
+
+    private class DelayedBaselineCrossMacro extends StatefulCoordinator {
+        public DelayedBaselineCrossMacro () {
+            super(DelayedBaselineCrossMacro.class);
+
+            addState("Grab preloaded cube", new GrabPreloadedCubeMacro());
+
+            addState("Raise elevator",
+                    new TimeLimitCoordinator(0.3, new ActionCoordinator(robot.elevator.raise)));
+
+            addState("Raise arm and wait", new TimeLimitCoordinator(7, new Coordinator() {
+                @Override
+                protected boolean run () {
+                    robot.elevator.raise.activate();
+                    robot.arm.mid.activate();
+                    return true;
+                }
+            }));
+
+            addState("Cross baseline", new Coordinator() {
+                private final Drive.ArcadeServo arcadeServo = robot.drive.new ArcadeServo(
+                        AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, (144+1)), 0);
+
+                @Override
+                protected boolean run () {
+                    robot.elevator.raise.activate();
+                    robot.arm.mid.activate();
+
+                    arcadeServo.activate();
+                    return arcadeServo.onTarget.get();
+                }
+            });
+
+            addState("Hold", new HoldElevatorArmMacro());
         }
     }
 
@@ -307,7 +354,7 @@ public class AutonomousMode extends StatefulCoordinator {
 
             addState("Turn toward switch", new Coordinator() {
                 private final Drive.ArcadeServo arcadeServo = robot.drive.new ArcadeServo(
-                        0, AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, 45));
+                        0, AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, 30));
 
                 @Override
                 protected boolean run () {
@@ -482,7 +529,7 @@ public class AutonomousMode extends StatefulCoordinator {
 
             addState("Drive away from wall", new Coordinator() {
                 private final Drive.ArcadeServo arcadeServo = robot.drive.new ArcadeServo(
-                        AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(222+1)), 0);
+                        AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(219+1)), 0);
 
                 @Override
                 protected boolean run () {
@@ -505,7 +552,7 @@ public class AutonomousMode extends StatefulCoordinator {
 
             addState("Drive away from wall", new Coordinator() {
                 private final Drive.ArcadeServo arcadeServo = robot.drive.new ArcadeServo(
-                        AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(222+1)), 0);
+                        AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(219+1)), 0);
 
                 @Override
                 protected boolean run () {
@@ -528,7 +575,7 @@ public class AutonomousMode extends StatefulCoordinator {
 
             addState("Drive away from wall", new Coordinator() {
                 private final Drive.ArcadeServo arcadeServo = robot.drive.new ArcadeServo(
-                        AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(222+1)), 0);
+                        AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(219+1)), 0);
 
                 @Override
                 protected boolean run () {
@@ -551,7 +598,7 @@ public class AutonomousMode extends StatefulCoordinator {
 
             addState("Drive away from wall", new Coordinator() {
                 private final Drive.ArcadeServo arcadeServo = robot.drive.new ArcadeServo(
-                        AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(222+1)), 0);
+                        AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(219+1)), 0);
 
                 @Override
                 protected boolean run () {
@@ -598,15 +645,6 @@ public class AutonomousMode extends StatefulCoordinator {
         }
     }
 
-    private class HoldElevatorArmMacro extends Coordinator {
-        @Override
-        protected boolean run () {
-            robot.elevator.hold.activate();
-            robot.arm.hold.activate();
-            return true;
-        }
-    }
-
     private class NewScaleBackwardLeftMacro extends StatefulCoordinator {
     	public NewScaleBackwardLeftMacro () {
     		super(NewScaleBackwardLeftMacro.class);
@@ -614,13 +652,13 @@ public class AutonomousMode extends StatefulCoordinator {
     		addState("Grab preloaded cube", new GrabPreloadedCubeMacro());
 
             addState("Drive away from wall", new DriveArcadeServoMacro(
-                    AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(36+1)), 0));
+                    AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(39+1)), 0));
 
             addState("Turn toward scale", new DriveArcadeServoMacro(
                     0, AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, 35)));
 
             addState("Drive toward scale", new DriveArcadeServoMacro(
-                    AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(9)), 0));
+                    AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(6)), 0));
 
             addState("Raise arm", new TimeLimitCoordinator(1.3, new ActionCoordinator(robot.arm.high)));
 
@@ -654,13 +692,13 @@ public class AutonomousMode extends StatefulCoordinator {
             addState("Grab preloaded cube", new GrabPreloadedCubeMacro());
 
             addState("Drive away from wall", new DriveArcadeServoMacro(
-                    AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(36+1)), 0));
+                    AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(39+1)), 0));
 
             addState("Turn toward scale", new DriveArcadeServoMacro(
                     0, AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, -35)));
 
             addState("Drive toward scale", new DriveArcadeServoMacro(
-                    AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(9)), 0));
+                    AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(6)), 0));
 
             addState("Raise arm", new TimeLimitCoordinator(1.3, new ActionCoordinator(robot.arm.high)));
 
@@ -706,7 +744,7 @@ public class AutonomousMode extends StatefulCoordinator {
 
             addState("Cross to other side", new Coordinator() {
                 private final Drive.ArcadeServo arcadeServo = robot.drive.new ArcadeServo(
-                        AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(190+1)), 0);
+                        AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(196+1)), 0);
 
                 @Override
                 protected boolean run () {
@@ -732,7 +770,7 @@ public class AutonomousMode extends StatefulCoordinator {
 
             addState("Drive toward scale", new Coordinator() {
                 private final Drive.ArcadeServo arcadeServo = robot.drive.new ArcadeServo(
-                        AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(33+1)), 0);
+                        AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(27+1)), 0);
 
                 @Override
                 protected boolean run () {
@@ -786,7 +824,7 @@ public class AutonomousMode extends StatefulCoordinator {
 
             addState("Cross to other side", new Coordinator() {
                 private final Drive.ArcadeServo arcadeServo = robot.drive.new ArcadeServo(
-                        AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(190+1)), 0);
+                        AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(196+1)), 0);
 
                 @Override
                 protected boolean run () {
@@ -812,7 +850,7 @@ public class AutonomousMode extends StatefulCoordinator {
 
             addState("Drive toward scale", new Coordinator() {
                 private final Drive.ArcadeServo arcadeServo = robot.drive.new ArcadeServo(
-                        AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(33+1)), 0);
+                        AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(27+1)), 0);
 
                 @Override
                 protected boolean run () {

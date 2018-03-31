@@ -1,5 +1,6 @@
 package com._604robotics.robot2018.modules;
 
+import com._604robotics.robot2018.constants.Calibration;
 import com._604robotics.robot2018.constants.Ports;
 import com._604robotics.robotnik.Action;
 import com._604robotics.robotnik.Input;
@@ -24,13 +25,30 @@ public class Intake extends Module {
 		@Override
 		public void run() {
 			innerMotorA.set(0);
+			innerMotorB.set(0);
 			outerMotorA.set(0);
 			outerMotorB.set(0);
 		}
 	}
 	public final Idle idle = new Idle();
 
-    public class Run extends Action {
+	public class Passive extends Action {
+		private Passive() {
+			super(Intake.this, Passive.class);
+		}
+
+		@Override
+		public void run() {
+			innerMotorA.set(Calibration.INTAKE_PASSIVE_POWER);
+			innerMotorB.set(Calibration.INTAKE_PASSIVE_POWER);
+
+			outerMotorA.set(0);
+			outerMotorB.set(0);
+		}
+	}
+	public final Passive passive = new Passive();
+
+	public class Run extends Action {
     	public final Input<Double> power;
     	
     	public Run () {
@@ -45,6 +63,8 @@ public class Intake extends Module {
     	@Override
     	public void run() {
     		innerMotorA.set(power.get());
+			innerMotorB.set(power.get());
+
     		outerMotorA.set(power.get());
     		outerMotorB.set(power.get());
     	}
@@ -54,9 +74,10 @@ public class Intake extends Module {
         super(Intake.class);
 
         innerMotorA.setInverted(true);
+		innerMotorA.setNeutralMode(com.ctre.phoenix.motorcontrol.NeutralMode.Coast);
 
         innerMotorB.setInverted(true);
-		innerMotorB.set(ControlMode.Follower, Ports.INTAKE_INNER_MOTOR_A);
+		innerMotorB.setNeutralMode(com.ctre.phoenix.motorcontrol.NeutralMode.Coast);
 
         outerMotorB.setInverted(true);
 
