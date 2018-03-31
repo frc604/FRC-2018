@@ -75,7 +75,7 @@ public class AutonomousMode extends StatefulCoordinator {
             super(GrabPreloadedCubeMacro.class);
 
             addState("Run intake",
-                    new TimeLimitCoordinator(0.25, new ActionCoordinator(robot.intake.new Run(0.5)));
+                    new TimeLimitCoordinator(0.25, new ActionCoordinator(robot.intake.new Run(0.5))));
         }
     }
 
@@ -83,16 +83,11 @@ public class AutonomousMode extends StatefulCoordinator {
         private final double moveSetpoint;
         private final double rotSetpoint;
 
-        private Drive.ArcadeServo arcadeServo;
+        private final Drive.ArcadeServo arcadeServo = robot.drive.new ArcadeServo(moveSetpoint, rotSetpoint);
 
         public DriveArcadeServoMacro (double moveSetpoint, double rotSetpoint) {
             this.moveSetpoint = moveSetpoint;
             this.rotSetpoint = rotSetpoint;
-        }
-
-        @Override
-        protected void begin () {
-            arcadeServo = robot.drive.new ArcadeServo(moveSetpoint, rotSetpoint);
         }
 
         @Override
@@ -112,50 +107,32 @@ public class AutonomousMode extends StatefulCoordinator {
 
             // Forward distance between front bumper and scale -76 XX
             addState("Drive away from wall", new Coordinator() {
-                private final Coordinator driveMacro = new DriveArcadeServoMacro(
-                        AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, 23),0));
-
-                @Override
-                protected void begin () {
-                    driveMacro.start();
-                }
+                private final Drive.ArcadeServo arcadeServo = robot.drive.new ArcadeServo(
+                        AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, 23),0);
 
                 @Override
                 protected boolean run () {
                     robot.elevator.raise.activate();
                     robot.arm.mid.activate();
 
-                    return driveMacro.execute();
-                }
-
-                @Override
-                protected void end () {
-                    driveMacro.stop();
+                    arcadeServo.activate();
+                    return arcadeServo.onTarget.get();
                 }
             });
 
             addState("Turn toward switch based on game data", new CenterSwitchDecisionMacro());
 
             addState("Drive toward switch", new Coordinator() {
-                private final Coordinator driveMacro = new DriveArcadeServoMacro(
-                        AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, 23),0))
-
-                @Override
-                protected void begin () {
-                    driveMacro.start();
-                }
+                private final Drive.ArcadeServo arcadeServo = robot.drive.new ArcadeServo(
+                        AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, 23),0);
 
                 @Override
                 protected boolean run () {
                     robot.elevator.raise.activate();
                     robot.arm.mid.activate();
 
-                    return driveMacro.execute();
-                }
-
-                @Override
-                protected void end () {
-                    driveMacro.stop();
+                    arcadeServo.activate();
+                    return arcadeServo.onTarget.get();
                 }
             });
 
@@ -172,71 +149,44 @@ public class AutonomousMode extends StatefulCoordinator {
             addState("Raise elevator", new TimeLimitCoordinator(0.3, new ActionCoordinator(robot.elevator.raise)));
 
             addState("Drive away from wall", new Coordinator() {
-                private final Coordinator driveMacro = new DriveArcadeServoMacro(
+                private final Drive.ArcadeServo arcadeServo = robot.drive.new ArcadeServo(
                     AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, 144 + 1), 0);
-
-                @Override
-                protected void begin () {
-                    driveMacro.start();
-                }
 
                 @Override
                 protected boolean run () {
                     robot.elevator.raise.activate();
                     robot.arm.mid.activate();
 
-                    return driveMacro.execute();
-                }
-
-                @Override
-                protected void end () {
-                    driveMacro.stop();
+                    arcadeServo.activate();
+                    return arcadeServo.onTarget.get();
                 }
             });
 
             addState("Turn toward switch", new Coordinator() {
-                private final Coordinator driveMacro = new DriveArcadeServoMacro(
+                private final Drive.ArcadeServo arcadeServo = robot.drive.new ArcadeServo(
                         0, AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, 90));
-
-                @Override
-                protected void begin () {
-                    driveMacro.start();
-                }
 
                 @Override
                 protected boolean run () {
                     robot.elevator.raise.activate();
                     robot.arm.mid.activate();
 
-                    return driveMacro.execute();
-                }
-
-                @Override
-                protected void end () {
-                    driveMacro.stop();
+                    arcadeServo.activate();
+                    return arcadeServo.onTarget.get();
                 }
             });
 
             addState("Drive toward switch", new Coordinator() {
-                private final Coordinator driveMacro = new DriveArcadeServoMacro(
+                private final Drive.ArcadeServo arcadeServo = robot.drive.new ArcadeServo(
                         AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, 24), 0);
-
-                @Override
-                protected void begin () {
-                    driveMacro.start();
-                }
 
                 @Override
                 protected boolean run () {
                     robot.elevator.raise.activate();
                     robot.arm.mid.activate();
 
-                    return driveMacro.execute();
-                }
-
-                @Override
-                protected void end () {
-                    driveMacro.stop();
+                    arcadeServo.activate();
+                    return arcadeServo.onTarget.get();
                 }
             });
 
@@ -253,71 +203,44 @@ public class AutonomousMode extends StatefulCoordinator {
             addState("Raise elevator", new TimeLimitCoordinator(0.3, new ActionCoordinator(robot.elevator.raise)));
 
             addState("Drive away from wall", new Coordinator() {
-                private final Coordinator driveMacro = new DriveArcadeServoMacro(
+                private final Drive.ArcadeServo arcadeServo = robot.drive.new ArcadeServo(
                         AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, 144 + 1), 0);
-
-                @Override
-                protected void begin () {
-                    driveMacro.start();
-                }
 
                 @Override
                 protected boolean run () {
                     robot.elevator.raise.activate();
                     robot.arm.mid.activate();
 
-                    return driveMacro.execute();
-                }
-
-                @Override
-                protected void end () {
-                    super.end();
+                    arcadeServo.activate();
+                    return arcadeServo.onTarget.get();
                 }
             });
 
             addState("Turn toward switch", new Coordinator() {
-                private final Coordinator driveMacro = new DriveArcadeServoMacro(
+                private final Drive.ArcadeServo arcadeServo = robot.drive.new ArcadeServo(
                         0, AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, -90));
-
-                @Override
-                protected void begin () {
-                    driveMacro.start();
-                }
 
                 @Override
                 protected boolean run () {
                     robot.elevator.raise.activate();
                     robot.arm.mid.activate();
 
-                    return driveMacro.execute();
-                }
-
-                @Override
-                protected void end () {
-                    super.end();
+                    arcadeServo.activate();
+                    return arcadeServo.onTarget.get();
                 }
             });
 
             addState("Drive toward switch", new Coordinator() {
-                private final Coordinator driveMacro = new DriveArcadeServoMacro(
+                private final Drive.ArcadeServo arcadeServo = robot.drive.new ArcadeServo(
                         AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, (24)), 0);
-
-                @Override
-                protected void begin () {
-                    driveMacro.start();
-                }
 
                 @Override
                 protected boolean run () {
                     robot.elevator.raise.activate();
                     robot.arm.mid.activate();
 
-                    return driveMacro.execute();
-                }
-
-                @Override
-                protected void end () {
-                    super.end();
+                    arcadeServo.activate();
+                    return arcadeServo.onTarget.get();
                 }
             });
 
@@ -359,71 +282,44 @@ public class AutonomousMode extends StatefulCoordinator {
             super(CenterLeftSwitchMacro.class);
 
             addState("Turn left", new Coordinator() {
-                private final Coordinator driveMacro = new DriveArcadeServoMacro(
+                private final Drive.ArcadeServo arcadeServo = robot.drive.new ArcadeServo(
                         0, AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, -45));
-
-                @Override
-                protected void begin () {
-                    driveMacro.start();
-                }
 
                 @Override
                 protected boolean run () {
                     robot.elevator.raise.activate();
                     robot.arm.mid.activate();
 
-                    return driveMacro.execute();
-                }
-
-                @Override
-                protected void end () {
-                    driveMacro.stop();
+                    arcadeServo.activate();
+                    return arcadeServo.onTarget.get();
                 }
             });
 
             addState("Drive toward switch", new Coordinator() {
-                private final Coordinator driveMacro = new DriveArcadeServoMacro(
+                private final Drive.ArcadeServo arcadeServo = robot.drive.new ArcadeServo(
                         AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, 76+15+1),0);
-
-                @Override
-                protected void begin () {
-                    driveMacro.start();
-                }
 
                 @Override
                 protected boolean run () {
                     robot.elevator.raise.activate();
                     robot.arm.mid.activate();
 
-                    return driveMacro.execute();
-                }
-
-                @Override
-                protected void end () {
-                    driveMacro.stop();
+                    arcadeServo.activate();
+                    return arcadeServo.onTarget.get();
                 }
             });
 
             addState("Turn toward switch", new Coordinator() {
-                private final Coordinator driveMacro = new DriveArcadeServoMacro(
+                private final Drive.ArcadeServo arcadeServo = robot.drive.new ArcadeServo(
                         0, AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, 45));
-
-                @Override
-                protected void begin () {
-                    driveMacro.start();
-                }
 
                 @Override
                 protected boolean run () {
                     robot.elevator.raise.activate();
                     robot.arm.mid.activate();
 
-                    return driveMacro.execute();
-                }
-
-                @Override
-                protected void end () {
-                    driveMacro.stop();
+                    arcadeServo.activate();
+                    return arcadeServo.onTarget.get();
                 }
             });
         }
@@ -434,71 +330,44 @@ public class AutonomousMode extends StatefulCoordinator {
             super(CenterLeftSwitchMacro.class);
 
             addState("Turn right", new Coordinator() {
-                private final Coordinator driveMacro = new DriveArcadeServoMacro(
+                private final Drive.ArcadeServo arcadeServo = robot.drive.new ArcadeServo(
                         0, AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, 45));
-
-                @Override
-                protected void begin () {
-                    driveMacro.start();
-                }
 
                 @Override
                 protected boolean run () {
                     robot.elevator.raise.activate();
                     robot.arm.mid.activate();
 
-                    return driveMacro.execute();
-                }
-
-                @Override
-                protected void end () {
-                    driveMacro.stop();
+                    arcadeServo.activate();
+                    return arcadeServo.onTarget.get();
                 }
             });
 
             addState("Drive toward switch", new Coordinator() {
-                private final Coordinator driveMacro = new DriveArcadeServoMacro(
+                private final Drive.ArcadeServo arcadeServo = robot.drive.new ArcadeServo(
                         AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, 76+1),0);
-
-                @Override
-                protected void begin () {
-                    driveMacro.start();
-                }
 
                 @Override
                 protected boolean run () {
                     robot.elevator.raise.activate();
                     robot.arm.mid.activate();
 
-                    return driveMacro.execute();
-                }
-
-                @Override
-                protected void end () {
-                    driveMacro.stop();
+                    arcadeServo.activate();
+                    return arcadeServo.onTarget.get();
                 }
             });
 
             addState("Turn toward switch", new Coordinator() {
-                private final Coordinator driveMacro = new DriveArcadeServoMacro(
+                private final Drive.ArcadeServo arcadeServo = robot.drive.new ArcadeServo(
                         0, AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, -45));
-
-                @Override
-                protected void begin () {
-                    driveMacro.start();
-                }
 
                 @Override
                 protected boolean run () {
                     robot.elevator.raise.activate();
                     robot.arm.mid.activate();
 
-                    return driveMacro.execute();
-                }
-
-                @Override
-                protected void end () {
-                    driveMacro.stop();
+                    arcadeServo.activate();
+                    return arcadeServo.onTarget.get();
                 }
             });
         }
@@ -515,6 +384,7 @@ public class AutonomousMode extends StatefulCoordinator {
                 protected boolean run () {
                     robot.elevator.raise.activate();
                     robot.arm.mid.activate();
+
                     runIntake.activate();
                     return true;
                 }
@@ -522,25 +392,16 @@ public class AutonomousMode extends StatefulCoordinator {
 
             // Scoot back to avoid arm hitting switch fence
             addState("Back away from switch", new Coordinator() {
-                private final Coordinator driveMacro = new DriveArcadeServoMacro(
-                        AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -12), 0));
-
-                @Override
-                protected void begin () {
-                    driveMacro.start();
-                }
+                private final Drive.ArcadeServo arcadeServo = robot.drive.new ArcadeServo(
+                        AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -12), 0);
 
                 @Override
                 protected boolean run () {
                     robot.elevator.raise.activate();
                     robot.arm.mid.activate();
 
-                    return driveMacro.execute();
-                }
-
-                @Override
-                protected void end () {
-                    driveMacro.stop();
+                    arcadeServo.activate();
+                    return arcadeServo.onTarget.get();
                 }
             });
 
@@ -570,25 +431,16 @@ public class AutonomousMode extends StatefulCoordinator {
             super(CancelSwitchMacro.class);
 
             addState("Back away from switch", new Coordinator() {
-                private final Coordinator driveMacro = new DriveArcadeServoMacro(
+                private final Drive.ArcadeServo arcadeServo = robot.drive.new ArcadeServo(
                         AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -24), 0);
-
-                @Override
-                protected void begin () {
-                    driveMacro.start();
-                }
 
                 @Override
                 protected boolean run () {
                     robot.elevator.raise.activate();
                     robot.arm.mid.activate();
 
-                    return driveMacro.execute();
-                }
-
-                @Override
-                protected void end () {
-                    driveMacro.stop();
+                    arcadeServo.activate();
+                    return arcadeServo.onTarget.get();
                 }
             });
 
@@ -633,24 +485,15 @@ public class AutonomousMode extends StatefulCoordinator {
             addState("Grab preloaded cube", new GrabPreloadedCubeMacro());
 
             addState("Drive away from wall", new Coordinator() {
-                private final Coordinator driveMacro = new DriveArcadeServoMacro(
+                private final Drive.ArcadeServo arcadeServo = robot.drive.new ArcadeServo(
                         AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(222+1)), 0);
-
-                @Override
-                protected void begin () {
-                    driveMacro.start();
-                }
 
                 @Override
                 protected boolean run () {
                     robot.elevator.mid.activate();
 
-                    return driveMacro.execute();
-                }
-
-                @Override
-                protected void end () {
-                    driveMacro.stop();
+                    arcadeServo.activate();
+                    return arcadeServo.onTarget.get();
                 }
             });
 
@@ -665,24 +508,15 @@ public class AutonomousMode extends StatefulCoordinator {
             addState("Grab preloaded cube", new GrabPreloadedCubeMacro());
 
             addState("Drive away from wall", new Coordinator() {
-                private final Coordinator driveMacro = new DriveArcadeServoMacro(
+                private final Drive.ArcadeServo arcadeServo = robot.drive.new ArcadeServo(
                         AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(222+1)), 0);
-
-                @Override
-                protected void begin () {
-                    driveMacro.start();
-                }
 
                 @Override
                 protected boolean run () {
                     robot.elevator.mid.activate();
 
-                    return driveMacro.execute();
-                }
-
-                @Override
-                protected void end () {
-                    driveMacro.stop();
+                    arcadeServo.activate();
+                    return arcadeServo.onTarget.get();
                 }
             });
 
@@ -697,24 +531,15 @@ public class AutonomousMode extends StatefulCoordinator {
             addState("Grab preloaded cube", new GrabPreloadedCubeMacro());
 
             addState("Drive away from wall", new Coordinator() {
-                private final Coordinator driveMacro = new DriveArcadeServoMacro(
+                private final Drive.ArcadeServo arcadeServo = robot.drive.new ArcadeServo(
                         AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(222+1)), 0);
-
-                @Override
-                protected void begin () {
-                    driveMacro.start();
-                }
 
                 @Override
                 protected boolean run () {
                     robot.elevator.mid.activate();
 
-                    return driveMacro.execute();
-                }
-
-                @Override
-                protected void end () {
-                    driveMacro.stop();
+                    arcadeServo.activate();
+                    return arcadeServo.onTarget.get();
                 }
             });
 
@@ -729,24 +554,15 @@ public class AutonomousMode extends StatefulCoordinator {
             addState("Grab preloaded cube", new GrabPreloadedCubeMacro());
 
             addState("Drive away from wall", new Coordinator() {
-                private final Coordinator driveMacro = new DriveArcadeServoMacro(
+                private final Drive.ArcadeServo arcadeServo = robot.drive.new ArcadeServo(
                         AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(222+1)), 0);
-
-                @Override
-                protected void begin () {
-                    driveMacro.start();
-                }
 
                 @Override
                 protected boolean run () {
                     robot.elevator.mid.activate();
 
-                    return driveMacro.execute();
-                }
-
-                @Override
-                protected void end () {
-                    driveMacro.stop();
+                    arcadeServo.activate();
+                    return arcadeServo.onTarget.get();
                 }
             });
 
