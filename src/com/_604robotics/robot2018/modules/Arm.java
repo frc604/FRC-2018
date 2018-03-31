@@ -101,7 +101,6 @@ public class Arm extends Module {
     public final Setpoint low = new Setpoint(Calibration.ARM_LOW_TARGET);
     public final Setpoint raise = new Setpoint(Calibration.ARM_RAISE_TARGET);
     public final Setpoint mid = new Setpoint(Calibration.ARM_MID_TARGET);
-    public final Setpoint balance = new Setpoint(Calibration.ARM_BALANCE_TARGET);
     public final Setpoint high = new Setpoint(Calibration.ARM_HIGH_TARGET);
 
     public class Hold extends Action {

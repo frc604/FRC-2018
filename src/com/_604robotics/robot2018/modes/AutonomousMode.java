@@ -80,14 +80,10 @@ public class AutonomousMode extends StatefulCoordinator {
     }
 
     private class DriveArcadeServoMacro extends Coordinator {
-        private final double moveSetpoint;
-        private final double rotSetpoint;
-
-        private final Drive.ArcadeServo arcadeServo = robot.drive.new ArcadeServo(moveSetpoint, rotSetpoint);
+        private final Drive.ArcadeServo arcadeServo;
 
         public DriveArcadeServoMacro (double moveSetpoint, double rotSetpoint) {
-            this.moveSetpoint = moveSetpoint;
-            this.rotSetpoint = rotSetpoint;
+            arcadeServo = robot.drive.new ArcadeServo(moveSetpoint, rotSetpoint);
         }
 
         @Override
@@ -691,49 +687,163 @@ public class AutonomousMode extends StatefulCoordinator {
         }
     }
 
-
     private class NewScaleOppositeLeftMacro extends StatefulCoordinator {
         public NewScaleOppositeLeftMacro () {
             super(NewScaleOppositeLeftMacro.class);
-            //addStates(new GrabPreloadedCubeMacro());
-            //addState("Set Elevator Persistent", new ElevatorSetPersistent(Calibration.ELEVATOR_MID_TARGET));
-            //addState("Backward 185 inches", new DriveArcadeServoMacro(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(185+1)), 0));
-            //addState("Set Arm Persistent", new ArmSetPersistent(Calibration.ARM_BALANCE_TARGET));
-            //addState("Sleep 0.5 seconds", new SleepCoordinator(0.5));
-            //addState("Backward 50 inches", new DriveArcadeServoMacro(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(50+1)), 0));
-            addState("Rotate 90 right", new DriveArcadeServoMacro(0, AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, 90)));
-            //238.5
-            addState("Backward 190 inches", new DriveArcadeServoMacro(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(190+1)), 0));
-            addState("Rotate 90 left", new DriveArcadeServoMacro(0, AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, -90)));
-            addState("Backward 33 inches", new DriveArcadeServoMacro(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(33+1)), 0));
-            addState("Set Arm High Persistent", new ArmSetPersistent(Calibration.ARM_HIGH_TARGET));
-            addState("Sleep 1.3 seconds", new SleepCoordinator(1.3));
-            addState("Eject cube", new IntakeMove(-0.5,0.5));
-            addState("Engage arm", new ArmSetPersistent(Calibration.ARM_LOW_TARGET));
-            addState("Engage elevator", new ElevatorSetPersistent(Calibration.ELEVATOR_LOW_TARGET));
-            addState("Unclamp", new ClampExtend());
+
+            addState("Turn toward center", new Coordinator() {
+                private final Drive.ArcadeServo arcadeServo = robot.drive.new ArcadeServo(
+                        0, AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, 90));
+
+                @Override
+                protected boolean run () {
+                    robot.elevator.mid.activate();
+
+                    arcadeServo.activate();
+                    return arcadeServo.onTarget.get();
+                }
+            });
+
+            addState("Cross to other side", new Coordinator() {
+                private final Drive.ArcadeServo arcadeServo = robot.drive.new ArcadeServo(
+                        AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(190+1)), 0);
+
+                @Override
+                protected boolean run () {
+                    robot.elevator.mid.activate();
+
+                    arcadeServo.activate();
+                    return arcadeServo.onTarget.get();
+                }
+            });
+
+            addState("Turn back to face driver station", new Coordinator() {
+                private final Drive.ArcadeServo arcadeServo = robot.drive.new ArcadeServo(
+                        0, AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, -90));
+
+                @Override
+                protected boolean run () {
+                    robot.elevator.mid.activate();
+
+                    arcadeServo.activate();
+                    return arcadeServo.onTarget.get();
+                }
+            });
+
+            addState("Drive toward scale", new Coordinator() {
+                private final Drive.ArcadeServo arcadeServo = robot.drive.new ArcadeServo(
+                        AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(33+1)), 0);
+
+                @Override
+                protected boolean run () {
+                    robot.elevator.mid.activate();
+
+                    arcadeServo.activate();
+                    return arcadeServo.onTarget.get();
+                }
+            });
+
+            addState("Raise arm", new TimeLimitCoordinator(1.3, new Coordinator() {
+                @Override
+                protected boolean run () {
+                    robot.elevator.mid.activate();
+                    robot.arm.high.activate();
+                    return true;
+                }
+            }));
+
+            addState("Eject cube",
+                    new TimeLimitCoordinator(0.5, new ActionCoordinator(robot.intake.new Run(-0.5))));
+
+            addState("Disengage and wait", new Coordinator() {
+                @Override
+                protected boolean run () {
+                    robot.elevator.low.activate();
+                    robot.arm.low.activate();
+                    robot.clamp.release.activate();
+                    return true;
+                }
+            });
         }
     }
-    
+
     private class NewScaleOppositeRightMacro extends StatefulCoordinator {
         public NewScaleOppositeRightMacro () {
             super(NewScaleOppositeRightMacro.class);
-          //addStates(new GrabPreloadedCubeMacro());
-            //addState("Set Elevator Persistent", new ElevatorSetPersistent(Calibration.ELEVATOR_MID_TARGET));
-            //addState("Backward 185 inches", new DriveArcadeServoMacro(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(185+1)), 0));
-            //addState("Set Arm Persistent", new ArmSetPersistent(Calibration.ARM_BALANCE_TARGET));
-            //addState("Sleep 0.5 seconds", new SleepCoordinator(0.5));
-            //addState("Backward 50 inches", new DriveArcadeServoMacro(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(50+1)), 0));
-            addState("Rotate 90 left", new DriveArcadeServoMacro(0, AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, -90)));
-            addState("Backward 190 inches", new DriveArcadeServoMacro(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(190+1)), 0));
-            addState("Rotate 90 right", new DriveArcadeServoMacro(0, AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, 90)));
-            addState("Backward 33 inches", new DriveArcadeServoMacro(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(33+1)), 0));
-            addState("Set Arm High Persistent", new ArmSetPersistent(Calibration.ARM_HIGH_TARGET));
-            addState("Sleep 1.3 seconds", new SleepCoordinator(1.3));
-            addState("Eject cube", new IntakeMove(-0.7,0.5));
-            addState("Engage arm", new ArmSetPersistent(Calibration.ARM_LOW_TARGET));
-            addState("Engage elevator", new ElevatorSetPersistent(Calibration.ELEVATOR_LOW_TARGET));
-            addState("Unclamp", new ClampExtend());
+
+            addState("Turn toward center", new Coordinator() {
+                private final Drive.ArcadeServo arcadeServo = robot.drive.new ArcadeServo(
+                        0, AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, -90));
+
+                @Override
+                protected boolean run () {
+                    robot.elevator.mid.activate();
+
+                    arcadeServo.activate();
+                    return arcadeServo.onTarget.get();
+                }
+            });
+
+            addState("Cross to other side", new Coordinator() {
+                private final Drive.ArcadeServo arcadeServo = robot.drive.new ArcadeServo(
+                        AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(190+1)), 0);
+
+                @Override
+                protected boolean run () {
+                    robot.elevator.mid.activate();
+
+                    arcadeServo.activate();
+                    return arcadeServo.onTarget.get();
+                }
+            });
+
+            addState("Turn back to face driver station", new Coordinator() {
+                private final Drive.ArcadeServo arcadeServo = robot.drive.new ArcadeServo(
+                        0, AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, 90));
+
+                @Override
+                protected boolean run () {
+                    robot.elevator.mid.activate();
+
+                    arcadeServo.activate();
+                    return arcadeServo.onTarget.get();
+                }
+            });
+
+            addState("Drive toward scale", new Coordinator() {
+                private final Drive.ArcadeServo arcadeServo = robot.drive.new ArcadeServo(
+                        AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(33+1)), 0);
+
+                @Override
+                protected boolean run () {
+                    robot.elevator.mid.activate();
+
+                    arcadeServo.activate();
+                    return arcadeServo.onTarget.get();
+                }
+            });
+
+            addState("Raise arm", new TimeLimitCoordinator(1.3, new Coordinator() {
+                @Override
+                protected boolean run () {
+                    robot.elevator.mid.activate();
+                    robot.arm.high.activate();
+                    return true;
+                }
+            }));
+
+            addState("Eject cube",
+                    new TimeLimitCoordinator(0.5, new ActionCoordinator(robot.intake.new Run(-0.7))));
+
+            addState("Disengage and wait", new Coordinator() {
+                @Override
+                protected boolean run () {
+                    robot.elevator.low.activate();
+                    robot.arm.low.activate();
+                    robot.clamp.release.activate();
+                    return true;
+                }
+            });
         }
     }
 }
