@@ -2,15 +2,17 @@ package com._604robotics.robotnik.prefabs.devices.wrappers;
 
 import edu.wpi.first.wpilibj.PIDOutput;
 import edu.wpi.first.wpilibj.RobotDrive;
+import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 
 /**
  * PID output for tank drive.
  */
 public class TankDrivePIDOutput {
-    private final RobotDrive drive;
+    private final DifferentialDrive drive;
+    private final boolean squaredInputs;
 
-    private double leftPower = 0D;
-    private double rightPower = 0D;
+    private double leftPower;
+    private double rightPower;
 
     /**
      * Left power PID output.
@@ -19,7 +21,6 @@ public class TankDrivePIDOutput {
         @Override
         public void pidWrite (double output) {
             leftPower = output;
-            update();
         }
     };
 
@@ -30,7 +31,6 @@ public class TankDrivePIDOutput {
         @Override
         public void pidWrite (double output) {
             rightPower = output;
-            update();
         }
     };
 
@@ -38,11 +38,22 @@ public class TankDrivePIDOutput {
      * Creates a tank drive PID output.
      * @param drive Robot drive to use.
      */
-    public TankDrivePIDOutput (RobotDrive drive) {
-        this.drive = drive;
+    public TankDrivePIDOutput (DifferentialDrive drive) {
+        this(drive, true);
     }
 
-    private synchronized void update () {
-        this.drive.tankDrive(this.leftPower, this.rightPower);
+    public TankDrivePIDOutput (DifferentialDrive drive, boolean squaredInputs) {
+        this.drive = drive;
+        this.squaredInputs = squaredInputs;
+    }
+
+    public void update () {
+        drive.tankDrive(leftPower, rightPower, squaredInputs);
+    }
+
+    public void reset () {
+        leftPower = 0;
+        rightPower = 0;
+        update();
     }
 }

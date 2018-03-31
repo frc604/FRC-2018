@@ -22,7 +22,6 @@ public class ArcadeDrivePIDOutput {
         @Override
         public void pidWrite (double output) {
             movePower = output;
-            update();
         }
     };
 
@@ -33,7 +32,6 @@ public class ArcadeDrivePIDOutput {
         @Override
         public void pidWrite (double output) {
             rotatePower = output;
-            update();
         }
     };
 
@@ -51,11 +49,12 @@ public class ArcadeDrivePIDOutput {
     }
 
     public void update () {
-        drive.arcadeDrive(this.movePower, this.rotatePower, squaredInputs);
+        drive.arcadeDrive(movePower, rotatePower, squaredInputs);
     }
 
     public void reset () {
         movePower = 0;
         rotatePower = 0;
+        update();
     }
 }
