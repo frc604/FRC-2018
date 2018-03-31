@@ -348,7 +348,6 @@ public class TeleopMode extends Coordinator {
     	}
     }
 
-<<<<<<< HEAD
     private class ElevatorArmManager extends Coordinator {
         private final Elevator.Manual elevatorManual = robot.elevator.new Manual();
         private final Arm.Manual armManual = robot.arm.new Manual();
