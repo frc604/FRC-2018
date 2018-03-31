@@ -198,14 +198,17 @@ public class TeleopMode extends Coordinator {
         private final Drive.ArcadeDrive arcadeDrive = robot.drive.new ArcadeDrive();
         private final Drive.TankDrive tankDrive = robot.drive.new TankDrive();
 
-        private final Toggle invertedToggle = new Toggle(false);
-        private final Toggle highGearToggle = new Toggle(false);
+        private final Toggle invertedToggle = new Toggle();
+        private final Toggle highGearToggle = new Toggle();
 
         private DriveMode currentDriveMode;
 
         @Override
         protected void begin () {
             currentDriveMode = DriveMode.ARCADE;
+
+            invertedToggle.reset(false);
+            highGearToggle.reset(false);
         }
 
         @Override
