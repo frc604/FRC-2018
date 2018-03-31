@@ -51,8 +51,10 @@ public class Dashboard extends DashboardModule {
         RIGHT_SWITCH,
         LEFT_SCALE_WITH_CROSS,
         LEFT_SCALE_WITHOUT_CROSS,
+        LEFT_SCALE_HALF_CROSS,
         RIGHT_SCALE_WITH_CROSS,
         RIGHT_SCALE_WITHOUT_CROSS,
+        RIGHT_SCALE_HALF_CROSS,
         // Calibration autons to verify angles and distances
         ROTATE_LEFT_TEST,
         ROTATE_RIGHT_TEST,
