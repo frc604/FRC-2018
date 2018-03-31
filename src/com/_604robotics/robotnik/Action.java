@@ -37,6 +37,8 @@ public abstract class Action {
     }
 
     synchronized protected <T> Input<T> addInput (String name, T defaultValue) {
+        parent.assertUnsealed();
+
         if (name.isEmpty()) {
             throw new IllegalArgumentException("Input names may not be empty");
         }
@@ -51,6 +53,8 @@ public abstract class Action {
     }
 
     synchronized protected <T> Output<T> addOutput (String name, Output<T> output) {
+        parent.assertUnsealed();
+
         if (name.isEmpty()) {
             throw new IllegalArgumentException("Output names may not be empty");
         }

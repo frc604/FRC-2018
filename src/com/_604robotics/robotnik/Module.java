@@ -30,6 +30,7 @@ public abstract class Module {
     @SuppressWarnings("rawtypes")
     private final List<OutputProxy> outputs = new ArrayList<>();
 
+    private boolean sealed = false;
     private long epoch = 0;
 
     protected void begin () {}
@@ -69,11 +70,23 @@ public abstract class Module {
         return runningAction;
     }
 
+    void seal () {
+        sealed = true;
+    }
+
+    void assertUnsealed () {
+        if (sealed) {
+            throw new IllegalStateException("Module \"" + name + "\" is sealed");
+        }
+    }
+
     protected void setDefaultAction (Action action) {
-        this.defaultAction = action;
+        assertUnsealed();
+        defaultAction = action;
     }
 
     protected <T> Input<T> addInput (String name, T defaultValue) {
+        assertUnsealed();
         final Input<T> input = new Input<>(this, name, defaultValue);
         inputs.add(input);
         inputsTableIndex.add("Input", input.getName());
@@ -81,6 +94,7 @@ public abstract class Module {
     }
 
     protected <T> Output<T> addOutput (String name, Output<T> output) {
+        assertUnsealed();
         final OutputProxy<T> proxy = new OutputProxy<>(name, output);
         outputs.add(proxy);
         outputsTableIndex.add("Output", name);

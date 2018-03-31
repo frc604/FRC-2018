@@ -34,6 +34,8 @@ public abstract class Robot extends SampleRobot {
     private Coordinator teleopMode;
     private Coordinator testMode;
 
+    private boolean sealed = false;
+
     public Robot () {
         this(DEFAULT_REPORT_INTERVAL);
     }
@@ -43,7 +45,14 @@ public abstract class Robot extends SampleRobot {
         updateModuleList();
     }
 
+    private void assertUnsealed () {
+        if (sealed) {
+            throw new IllegalStateException("Robot is sealed");
+        }
+    }
+
     protected <T extends Module> T addModule (T module) {
+        assertUnsealed();
         modules.add(module);
         updateModuleList();
         return module;
@@ -56,27 +65,37 @@ public abstract class Robot extends SampleRobot {
     }
 
     protected void addSystem (String name, Coordinator system) {
+        assertUnsealed();
         systems.add(new Pair<>(name, system));
     }
 
     protected void addSystem (Class<?> klass, Coordinator system) {
+        assertUnsealed();
         addSystem(klass.getSimpleName(), system);
     }
 
     protected void setAutonomousMode (Coordinator autonomousMode) {
+        assertUnsealed();
         this.autonomousMode = autonomousMode;
     }
 
     protected void setTeleopMode (Coordinator teleopMode) {
+        assertUnsealed();
         this.teleopMode = teleopMode;
     }
 
     protected void setTestMode (Coordinator testMode) {
+        assertUnsealed();
         this.testMode = testMode;
     }
 
     @Override
     protected void robotInit () {
+        sealed = true;
+        for (Module module : modules) {
+            module.seal();
+        }
+
         printBanner();
     }
 
