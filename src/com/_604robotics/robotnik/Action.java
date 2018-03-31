@@ -37,9 +37,9 @@ public abstract class Action {
     }
 
     protected <T> Input<T> addInput (String name, T defaultValue) {
-        // Only one synchronized method call: no need to synchronize this
         return addInput(name, defaultValue, false);
     }
+
     synchronized protected <T> Input<T> addInput (String name, T defaultValue, boolean persistent) {
         if (name.isEmpty()) {
             throw new IllegalArgumentException("Input names may not be empty");

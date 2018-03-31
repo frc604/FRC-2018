@@ -508,7 +508,7 @@ public class AutonomousMode extends Coordinator {
         protected void begin() {
             // Activate arcadeDrive and reset encoder and gyro
             arcadeDrive.activate();
-            robot.drive.resetSensors();
+            robot.drive.resetEncoders();
             // Set up PIDSource details
             encoderDiff.setPIDSourceType(PIDSourceType.kDisplacement);
             encoderAvg.setPIDSourceType(PIDSourceType.kDisplacement);

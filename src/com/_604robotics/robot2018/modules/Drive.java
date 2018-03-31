@@ -24,7 +24,7 @@ public class Drive extends Module {
     private final RampMotor m_rearRight = new RampMotor(new PWMVictorSPX(Ports.DRIVE_REAR_RIGHT_MOTOR),Calibration.DRIVE_MOTOR_RAMP);
     private final SpeedControllerGroup m_right = new SpeedControllerGroup(m_frontRight, m_rearRight);
 
-    DifferentialDrive robotDrive = new DifferentialDrive(m_left, m_right);
+    private final DifferentialDrive robotDrive = new DifferentialDrive(m_left, m_right);
 
     // Reversed from previously due to new mountings
     private final Encoder encoderLeft = new Encoder(Ports.ENCODER_LEFT_A,
@@ -36,15 +36,11 @@ public class Drive extends Module {
             true,
             CounterBase.EncodingType.k4X);
     
-    //private final AnalogGyro horizGyro=new AnalogGyro(Ports.HORIZGYRO);
-    
-    public synchronized void resetSensors() {
+    public void resetEncoders () {
         encoderLeft.reset();
         encoderRight.reset();
-        //horizGyro.reset();
     }
 
-    //public final Output<Double> gyroAngle = addOutput("gyroAngle",horizGyro::getAngle);
     public final Output<Integer> leftClicks = addOutput("leftClicks", encoderLeft::get);
     public final Output<Integer> rightClicks = addOutput("rightClicks", encoderRight::get);
     
@@ -52,7 +48,7 @@ public class Drive extends Module {
     public final Output<Double> rightClickRate = addOutput("rightClickRate", encoderRight::getRate);
 
     public class Idle extends Action {
-        public Idle () {
+        private Idle () {
             super(Drive.this, Idle.class);
         }
 
@@ -61,75 +57,74 @@ public class Drive extends Module {
             robotDrive.stopMotor();
         }
     }
-
-    public final Action idle = new Idle();
+    public final Idle idle = new Idle();
 
     public class TankDrive extends Action {
         public final Input<Double> leftPower;
         public final Input<Double> rightPower;
-        public final boolean squared;
+        public final Input<Boolean> squaredInputs;
 
         public TankDrive () {
-            this(0, 0, true);
+            this(0, 0);
         }
-        
-        public TankDrive (boolean squared) {
-            this(0, 0, squared);
+
+        public TankDrive (boolean defaultSquaredInputs) {
+            this(0, 0);
         }
 
         public TankDrive (double defaultLeftPower, double defaultRightPower) {
             this(defaultLeftPower, defaultRightPower, true);
         }
 
-        public TankDrive (double defaultLeftPower, double defaultRightPower, boolean squared) {
+        public TankDrive (double defaultLeftPower, double defaultRightPower, boolean defaultSquaredInputs) {
             super(Drive.this, TankDrive.class);
-            // Make these inputs persistent for auton code
-            leftPower = addInput("leftPower", defaultLeftPower, true);
-            rightPower = addInput("rightPower", defaultRightPower, true);
-            this.squared = squared; 
+
+            leftPower = addInput("leftPower", defaultLeftPower);
+            rightPower = addInput("rightPower", defaultRightPower);
+            squaredInputs = addInput("squaredInputs", defaultSquaredInputs);
         }
 
         @Override
         public void run () {
-            robotDrive.tankDrive(leftPower.get(), rightPower.get(), squared);
+            robotDrive.tankDrive(leftPower.get(), rightPower.get(), squaredInputs.get());
         }
     }
 
     public class ArcadeDrive extends Action {
         public final Input<Double> movePower;
         public final Input<Double> rotatePower;
-        public final boolean squared;
+        public final Input<Boolean> squaredInputs;
 
         public ArcadeDrive () {
-            this(0, 0, true);
+            this(0, 0);
         }
-        
-        public ArcadeDrive (boolean squared) {
-            this(0, 0, squared);
+
+        public ArcadeDrive (boolean defaultSquaredInputs) {
+            this(0, 0, defaultSquaredInputs);
         }
 
         public ArcadeDrive (double defaultMovePower, double defaultRotPower) {
             this(defaultMovePower, defaultRotPower, true);
         }
 
-        public ArcadeDrive (double defaultMovePower, double defaultRotPower, boolean squared) {
+        public ArcadeDrive (double defaultMovePower, double defaultRotPower, boolean defaultSquaredInputs) {
             super(Drive.this, ArcadeDrive.class);
-            // Make these inputs persistent for auton code
-            movePower = addInput("movePower", defaultMovePower, true);
-            rotatePower = addInput("rotatePower", defaultRotPower, true);
-            this.squared = squared;
+            movePower = addInput("movePower", defaultMovePower);
+            rotatePower = addInput("rotatePower", defaultRotPower);
+            squaredInputs = addInput("squaredInputs", defaultSquaredInputs);
         }
 
         @Override
         public void run () {
-            robotDrive.arcadeDrive(movePower.get(), rotatePower.get(), squared);
+            robotDrive.arcadeDrive(movePower.get(), rotatePower.get(), squaredInputs.get());
         }
     }
 
     public Drive () {
         super(Drive.class);
+
         robotDrive.setDeadband(0.04);
-        //horizGyro.calibrate();
+
         setDefaultAction(idle);
     }
 }

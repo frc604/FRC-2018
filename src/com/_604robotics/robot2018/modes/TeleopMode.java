@@ -193,7 +193,7 @@ public class TeleopMode extends Coordinator {
         private Toggle gearState;
 
         public DriveManager () {
-            idle=robot.drive.new Idle();
+            idle=robot.drive.idle;
             arcade=robot.drive.new ArcadeDrive();
             tank=robot.drive.new TankDrive();
             // TODO: Expose on dashboard
