@@ -325,7 +325,7 @@ public class TeleopMode extends Coordinator {
     	public ClampManager() {
     		extend = robot.clamp.new Extend();
     		retract = robot.clamp.new Retract();
-    		clamping = new Toggle(false);
+    		clamping = new Toggle(true);
     	}
     	
     	public void run() { //testme
