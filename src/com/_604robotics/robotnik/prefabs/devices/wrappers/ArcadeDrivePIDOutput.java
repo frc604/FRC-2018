@@ -16,7 +16,7 @@ public class ArcadeDrivePIDOutput {
     private double rotatePower;
 
     /**
-     * Move power PID output.
+     * Manual power PID output.
      */
     public final PIDOutput move = new PIDOutput() {
         @Override

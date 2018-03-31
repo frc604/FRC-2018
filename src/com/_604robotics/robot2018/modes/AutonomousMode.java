@@ -5,11 +5,7 @@ import com._604robotics.robot2018.constants.Calibration;
 import com._604robotics.robot2018.macros.ArcadeTimedDriveMacro;
 import com._604robotics.robot2018.modules.*;
 import com._604robotics.robotnik.Coordinator;
-import com._604robotics.robotnik.Logger;
-import com._604robotics.robotnik.prefabs.coordinators.SleepCoordinator;
-import com._604robotics.robotnik.prefabs.coordinators.StatefulCoordinator;
-import com._604robotics.robotnik.prefabs.coordinators.SwitchCoordinator;
-import com._604robotics.robotnik.prefabs.flow.SmartTimer;
+import com._604robotics.robotnik.prefabs.coordinators.*;
 import com._604robotics.robotnik.utils.AutonMovement;
 import com._604robotics.robotnik.utils.annotations.Unreal;
 
@@ -25,7 +21,6 @@ public class AutonomousMode extends Coordinator {
         this.robot = robot;
 
         autonModes.put(Dashboard.AutonMode.CENTER_SWITCH, new CenterSwitchMacro());
-        autonModes.put(Dashboard.AutonMode.BACKWARD_CENTER_SWITCH, new BackwardsCenterSwitchMacro());
 
         autonModes.put(Dashboard.AutonMode.LEFT_SWITCH, new LeftSwitchMacro());
         autonModes.put(Dashboard.AutonMode.RIGHT_SWITCH, new RightSwitchMacro());
@@ -73,366 +68,548 @@ public class AutonomousMode extends Coordinator {
             selectedMode.stop();
         }
     }
-    
-    protected final class ClampExtend extends Coordinator {
-    	private Clamp.HoldExtend autonClampExtend;
-    	private boolean sent;
-    	
-    	public ClampExtend() {
-    		autonClampExtend = robot.clamp.new HoldExtend();
-    		sent = false;
-    	}
-    	
-    	@Override
-    	public void begin() {
-    		autonClampExtend.activate();
-    		sent = false;
-    	}
-    	
-    	@Override
-    	public boolean run() {
-    		if( sent ) {
-    			return false;
-    		} else {
-    			sent = true;
-        		autonClampExtend.activate();
-        		return true;
-    		}
-    	}
-    	
-    	@Override
-    	public void end() {
-    		// Do nothing
-    	}
-    }
-    
-    protected final class ClampRetract extends Coordinator {
-    	private Clamp.HoldRetract autonClampRetract;
-    	private boolean sent;
-    	
-    	public ClampRetract() {
-    		autonClampRetract = robot.clamp.new HoldRetract();
-    		sent = false;
-    	}
-    	
-    	@Override
-    	public void begin() {
-    		autonClampRetract.activate();
-    		sent = false;
-    	}
-    	
-    	@Override
-    	public boolean run() {
-    		if( sent ) {
-    			return false;
-    		} else {
-    			sent = true;
-        		autonClampRetract.activate();
-        		return true;
-    		}
-    	}
-    	
-    	@Override
-    	public void end() {
-    		// Do nothing
-    	}
-    }
-    
-    protected final class ArmSetPersistent extends Coordinator {
-    	private Arm.SetPersistent autonArmSetPersistent;
-    	private double setpoint;
-    	private boolean sent;
-    	
-    	public ArmSetPersistent(double clicks) {
-    		setpoint = clicks;
-    		autonArmSetPersistent = robot.arm.new SetPersistent(setpoint);
-    		sent = false;
-    	}
-    	
-    	@Override
-    	public void begin() {
-    		autonArmSetPersistent.activate();
-    		sent = false;
-    	}
-    	
-    	@Override
-    	public boolean run() {
-    		if( sent ) {
-    			return false;
-    		} else {
-    			sent = true;
-        		autonArmSetPersistent.activate();
-        		return true;
-    		}
-    	}
-    	
-    	@Override
-    	public void end() {
-    		// Do nothing
-    	}
-    	
-    }
-    
-    protected final class ElevatorSetPersistent extends Coordinator {
-    	private Elevator.SetPersistent autonElevatorSetPersistent;
-    	private double setpoint;
-    	private boolean sent;
-    	
-    	public ElevatorSetPersistent(double clicks) {
-    		setpoint = clicks;
-    		autonElevatorSetPersistent = robot.elevator.new SetPersistent(setpoint);
-    		sent = false;
-    	}
-    	
-    	@Override
-    	public void begin() {
-    		autonElevatorSetPersistent.activate();
-    		sent = false;
-    	}
-    	
-    	@Override
-    	public boolean run() {
-    		if( sent ) {
-    			return false;
-    		} else {
-    			sent = true;
-        		autonElevatorSetPersistent.activate();
-        		return true;
-    		}
-    	}
-    	
-    	@Override
-    	public void end() {
-    		// Do nothing
-    	}
-    	
-    }
-    
-    @Deprecated @Unreal("Moves but does not hold afterward")
-    protected final class ElevatorMove extends Coordinator {
-    	private Elevator.Setpoint autonElevator;
-    	private SmartTimer timeElapsed = new SmartTimer();
-    	private double elevatorPosition;
-    	private double time;
-    	
-    	public ElevatorMove(double elevatorPos, double seconds) {
-    		elevatorPosition = elevatorPos;
-    		time = seconds;
-    		autonElevator = robot.elevator.new Setpoint(elevatorPosition);
-    	}
-    	
-    	 @Override
-         public void begin() {
-             autonElevator.activate();
-             timeElapsed.start();
-         }
-         
-         @Override
-         public boolean run() {
-             autonElevator.activate();
-             return !timeElapsed.hasReachedTime(time);
-         }
-         
-         @Override
-         public void end() {
-             timeElapsed.stopAndReset();
-         }
-    }
-    
-    @Deprecated @Unreal("Moves but does not hold afterward")
-    protected final class ArmMove extends Coordinator {
-        private Arm.Setpoint autonArm;
-        private SmartTimer timeElapsed = new SmartTimer();
-        private double armPosition;
-        private double time;
-        
-        public ArmMove(double armPos, double seconds) {
-            armPosition = armPos;
-            time = seconds;
-            autonArm = robot.arm.new Setpoint(armPosition);
-        }
-        
-        @Override
-        public void begin() {
-            autonArm.activate();
-            timeElapsed.start();
-        }
-        
-        @Override
-        public boolean run() {
-            autonArm.activate();
-            return !timeElapsed.hasReachedTime(time);
-        }
-        
-        @Override
-        public void end() {
-            timeElapsed.stopAndReset();
+
+    private class GrabPreloadedCubeMacro extends StatefulCoordinator {
+        public GrabPreloadedCubeMacro () {
+            super(GrabPreloadedCubeMacro.class);
+
+            addState("Run intake",
+                    new TimeLimitCoordinator(0.25, new ActionCoordinator(robot.intake.new Run(0.5)));
         }
     }
 
-    protected final class IntakeMove extends Coordinator {
-    	private SmartTimer timeElapsed;
-    	private Intake.Run autonIntake;
-    	private double power;
-    	private double time;
-    	
-    	public IntakeMove(double pow, double seconds) {
-    		power = pow;
-    		time = seconds;
-    		timeElapsed = new SmartTimer();
-    		autonIntake = robot.intake.new Run(power);
-    	}
-    	
-    	@Override
-    	public void begin() {
-    		timeElapsed.start();
-    		autonIntake.activate();
-    	}
-    	
-    	@Override
-    	public boolean run() {
-    		autonIntake.activate();
-    		return !timeElapsed.hasReachedTime(time);
-    	}
-    	
-    	@Override
-    	public void end() {
-    		timeElapsed.stopAndReset();
-    	}
+    private class CenterSwitchMacro extends StatefulCoordinator {
+        public CenterSwitchMacro () {
+            super(CenterSwitchMacro.class);
+
+            addState("Grab preloaded cube", new GrabPreloadedCubeMacro());
+
+            addState("Raise elevator", new TimeLimitCoordinator(0.3, new ActionCoordinator(robot.elevator.raise)));
+
+            // Forward distance between front bumper and scale -76 XX
+            addState("Drive away from wall", new Coordinator() {
+                private final Coordinator driveMacro = new DriveArcadeServoMacro(
+                        AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, 23),0));
+
+                @Override
+                protected void begin () {
+                    driveMacro.start();
+                }
+
+                @Override
+                protected boolean run () {
+                    robot.elevator.raise.activate();
+                    robot.arm.mid.activate();
+
+                    return driveMacro.execute();
+                }
+
+                @Override
+                protected void end () {
+                    driveMacro.stop();
+                }
+            });
+
+            addState("Turn toward switch based on game data", new CenterSwitchDecisionMacro());
+
+            addState("Drive toward switch", new Coordinator() {
+                private final Coordinator driveMacro = new DriveArcadeServoMacro(
+                        AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, 23),0))
+
+                @Override
+                protected void begin () {
+                    driveMacro.start();
+                }
+
+                @Override
+                protected boolean run () {
+                    robot.elevator.raise.activate();
+                    robot.arm.mid.activate();
+
+                    return driveMacro.execute();
+                }
+
+                @Override
+                protected void end () {
+                    driveMacro.stop();
+                }
+            });
+
+            addState("Eject cube", new SwitchEjectMacro());
+        }
     }
-    
+
+    private class LeftSwitchMacro extends StatefulCoordinator {
+        public LeftSwitchMacro() {
+            super(LeftSwitchMacro.class);
+
+            addState("Grab preloaded cube", new GrabPreloadedCubeMacro());
+
+            addState("Raise elevator", new TimeLimitCoordinator(0.3, new ActionCoordinator(robot.elevator.raise)));
+
+            addState("Drive away from wall", new Coordinator() {
+                private final Coordinator driveMacro = new DriveArcadeServoMacro(
+                    AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, 144 + 1), 0);
+
+                @Override
+                protected void begin () {
+                    driveMacro.start();
+                }
+
+                @Override
+                protected boolean run () {
+                    robot.elevator.raise.activate();
+                    robot.arm.mid.activate();
+
+                    return driveMacro.execute();
+                }
+
+                @Override
+                protected void end () {
+                    driveMacro.stop();
+                }
+            });
+
+            addState("Turn toward switch", new Coordinator() {
+                private final Coordinator driveMacro = new DriveArcadeServoMacro(
+                        0, AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, 90));
+
+                @Override
+                protected void begin () {
+                    driveMacro.start();
+                }
+
+                @Override
+                protected boolean run () {
+                    robot.elevator.raise.activate();
+                    robot.arm.mid.activate();
+
+                    return driveMacro.execute();
+                }
+
+                @Override
+                protected void end () {
+                    driveMacro.stop();
+                }
+            });
+
+            addState("Drive toward switch", new Coordinator() {
+                private final Coordinator driveMacro = new DriveArcadeServoMacro(
+                        AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, 24), 0);
+
+                @Override
+                protected void begin () {
+                    driveMacro.start();
+                }
+
+                @Override
+                protected boolean run () {
+                    robot.elevator.raise.activate();
+                    robot.arm.mid.activate();
+
+                    return driveMacro.execute();
+                }
+
+                @Override
+                protected void end () {
+                    driveMacro.stop();
+                }
+            });
+
+            addState("Continue based on game data", new LeftSideSwitchDecisionMacro());
+        }
+    }
+
+    private class RightSwitchMacro extends StatefulCoordinator {
+        public RightSwitchMacro() {
+            super(RightSwitchMacro.class);
+
+            addState("Grab preloaded cube", new GrabPreloadedCubeMacro());
+
+            addState("Raise elevator", new TimeLimitCoordinator(0.3, new ActionCoordinator(robot.elevator.raise)));
+
+            addState("Drive away from wall", new Coordinator() {
+                private final Coordinator driveMacro = new DriveArcadeServoMacro(
+                        AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, 144 + 1), 0);
+
+                @Override
+                protected void begin () {
+                    driveMacro.start();
+                }
+
+                @Override
+                protected boolean run () {
+                    robot.elevator.raise.activate();
+                    robot.arm.mid.activate();
+
+                    return driveMacro.execute();
+                }
+
+                @Override
+                protected void end () {
+                    super.end();
+                }
+            });
+
+            addState("Turn toward switch", new Coordinator() {
+                private final Coordinator driveMacro = new DriveArcadeServoMacro(
+                        0, AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, -90));
+
+                @Override
+                protected void begin () {
+                    driveMacro.start();
+                }
+
+                @Override
+                protected boolean run () {
+                    robot.elevator.raise.activate();
+                    robot.arm.mid.activate();
+
+                    return driveMacro.execute();
+                }
+
+                @Override
+                protected void end () {
+                    super.end();
+                }
+            });
+
+            addState("Drive toward switch", new Coordinator() {
+                private final Coordinator driveMacro = new DriveArcadeServoMacro(
+                        AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, (24)), 0);
+
+                @Override
+                protected void begin () {
+                    driveMacro.start();
+                }
+
+                @Override
+                protected boolean run () {
+                    robot.elevator.raise.activate();
+                    robot.arm.mid.activate();
+
+                    return driveMacro.execute();
+                }
+
+                @Override
+                protected void end () {
+                    super.end();
+                }
+            });
+
+            addState("Continue based on game data", new RightSideSwitchDecisionMacro());
+        }
+    }
+
+    private class CenterSwitchDecisionMacro extends SwitchCoordinator {
+        public CenterSwitchDecisionMacro () {
+            super(CenterSwitchDecisionMacro.class);
+
+            addDefault(new CenterLeftSwitchMacro()); // Lucky randomness guaranteed by coin flip
+            addCase(new String[]{"LLL", "LLR", "LRL", "LRR"}, new CenterLeftSwitchMacro());
+            addCase(new String[]{"RLL", "RLR", "RRL", "RRR"}, new CenterRightSwitchMacro());
+        }
+    }
+
+    private class LeftSideSwitchDecisionMacro extends SwitchCoordinator {
+        public LeftSideSwitchDecisionMacro() {
+            super(LeftSideSwitchDecisionMacro.class);
+
+            addDefault(new CancelSwitchMacro());
+            addCase(new String[]{"LLL", "LLR", "LRL", "LRR"}, new SwitchEjectMacro());
+            addCase(new String[]{"RLL", "RLR", "RRL", "RRR"}, new CancelSwitchMacro());
+        }
+    }
+
+    private class RightSideSwitchDecisionMacro extends SwitchCoordinator {
+        public RightSideSwitchDecisionMacro() {
+            super(RightSideSwitchDecisionMacro.class);
+            addDefault(new CancelSwitchMacro());
+            addCase(new String[]{"LLL", "LLR", "LRL", "LRR"}, new CancelSwitchMacro());
+            addCase(new String[]{"RLL", "RLR", "RRL", "RRR"}, new SwitchEjectMacro());
+        }
+    }
+
+    private class CenterLeftSwitchMacro extends StatefulCoordinator {
+        public CenterLeftSwitchMacro () {
+            super(CenterLeftSwitchMacro.class);
+
+            addState("Turn left", new Coordinator() {
+                private final Coordinator driveMacro = new DriveArcadeServoMacro(
+                        0, AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, -45));
+
+                @Override
+                protected void begin () {
+                    driveMacro.start();
+                }
+
+                @Override
+                protected boolean run () {
+                    robot.elevator.raise.activate();
+                    robot.arm.mid.activate();
+
+                    return driveMacro.execute();
+                }
+
+                @Override
+                protected void end () {
+                    driveMacro.stop();
+                }
+            });
+
+            addState("Drive toward switch", new Coordinator() {
+                private final Coordinator driveMacro = new DriveArcadeServoMacro(
+                        AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, 76+15+1),0);
+
+                @Override
+                protected void begin () {
+                    driveMacro.start();
+                }
+
+                @Override
+                protected boolean run () {
+                    robot.elevator.raise.activate();
+                    robot.arm.mid.activate();
+
+                    return driveMacro.execute();
+                }
+
+                @Override
+                protected void end () {
+                    driveMacro.stop();
+                }
+            });
+
+            addState("Turn toward switch", new Coordinator() {
+                private final Coordinator driveMacro = new DriveArcadeServoMacro(
+                        0, AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, 45));
+
+                @Override
+                protected void begin () {
+                    driveMacro.start();
+                }
+
+                @Override
+                protected boolean run () {
+                    robot.elevator.raise.activate();
+                    robot.arm.mid.activate();
+
+                    return driveMacro.execute();
+                }
+
+                @Override
+                protected void end () {
+                    driveMacro.stop();
+                }
+            });
+        }
+    }
+
+    private class CenterRightSwitchMacro extends StatefulCoordinator {
+        public CenterRightSwitchMacro () {
+            super(CenterLeftSwitchMacro.class);
+
+            addState("Turn right", new Coordinator() {
+                private final Coordinator driveMacro = new DriveArcadeServoMacro(
+                        0, AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, 45));
+
+                @Override
+                protected void begin () {
+                    driveMacro.start();
+                }
+
+                @Override
+                protected boolean run () {
+                    robot.elevator.raise.activate();
+                    robot.arm.mid.activate();
+
+                    return driveMacro.execute();
+                }
+
+                @Override
+                protected void end () {
+                    driveMacro.stop();
+                }
+            });
+
+            addState("Drive toward switch", new Coordinator() {
+                private final Coordinator driveMacro = new DriveArcadeServoMacro(
+                        AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, 76+1),0);
+
+                @Override
+                protected void begin () {
+                    driveMacro.start();
+                }
+
+                @Override
+                protected boolean run () {
+                    robot.elevator.raise.activate();
+                    robot.arm.mid.activate();
+
+                    return driveMacro.execute();
+                }
+
+                @Override
+                protected void end () {
+                    driveMacro.stop();
+                }
+            });
+
+            addState("Turn toward switch", new Coordinator() {
+                private final Coordinator driveMacro = new DriveArcadeServoMacro(
+                        0, AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, -45));
+
+                @Override
+                protected void begin () {
+                    driveMacro.start();
+                }
+
+                @Override
+                protected boolean run () {
+                    robot.elevator.raise.activate();
+                    robot.arm.mid.activate();
+
+                    return driveMacro.execute();
+                }
+
+                @Override
+                protected void end () {
+                    driveMacro.stop();
+                }
+            });
+        }
+    }
+
+    private class SwitchEjectMacro extends StatefulCoordinator {
+        public SwitchEjectMacro() {
+            super(SwitchEjectMacro.class);
+
+            addState("Eject cube", new TimeLimitCoordinator(1.5, new Coordinator() {
+                private final Intake.Run runIntake = robot.intake.new Run(-0.3);
+
+                @Override
+                protected boolean run () {
+                    robot.elevator.raise.activate();
+                    robot.arm.mid.activate();
+                    runIntake.activate();
+                    return true;
+                }
+            }));
+
+            // Scoot back to avoid arm hitting switch fence
+            addState("Back away from switch", new Coordinator() {
+                private final Coordinator driveMacro = new DriveArcadeServoMacro(
+                        AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -12), 0));
+
+                @Override
+                protected void begin () {
+                    driveMacro.start();
+                }
+
+                @Override
+                protected boolean run () {
+                    robot.elevator.raise.activate();
+                    robot.arm.mid.activate();
+
+                    return driveMacro.execute();
+                }
+
+                @Override
+                protected void end () {
+                    driveMacro.stop();
+                }
+            });
+
+            addState("Lower arm", new TimeLimitCoordinator(0.2, new Coordinator() {
+                @Override
+                protected boolean run () {
+                    robot.elevator.raise.activate();
+                    robot.arm.low.activate();
+                    return true;
+                }
+            }));
+
+            addState("Lower elevator, disengage, and wait", new Coordinator() {
+                @Override
+                protected boolean run () {
+                    robot.elevator.low.activate();
+                    robot.arm.low.activate();
+                    robot.clamp.release.activate();
+                    return true;
+                }
+            });
+        }
+    }
+
+    private class CancelSwitchMacro extends StatefulCoordinator {
+        public CancelSwitchMacro () {
+            super(CancelSwitchMacro.class);
+
+            addState("Back away from switch", new Coordinator() {
+                private final Coordinator driveMacro = new DriveArcadeServoMacro(
+                        AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -24), 0);
+
+                @Override
+                protected void begin () {
+                    driveMacro.start();
+                }
+
+                @Override
+                protected boolean run () {
+                    robot.elevator.raise.activate();
+                    robot.arm.mid.activate();
+
+                    return driveMacro.execute();
+                }
+
+                @Override
+                protected void end () {
+                    driveMacro.stop();
+                }
+            });
+
+            addState("Disengage and wait", new Coordinator() {
+                @Override
+                protected boolean run () {
+                    robot.elevator.low.activate();
+                    robot.arm.low.activate();
+                    robot.clamp.release.activate();
+                    return true;
+                }
+            });
+        }
+    }
+
     private class FallBackMacro extends StatefulCoordinator {
         public FallBackMacro() {
             super(FallBackMacro.class);
-            addStates(new IntakeMacro());
-            addState("Backward 144 inches", new DriveArcadeServoMacro(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(144+1)), 0));
+
+            addState("Grab preloaded cube", new GrabPreloadedCubeMacro());
+
+            addState("Drive backward", new DriveArcadeServoMacro(
+                    AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(144+1)), 0));
         }
     }
     
     private class FallForwardMacro extends StatefulCoordinator {
         public FallForwardMacro() {
             super(FallForwardMacro.class);
-            addStates(new IntakeMacro());
-            addState("Forward 144 inches", new DriveArcadeServoMacro(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, (144+1)), 0));
-        }
-    }
-    
-    private class LeftSwitchMacro extends StatefulCoordinator {
-        public LeftSwitchMacro() {
-            super(LeftSwitchMacro.class);
-            addStates(new IntakeMacro());
-            addState("Raise elevator", new ElevatorSetPersistent(Calibration.ELEVATOR_RAISE_TARGET));
-            addState("Wait for elevator", new SleepCoordinator(0.3));
-            addState("Raise arm", new ArmSetPersistent(Calibration.ARM_MID_TARGET));
-            addState("Forward 144 inches", new DriveArcadeServoMacro(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, (144+1)), 0));
-            addState("Rotate 90 right", new DriveArcadeServoMacro(0, AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, 90)));
-            addState("Forward 24 inches", new DriveArcadeServoMacro(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, (24)), 0));
-            addState("Switch decision", new LeftSideSwitchDecisionMacro());
-        }
-    }
-    
-    private class RightSwitchMacro extends StatefulCoordinator {
-        public RightSwitchMacro() {
-            super(RightSwitchMacro.class);
-            addStates(new IntakeMacro());
-            addState("Raise elevator", new ElevatorSetPersistent(Calibration.ELEVATOR_RAISE_TARGET));
-            addState("Wait for elevator", new SleepCoordinator(0.3));
-            addState("Raise arm", new ArmSetPersistent(Calibration.ARM_MID_TARGET));
-            addState("Forward 144 inches", new DriveArcadeServoMacro(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, (144+1)), 0));
-            addState("Rotate 90 left", new DriveArcadeServoMacro(0, AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, -90)));
-            addState("Forward 24 inches", new DriveArcadeServoMacro(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, (24)), 0));
-            addState("Switch decision", new RightSideSwitchDecisionMacro());
+
+            addState("Grab preloaded cube", new GrabPreloadedCubeMacro());
+
+            addState("Drive forward", new DriveArcadeServoMacro(
+                    AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, (144+1)), 0));
         }
     }
 
-    private class CenterSwitchMacro extends StatefulCoordinator {
-        public CenterSwitchMacro() {
-            super(CenterSwitchMacro.class);
-            addStates(new IntakeMacro());
-            addState("Raise elevator", new ElevatorSetPersistent(Calibration.ELEVATOR_SWITCH_CLEAR));
-            addState("Wait for elevator", new SleepCoordinator(0.3));
-            addState("Raise arm", new ArmSetPersistent(Calibration.ARM_MID_TARGET));
-            // Forward distance between front bumper and scale -76 XX
-            addState("Forward 23 inches", new DriveArcadeServoMacro(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, 23),0));
-            // Choose based on FMS Game Data
-            addState("Switch choosing", new CenterSwitchChooserMacro());
-            addState("Forward 23 inches", new DriveArcadeServoMacro(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, 23),0));
-            addStates(new SwitchEjectMacro());
-        }
-    }
-    
-    // Comment me out
-    @Unreal("Experimenting with a backwards jerk to deploy outer intake")
-    private class BackwardsCenterSwitchMacro extends StatefulCoordinator {
-        public BackwardsCenterSwitchMacro() {
-            super(BackwardsCenterSwitchMacro.class);
-            addState("Jerk backwards", new TimedMacro(-1, 0, 0.5));
-            addState("Rotate 180", new DriveArcadeServoMacro(0, AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, 180)));
-            addState("Return backwards", new TimedMacro(0.5, 0, 1.5));
-            addStates(new CenterSwitchMacro());
-        }
-    }
-    
-    private class TimedMacro extends ArcadeTimedDriveMacro {
-        protected double movePower;
-        protected double rotatePower;
-        protected double time;
-        
-        public TimedMacro( double movePower, double rotatePower, double time ) {
-            super(robot);
-            this.movePower = movePower;
-            this.rotatePower = rotatePower;
-            this.time = time;
-        }
 
-        @Override
-        protected double getMovePower() {
-            return movePower;
-        }
 
-        @Override
-        protected double getRotatePower() {
-            return rotatePower;
-        }
+    
 
-        @Override
-        protected double getTime() {
-            return time;
-        }
-    }
-    
-    /* Modular Modes */
-    private class CenterSwitchChooserMacro extends SwitchCoordinator {
-    	public CenterSwitchChooserMacro() {
-    		super(CenterSwitchChooserMacro.class);
-    		addDefault(new CenterMacroLeft()); // Lucky randomness guaranteed by coin flip
-    		addCase(new String[]{"LLL", "LLR", "LRL", "LRR"}, new CenterMacroLeft());
-    		addCase(new String[]{"RLL", "RLR", "RRL", "RRR"}, new CenterMacroRight());
-    	}
-    }
-    
-    private class LeftSideSwitchDecisionMacro extends SwitchCoordinator {
-        public LeftSideSwitchDecisionMacro() {
-            super(LeftSideSwitchDecisionMacro.class);
-            addDefault(new LowerMacro());
-            addCase(new String[]{"LLL", "LLR", "LRL", "LRR"}, new SwitchEjectMacro());
-            addCase(new String[]{"RLL", "RLR", "RRL", "RRR"}, new LowerMacro());
-        }
-    }
-    
-    private class RightSideSwitchDecisionMacro extends SwitchCoordinator {
-        public RightSideSwitchDecisionMacro() {
-            super(RightSideSwitchDecisionMacro.class);
-            addDefault(new LowerMacro());
-            addCase(new String[]{"LLL", "LLR", "LRL", "LRR"}, new LowerMacro());
-            addCase(new String[]{"RLL", "RLR", "RRL", "RRR"}, new SwitchEjectMacro());
-        }
-    }
-    
     private class LeftScaleMacro extends StatefulCoordinator {
         public LeftScaleMacro() {
             super(LeftScaleMacro.class);
-            addStates(new IntakeMacro());
+            addStates(new GrabPreloadedCubeMacro());
             addState("Set Elevator Persistent", new ElevatorSetPersistent(Calibration.ELEVATOR_MID_TARGET));
             addState("Backward 222 inches", new DriveArcadeServoMacro(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(222+1)), 0));
             //addState("Set Arm Persistent", new ArmSetPersistent(Calibration.ARM_BALANCE_TARGET));
@@ -444,7 +621,7 @@ public class AutonomousMode extends Coordinator {
     private class LeftScaleSameOnlyMacro extends StatefulCoordinator {
         public LeftScaleSameOnlyMacro() {
             super(LeftScaleSameOnlyMacro.class);
-            addStates(new IntakeMacro());
+            addStates(new GrabPreloadedCubeMacro());
             addState("Set Elevator Persistent", new ElevatorSetPersistent(Calibration.ELEVATOR_MID_TARGET));
             addState("Backward 222 inches", new DriveArcadeServoMacro(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(222+1)), 0));
             //addState("Set Arm Persistent", new ArmSetPersistent(Calibration.ARM_BALANCE_TARGET));
@@ -456,7 +633,7 @@ public class AutonomousMode extends Coordinator {
     private class RightScaleMacro extends StatefulCoordinator {
         public RightScaleMacro() {
             super(RightScaleMacro.class);
-            addStates(new IntakeMacro());
+            addStates(new GrabPreloadedCubeMacro());
             addState("Set Elevator Persistent", new ElevatorSetPersistent(Calibration.ELEVATOR_MID_TARGET));
             addState("Backward 222 inches", new DriveArcadeServoMacro(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(222+1)), 0));
             //addState("Set Arm Persistent", new ArmSetPersistent(Calibration.ARM_BALANCE_TARGET));
@@ -468,7 +645,7 @@ public class AutonomousMode extends Coordinator {
     private class RightScaleSameOnlyMacro extends StatefulCoordinator {
         public RightScaleSameOnlyMacro() {
             super(RightScaleSameOnlyMacro.class);
-            addStates(new IntakeMacro());
+            addStates(new GrabPreloadedCubeMacro());
             addState("Set Elevator Persistent", new ElevatorSetPersistent(Calibration.ELEVATOR_MID_TARGET));
             addState("Backward 222 inches", new DriveArcadeServoMacro(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(222+1)), 0));
             //addState("Set Arm Persistent", new ArmSetPersistent(Calibration.ARM_BALANCE_TARGET));
@@ -511,29 +688,11 @@ public class AutonomousMode extends Coordinator {
     
     /* Auton Modes */
     
-    private class CenterMacroLeft extends StatefulCoordinator {
-        public CenterMacroLeft() {
-            super(CenterMacroLeft.class);
-            addState("Rotate 45 left", new DriveArcadeServoMacro(0, AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, -45)));
-            addState("Forward 76+15 inches", new DriveArcadeServoMacro(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, 76+15+1),0));
-            addState("Rotate 45 right", new DriveArcadeServoMacro(0, AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, 45)));
-            //addState("Forward 19 inches", new DriveArcadeServoMacro(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, 19+1),0));
-        }
-    }
-    
-    private class CenterMacroRight extends StatefulCoordinator {
-        public CenterMacroRight() {
-            super(CenterMacroRight.class);
-            addState("Rotate 45 right", new DriveArcadeServoMacro(0, AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, 45)));
-            addState("Forward 76 inches", new DriveArcadeServoMacro(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, 76+1),0));
-            addState("Rotate 45 left", new DriveArcadeServoMacro(0, AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, -45)));
-        }
-    }
-    
+
     private class NewScaleBackwardMacroLeft extends StatefulCoordinator {
     	public NewScaleBackwardMacroLeft() {
     		super(NewScaleBackwardMacroLeft.class);
-    		addStates(new IntakeMacro());
+    		addStates(new GrabPreloadedCubeMacro());
     		//addState("Set Elevator Persistent", new ElevatorSetPersistent(Calibration.ELEVATOR_MID_TARGET));
             addState("Backward 36 inches", new DriveArcadeServoMacro(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(36+1)), 0));
             //addState("Set Arm Persistent", new ArmSetPersistent(Calibration.ARM_BALANCE_TARGET));
@@ -543,8 +702,8 @@ public class AutonomousMode extends Coordinator {
             addState("Set Arm High Persistent", new ArmSetPersistent(Calibration.ARM_HIGH_TARGET));
             addState("Sleep 1.3 seconds", new SleepCoordinator(1.3));
             addState("Eject cube", new IntakeMove(-0.5,0.5));
-            addState("Retract arm", new ArmSetPersistent(Calibration.ARM_LOW_TARGET));
-            addState("Retract elevator", new ElevatorSetPersistent(Calibration.ELEVATOR_LOW_TARGET));
+            addState("Engage arm", new ArmSetPersistent(Calibration.ARM_LOW_TARGET));
+            addState("Engage elevator", new ElevatorSetPersistent(Calibration.ELEVATOR_LOW_TARGET));
             addState("Unclamp", new ClampExtend());
     	}
     }
@@ -552,7 +711,7 @@ public class AutonomousMode extends Coordinator {
     private class NewScaleBackwardMacroRight extends StatefulCoordinator {
     	public NewScaleBackwardMacroRight() {
     		super(NewScaleBackwardMacroRight.class);
-    		addStates(new IntakeMacro());
+    		addStates(new GrabPreloadedCubeMacro());
     		//addState("Set Elevator Persistent", new ElevatorSetPersistent(Calibration.ELEVATOR_MID_TARGET));
             addState("Backward 36 inches", new DriveArcadeServoMacro(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(36+1)), 0));
             //addState("Set Arm Persistent", new ArmSetPersistent(Calibration.ARM_BALANCE_TARGET));
@@ -562,8 +721,8 @@ public class AutonomousMode extends Coordinator {
             addState("Set Arm High Persistent", new ArmSetPersistent(Calibration.ARM_HIGH_TARGET));
             addState("Sleep 1.3 seconds", new SleepCoordinator(1.3));
             addState("Eject cube", new IntakeMove(-0.5,0.5));
-            addState("Retract arm", new ArmSetPersistent(Calibration.ARM_LOW_TARGET));
-            addState("Retract elevator", new ElevatorSetPersistent(Calibration.ELEVATOR_LOW_TARGET));
+            addState("Engage arm", new ArmSetPersistent(Calibration.ARM_LOW_TARGET));
+            addState("Engage elevator", new ElevatorSetPersistent(Calibration.ELEVATOR_LOW_TARGET));
             addState("Unclamp", new ClampExtend());
     	}
     }
@@ -571,7 +730,7 @@ public class AutonomousMode extends Coordinator {
     private class NewScaleOppositeMacroLeft extends StatefulCoordinator {
         public NewScaleOppositeMacroLeft() {
             super(NewScaleOppositeMacroLeft.class);
-            //addStates(new IntakeMacro());
+            //addStates(new GrabPreloadedCubeMacro());
             //addState("Set Elevator Persistent", new ElevatorSetPersistent(Calibration.ELEVATOR_MID_TARGET));
             //addState("Backward 185 inches", new DriveArcadeServoMacro(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(185+1)), 0));
             //addState("Set Arm Persistent", new ArmSetPersistent(Calibration.ARM_BALANCE_TARGET));
@@ -585,8 +744,8 @@ public class AutonomousMode extends Coordinator {
             addState("Set Arm High Persistent", new ArmSetPersistent(Calibration.ARM_HIGH_TARGET));
             addState("Sleep 1.3 seconds", new SleepCoordinator(1.3));
             addState("Eject cube", new IntakeMove(-0.5,0.5));
-            addState("Retract arm", new ArmSetPersistent(Calibration.ARM_LOW_TARGET));
-            addState("Retract elevator", new ElevatorSetPersistent(Calibration.ELEVATOR_LOW_TARGET));
+            addState("Engage arm", new ArmSetPersistent(Calibration.ARM_LOW_TARGET));
+            addState("Engage elevator", new ElevatorSetPersistent(Calibration.ELEVATOR_LOW_TARGET));
             addState("Unclamp", new ClampExtend());
         }
     }
@@ -594,7 +753,7 @@ public class AutonomousMode extends Coordinator {
     private class NewScaleOppositeMacroRight extends StatefulCoordinator {
         public NewScaleOppositeMacroRight() {
             super(NewScaleOppositeMacroRight.class);
-          //addStates(new IntakeMacro());
+          //addStates(new GrabPreloadedCubeMacro());
             //addState("Set Elevator Persistent", new ElevatorSetPersistent(Calibration.ELEVATOR_MID_TARGET));
             //addState("Backward 185 inches", new DriveArcadeServoMacro(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(185+1)), 0));
             //addState("Set Arm Persistent", new ArmSetPersistent(Calibration.ARM_BALANCE_TARGET));
@@ -607,8 +766,8 @@ public class AutonomousMode extends Coordinator {
             addState("Set Arm High Persistent", new ArmSetPersistent(Calibration.ARM_HIGH_TARGET));
             addState("Sleep 1.3 seconds", new SleepCoordinator(1.3));
             addState("Eject cube", new IntakeMove(-0.7,0.5));
-            addState("Retract arm", new ArmSetPersistent(Calibration.ARM_LOW_TARGET));
-            addState("Retract elevator", new ElevatorSetPersistent(Calibration.ELEVATOR_LOW_TARGET));
+            addState("Engage arm", new ArmSetPersistent(Calibration.ARM_LOW_TARGET));
+            addState("Engage elevator", new ElevatorSetPersistent(Calibration.ELEVATOR_LOW_TARGET));
             addState("Unclamp", new ClampExtend());
         }
     }
@@ -646,35 +805,4 @@ public class AutonomousMode extends Coordinator {
         }
     }
 
-    private class IntakeMacro extends StatefulCoordinator {
-        public IntakeMacro() {
-            super(IntakeMacro.class);
-            addState("Intake cube", new IntakeMove(0.5,0.25));
-            //addState("Sleep 0.25 seconds", new SleepCoordinator(0.25));
-            addState("Clamp cube", new ClampRetract());
-        }
-    }
-    
-    private class SwitchEjectMacro extends StatefulCoordinator {
-        public SwitchEjectMacro() {
-            super(SwitchEjectMacro.class);
-            addState("Eject cube", new IntakeMove(-0.3,1.5));
-            // Move back to avoid arm hitting switch fence
-            addState("Move back", new DriveArcadeServoMacro(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -12), 0));
-            addState("Move arm", new ArmSetPersistent(Calibration.ARM_LOW_TARGET));
-            addState("Wait", new SleepCoordinator(0.2));
-            addState("Move elevator", new ElevatorSetPersistent(Calibration.ELEVATOR_LOW_TARGET));
-            addState("Unclamp", new ClampExtend());
-        }
-    }
-    
-    private class LowerMacro extends StatefulCoordinator {
-        public LowerMacro() {
-            super(LowerMacro.class);
-            addState("Back away 24 inches", new DriveArcadeServoMacro(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -24), 0));
-            addState("Retract arm", new ArmSetPersistent(Calibration.ARM_LOW_TARGET));
-            addState("Retract elevator", new ElevatorSetPersistent(Calibration.ELEVATOR_LOW_TARGET));
-            addState("Unclamp", new ClampExtend());
-        }
-    }
 }

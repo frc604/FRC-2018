@@ -7,7 +7,6 @@ import com._604robotics.robot2018.modules.Clamp;
 import com._604robotics.robot2018.modules.Drive;
 import com._604robotics.robot2018.modules.Elevator;
 import com._604robotics.robot2018.modules.Intake;
-import com._604robotics.robot2018.modules.Intake.Passive;
 import com._604robotics.robotnik.Coordinator;
 import com._604robotics.robotnik.Logger;
 import com._604robotics.robotnik.prefabs.flow.Pulse;
@@ -318,20 +317,20 @@ public class TeleopMode extends Coordinator {
     }
     
     private class ClampManager {
-    	private final Clamp.Extend extend;
-    	private final Clamp.Retract retract;
+    	private final Clamp.Release extend;
+    	private final Clamp.Engage engage;
     	private final Toggle clamping;
     	
     	public ClampManager() {
-    		extend = robot.clamp.new Extend();
-    		retract = robot.clamp.new Retract();
+    		extend = robot.clamp.new Release();
+    		engage = robot.clamp.new Engage();
     		clamping = new Toggle(false);
     	}
     	
     	public void run() { //testme
     		clamping.update(manipX);
             if (clamping.isInOnState()) {
-                retract.activate();
+                engage.activate();
                 clampingOverride = true;
             } else if (clamping.isInOffState()) {
                 extend.activate();
@@ -343,12 +342,12 @@ public class TeleopMode extends Coordinator {
     private boolean elevatorOverride = false;
     
     private class ElevatorManager {
-        private final Elevator.Move move;
+        private final Elevator.Manual move;
         private final Elevator.Setpoint setpoint;
         private double holdSetpoint;
 
         public ElevatorManager() {
-            move = robot.elevator.new Move();
+            move = robot.elevator.new Manual();
             setpoint = robot.elevator.new Setpoint();
         }
 
@@ -356,12 +355,12 @@ public class TeleopMode extends Coordinator {
             // Only use when absolutely necessary
         	if( manipBack ) {
         		 robot.elevator.encoder.zero();
-                 setpoint.target_clicks.set(robot.elevator.encoderClicks.get());
+                 setpoint.targetClicks.set(robot.elevator.encoderClicks.get());
                  setpoint.activate();
         	} 
         	if( Calibration.TANDEM_ACTIVE && !manipLeftTriggerButton && elevatorOverride ) {
         	    System.out.println("Warning: overriding elevator");
-        		setpoint.target_clicks.set(Calibration.ELEVATOR_RAISE_TARGET);
+        		setpoint.targetClicks.set(Calibration.ELEVATOR_RAISE_TARGET);
         		setpoint.activate();
         	} else if( manipLeftJoystickY != 0 ) {
         	    // Scale negative power for safety
@@ -369,25 +368,25 @@ public class TeleopMode extends Coordinator {
         	    if (elevPower<0) {
         	        elevPower*=0.5;
         	    }
-        		move.liftPower.set(elevPower);
+        		move.power.set(elevPower);
         		move.activate();
         	} else if( manipA ) {
-        		setpoint.target_clicks.set(Calibration.ELEVATOR_LOW_TARGET);
+        		setpoint.targetClicks.set(Calibration.ELEVATOR_LOW_TARGET);
         		setpoint.activate();
         	} else if( manipB && manipLeftBumper ) {
-        		setpoint.target_clicks.set(Calibration.ELEVATOR_MID_TARGET);
+        		setpoint.targetClicks.set(Calibration.ELEVATOR_MID_TARGET);
         		setpoint.activate();
         	} else if( manipY && manipLeftBumper ) {
-        		setpoint.target_clicks.set(Calibration.ELEVATOR_HIGH_TARGET);
+        		setpoint.targetClicks.set(Calibration.ELEVATOR_HIGH_TARGET);
         		setpoint.activate();
         	} else if( driverA ) {
-        		setpoint.target_clicks.set(Calibration.ELEVATOR_LOW_TARGET);
+        		setpoint.targetClicks.set(Calibration.ELEVATOR_LOW_TARGET);
         		setpoint.activate();
         	} else if( driverB && driverLeftJoystickButton ) {
-        		setpoint.target_clicks.set(Calibration.ELEVATOR_MID_TARGET);
+        		setpoint.targetClicks.set(Calibration.ELEVATOR_MID_TARGET);
         		setpoint.activate();
         	} else if( driverY && driverLeftJoystickButton ) {
-        		setpoint.target_clicks.set(Calibration.ELEVATOR_HIGH_TARGET);
+        		setpoint.targetClicks.set(Calibration.ELEVATOR_HIGH_TARGET);
         		setpoint.activate();
         	} else {
         	    // test.log("ERROR","Reaching set logic");
@@ -397,7 +396,7 @@ public class TeleopMode extends Coordinator {
         			robot.elevator.resetIntegral(Calibration.ELEVATOR_RESET_SUM);
         			robot.elevator.getHoldElevatorClicks = false;
         		}
-        		setpoint.target_clicks.set(holdSetpoint);
+        		setpoint.targetClicks.set(holdSetpoint);
         		setpoint.activate();
         	}
         }

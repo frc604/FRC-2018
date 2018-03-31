@@ -10,78 +10,35 @@ import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 
 public class Clamp extends Module {
 	private final DoubleSolenoid solenoid = new DoubleSolenoid(Ports.CLAMP_A, Ports.CLAMP_B);
-	
-	private boolean clamping = false;
-	
-	public Output<Boolean> isClamped = addOutput("Clamping", this::isClamped);
-	
-	public boolean isClamped() {
-		return clamping;
-	}
-	
-	public Action retract = new Retract();
-	public Action extend = new Extend();
-	
-	public class Retract extends Action {
-		public Retract() {
-			super(Clamp.this, Retract.class);
+
+	public class Engage extends Action {
+		private Engage () {
+			super(Clamp.this, Engage.class);
 		}
 		
 		@Override
 		public void run() {
 			solenoid.set(Value.kReverse);
-			clamping = true;
 		}
 	}
-	
-	public class Extend extends Action {
-		public Extend() {
-			super(Clamp.this, Extend.class);
+	public final Engage engage = new Engage();
+
+	public class Release extends Action {
+		private Release () {
+			super(Clamp.this, Release.class);
 		}
 		
 		@Override
 		public void run() {
 			solenoid.set(Value.kForward);
-			clamping = false;
 		}
 	}
-	
-	public class HoldRetract extends Action {
-		public HoldRetract() {
-			super(Clamp.this, HoldRetract.class);
-		}
-		
-		@Override
-		public void begin() {
-			setDefaultAction(retract);
-		}
-		
-		@Override
-		public void run() {
-			solenoid.set(Value.kReverse);
-			clamping = false;
-		}
-	}
-	
-	public class HoldExtend extends Action {
-		public HoldExtend() {
-			super(Clamp.this, HoldExtend.class);
-		}
-		
-		@Override
-		public void begin() {
-			setDefaultAction(extend);
-		}
-		
-		@Override
-		public void run() {
-			solenoid.set(Value.kForward);
-			clamping = true;
-		}	
-	}
-	
+	public final Release release = new Release();
+
+	public final Output<Boolean> clamped = addOutput("clamped", engage::isRunning);
+
 	public Clamp() {
 		super(Clamp.class);
-		this.setDefaultAction(retract);
+		setDefaultAction(engage);
 	}
 }

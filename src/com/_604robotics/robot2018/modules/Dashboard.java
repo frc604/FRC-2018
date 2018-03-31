@@ -44,7 +44,6 @@ public class Dashboard extends DashboardModule {
         OFF,
         // Following are actual strategy selections
         CENTER_SWITCH,
-        BACKWARD_CENTER_SWITCH,
         LEFT_SWITCH,
         RIGHT_SWITCH,
         LEFT_SCALE_WITH_CROSS,

@@ -27,10 +27,11 @@ public class DashboardSystem extends Coordinator {
         
         robot.dashboard.armRate.set(robot.arm.encoderRate.get());
         robot.dashboard.armClicks.set(robot.arm.encoderClicks.get());
-        
-        robot.dashboard.isClamped.set(robot.clamp.isClamped.get() ? "CLAMPED" : "NOT CLAMPED");
-        robot.dashboard.clampLightA.set(robot.clamp.isClamped.get());
-        robot.dashboard.clampLightB.set(robot.clamp.isClamped.get());
+
+        robot.dashboard.isClamped.set(robot.clamp.clamped.get() ? "CLAMPED" : "NOT CLAMPED");
+        robot.dashboard.clampLightA.set(robot.clamp.clamped.get());
+        robot.dashboard.clampLightB.set(robot.clamp.clamped.get());
+
         robot.dashboard.armEncoderStatus.set(robot.arm.encoderClicks.get()>4700 || robot.arm.encoderClicks.get() < -2500);
         robot.dashboard.limitPressed.set(robot.arm.getBottomLimit());
         //robot.powermonitor.initDashboardSendables();

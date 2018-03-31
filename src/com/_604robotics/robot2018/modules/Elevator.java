@@ -12,159 +12,116 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 public class Elevator extends Module {
+    private final WPI_TalonSRX motorA = new WPI_TalonSRX(Ports.ELEVATOR_MOTOR_A);
+    private final WPI_TalonSRX motorB = new WPI_TalonSRX(Ports.ELEVATOR_MOTOR_B);
 
-    private WPI_TalonSRX motorA = new WPI_TalonSRX(Ports.ELEVATOR_MOTOR_A);
-    private WPI_TalonSRX motorB = new WPI_TalonSRX(Ports.ELEVATOR_MOTOR_B);
-    public TalonPWMEncoder encoder = new TalonPWMEncoder(motorA);
-
-    public double persistent = 0;
-    
-    public final Setpoint setpoint = new Setpoint();
-    public final PersistentSetpoint persistentSetpoint = new PersistentSetpoint();
-
+    public final TalonPWMEncoder encoder = new TalonPWMEncoder(motorA);
     public final Output<Double> encoderRate = addOutput("Elevator Rate", encoder::getVelocity);
     public final Output<Double> encoderClicks = addOutput("Elevator Clicks", encoder::getPosition);
 
-    public boolean holding = true;
-    public double power = 0;
+    private final ClampedIntegralPIDController pid = new ClampedIntegralPIDController(
+            Calibration.ELEVATOR_P,
+            Calibration.ELEVATOR_I,
+            Calibration.ELEVATOR_D,
+            encoder,
+            motorA,
+            Calibration.ELEVATOR_PID_PERIOD);
+    public final Output<Double> pidError = addOutput("Elevator PID Error", pid::getError);
 
-    public final Output<Boolean> getHolding = addOutput("Holding", this::getHolding);
-    public final Output<Double> getPower = addOutput("Power", this::getPower);
+    public class Idle extends Action {
+        private Idle () {
+            super(Elevator.this, Idle.class);
+        }
 
-    private final ClampedIntegralPIDController pid;
-    
-    public final Output<Double> pidError;
-    
-    public boolean getHoldElevatorClicks = false;
-    
-    public boolean getHolding() {
-        return holding;
+        @Override
+        protected void run () {
+            motorA.set(0);
+        }
     }
+    public final Idle idle = new Idle();
 
-    public double getPower() {
-        return power;
-    }
-    
-    public void resetIntegral(double sum) {
-        pid.setErrorSum(sum);
-    }
+    public class Manual extends Action {
+        public final Input<Double> power;
 
-    public class Move extends Action {
-        public final Input<Double> liftPower;
-
-        public Move() {
+        public Manual () {
             this(0);
         }
 
-        public Move (double power) {
-            super(Elevator.this, Move.class);
-            liftPower = addInput("Lift Power", power, true);
+        public Manual (double defaultPower) {
+            super(Elevator.this, Manual.class);
+            power = addInput("power", defaultPower);
         }
 
         @Override
-        public void begin() {
-        	setDefaultAction(setpoint);
-        }
-        
-        @Override
         public void run () {
-            holding = false;
-            power = liftPower.get();
-            motorA.set(liftPower.get());
-            if( encoder.getPosition() < -Calibration.ELEVATOR_RESET_TOLERANCE ) {
-            	encoder.zero();
+            motorA.set(power.get());
+            if (encoder.getPosition() < -Calibration.ELEVATOR_RESET_TOLERANCE) {
+                encoder.zero();
             }
-            getHoldElevatorClicks = true;
         }
     }
 
     public class Setpoint extends Action {
-        public final Input<Double> target_clicks;
+        private final double targetClicks;
 
-        public Setpoint() {
-            this(0);
-        }
-
-        public Setpoint(double clicks) {
+        private Setpoint (double targetClicks) {
             super(Elevator.this, Setpoint.class);
-            target_clicks = addInput("Target Elevator Clicks", clicks, true);
+            this.targetClicks = targetClicks;
         }
 
         @Override
-        public void begin() {
+        public void begin () {
+            pid.setSetpoint(targetClicks);
             pid.enable();
-            holding = false;
-            setDefaultAction(setpoint);
         }
-        @Override
-        public void run () {
-        	System.out.println("WARN: setpoint enabled at " + target_clicks.get());
-            pid.setSetpoint(target_clicks.get());
-            pid.enable();
-            getHoldElevatorClicks = true;
-        }
+
         @Override
         public void end () {
-            pid.disable();
+            pid.reset();
         }
     }
+    public final Setpoint low = new Setpoint(Calibration.ELEVATOR_LOW_TARGET);
+    public final Setpoint raise = new Setpoint(Calibration.ELEVATOR_RAISE_TARGET);
+    public final Setpoint mid = new Setpoint(Calibration.ELEVATOR_MID_TARGET);
+    public final Setpoint high = new Setpoint(Calibration.ELEVATOR_HIGH_TARGET);
 
-    public class SetPersistent extends Action {
-        public final Input<Double> target_clicks;
-    	
-    	public SetPersistent(double target) {
-    		super(Elevator.this, PersistentSetpoint.class);
-    		target_clicks = addInput("Persistent Setpoint", target, true);
-    	}
-    	
-    	@Override
-    	public void begin() {
-    		persistent = target_clicks.get();
-    		setDefaultAction(persistentSetpoint);
-    	}
+    public class Hold extends Action {
+        private double targetClicks;
+
+        private Hold () {
+            super(Elevator.this, Hold.class);
+        }
+
+        @Override
+        public void begin () {
+            targetClicks = encoderClicks.get();
+            pid.setErrorSum(Calibration.ELEVATOR_RESET_SUM);
+            pid.setSetpoint(targetClicks);
+            pid.enable();
+        }
+
+        @Override
+        public void end () {
+            pid.reset();
+        }
     }
-    
-    public class PersistentSetpoint extends Action {
-    	public PersistentSetpoint() {
-    		super(Elevator.this, PersistentSetpoint.class);
-    	}
-    	
-    	@Override
-    	public void begin() {
-    		pid.enable();
-    	}
-    	
-    	@Override
-    	public void run() {
-    		pid.setSetpoint(persistent);
-    		getHoldElevatorClicks = true;
-    	}
-    	
-    	@Override
-    	public void end() {
-    		pid.disable();
-    	}
-    }
-    
+    public final Hold hold = new Hold();
+
     public Elevator() {
         super(Elevator.class);
-        encoder.setInverted(false);
-        //encoder.setOffset(Calibration.ELEVATOR_ENCODER_ZERO);
-        encoder.zero();
+
         motorA.setInverted(true);
         motorB.setInverted(true);
         motorB.set(ControlMode.Follower,Ports.ELEVATOR_MOTOR_A);
-        pid = new ClampedIntegralPIDController(Calibration.ELEVATOR_P,
-                Calibration.ELEVATOR_I,
-                Calibration.ELEVATOR_D,
-                encoder,
-                motorA,
-                Calibration.ELEVATOR_PID_PERIOD);
+
+        encoder.setInverted(false);
+        //encoder.setOffset(Calibration.ELEVATOR_ENCODER_ZERO);
+        encoder.zero();
+
         pid.setAbsoluteTolerance(Calibration.ELEVATOR_CLICK_TOLERANCE);
-        pidError = addOutput("Elevator PID Error", pid::getError);
         pid.setIntegralLimits(Calibration.ELEVATOR_MIN_SUM, Calibration.ELEVATOR_MAX_SUM);
         pid.setOutputRange(Calibration.ELEVATOR_MIN_SPEED, Calibration.ELEVATOR_MAX_SPEED);
-        //setpoint.target_clicks.set(encoder.getPosition());
-        setDefaultAction(setpoint);
+
+        setDefaultAction(idle);
     }
 }
