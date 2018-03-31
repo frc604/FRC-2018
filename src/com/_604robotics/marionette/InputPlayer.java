@@ -1,7 +1,5 @@
 package com._604robotics.marionette;
 
-import edu.wpi.first.wpilibj.Joystick;
-
 public class InputPlayer {
     private InputRecording playbackRecording;
     private double playbackTimestamp;
