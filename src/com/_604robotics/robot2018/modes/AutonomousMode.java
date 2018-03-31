@@ -58,10 +58,12 @@ public class AutonomousMode extends Coordinator {
         marionetteDriver = new Coordinator() {
             @Override
             protected void begin () {
-                logger.info("Loading Marionette recording from \"autonomous.marionette\"");
+                final String fileName = robot.dashboard.recordAutonFile.get();
+
+                logger.info("Loading Marionette recording from \"" + fileName + "\"");
                 final InputRecording recording;
                 try {
-                    recording = InputRecording.load("/home/lvuser/autonomous.marionette");
+                    recording = InputRecording.load("/home/lvuser/" + fileName);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
