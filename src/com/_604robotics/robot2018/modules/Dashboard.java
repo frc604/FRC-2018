@@ -88,6 +88,7 @@ public class Dashboard extends DashboardModule {
     public final Output<DriveMode> driveMode = addDashboardOutput("driveMode", DriveMode.DYNAMIC, DriveMode.class);
 
     public final Output<Boolean> recordAuton = addDashboardOutput("recordAuton", false);
+    public final Output<String> recordAutonFile = addDashboardOutput("recordAutonFile", "autonomous.marionette");
 
     public Dashboard () {
         super(Dashboard.class);
