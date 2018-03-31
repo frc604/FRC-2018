@@ -1,0 +1,90 @@
+<xml version="1.0">
+<dashboard>
+	<widget field="Arm Encoder Status" type="Boolean" class="edu.wpi.first.smartdashboard.gui.elements.BooleanBox">
+		<location x="1276" y="339"/>
+		<width>497</width>
+		<height>106</height>
+	</widget>
+	<widget field="Elevator Raised" type="Boolean" class="edu.wpi.first.smartdashboard.gui.elements.BooleanBox">
+		<location x="1419" y="244"/>
+		<width>168</width>
+		<height>29</height>
+	</widget>
+	<widget field="Clear" type="Boolean" class="edu.wpi.first.smartdashboard.gui.elements.BooleanBox">
+		<location x="1417" y="168"/>
+		<width>113</width>
+		<height>29</height>
+	</widget>
+	<widget field="Raise More" type="Boolean" class="edu.wpi.first.smartdashboard.gui.elements.BooleanBox">
+		<location x="1418" y="205"/>
+		<width>145</width>
+		<height>29</height>
+	</widget>
+	<widget field="LimitPressed" type="Boolean" class="edu.wpi.first.smartdashboard.gui.elements.BooleanBox">
+		<location x="1630" y="239"/>
+		<width>186</width>
+		<height>47</height>
+	</widget>
+	<widget field="XboxFlipped" type="Boolean" class="edu.wpi.first.smartdashboard.gui.elements.BooleanBox">
+		<location x="1173" y="34"/>
+		<width>697</width>
+		<height>78</height>
+	</widget>
+	<widget field="Clamp Light B" type="Boolean" class="edu.wpi.first.smartdashboard.gui.elements.BooleanBox">
+		<location x="774" y="686"/>
+		<width>304</width>
+		<height>217</height>
+	</widget>
+	<widget field="Clamp Light A" type="Boolean" class="edu.wpi.first.smartdashboard.gui.elements.BooleanBox">
+		<location x="15" y="686"/>
+		<width>277</width>
+		<height>209</height>
+	</widget>
+	<widget field="Is Clamped" type="String" class="edu.wpi.first.smartdashboard.gui.elements.FormattedField">
+		<location x="149" y="687"/>
+		<width>618</width>
+		<height>93</height>
+		<property name="Font Size" value="84"/>
+	</widget>
+	<static-widget class="edu.wpi.first.smartdashboard.gui.elements.CameraServerViewer">
+		<location x="19" y="30"/>
+		<width>890</width>
+		<height>637</height>
+		<property name="Camera Choice" value=""/>
+	</static-widget>
+	<widget field="driveMode" type="String Chooser" class="edu.wpi.first.smartdashboard.gui.elements.Chooser">
+		<location x="1069" y="505"/>
+	</widget>
+	<widget field="autonMode" type="String Chooser" class="edu.wpi.first.smartdashboard.gui.elements.Chooser">
+		<location x="918" y="32"/>
+	</widget>
+	<widget field="Elevator Clicks" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1199" y="168"/>
+	</widget>
+	<widget field="Arm Rate" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1573" y="202"/>
+		<height>22</height>
+	</widget>
+	<widget field="Arm Clicks" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1566" y="170"/>
+	</widget>
+	<widget field="leftDriveClicks" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1179" y="523"/>
+	</widget>
+	<widget field="Elevator Rate" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1208" y="202"/>
+		<height>22</height>
+	</widget>
+	<widget field="rightDriveRate" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1395" y="552"/>
+	</widget>
+	<widget field="rightDriveClicks" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1390" y="521"/>
+	</widget>
+	<widget field="leftDriveRate" type="Number" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1188" y="555"/>
+	</widget>
+</dashboard>
+<live-window>
+</live-window>
+</xml>
