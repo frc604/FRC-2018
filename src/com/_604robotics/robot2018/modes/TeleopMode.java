@@ -300,7 +300,7 @@ public class TeleopMode extends Coordinator {
     			double output = 0;
     			if( manipRightTrigger != 0 ) {
     			    if( manipDPad ) {
-                        output = -Calibration.INTAKE_OUTAKE_OVERDRIVE_MODIFIER;
+                        output = -0.4;
                     } else {
                         output = -Calibration.INTAKE_OUTAKE_MODIFIER*(manipRightTrigger);
                     }
