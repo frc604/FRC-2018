@@ -1,6 +1,6 @@
 package com._604robotics.robotnik;
 
-public abstract class Coordinator {
+public class Coordinator {
     private boolean running;
 
     public boolean isRunning () {
