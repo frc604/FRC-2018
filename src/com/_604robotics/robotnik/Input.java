@@ -33,7 +33,7 @@ public class Input<T> {
                 : defaultValue;
     }
 
-    public synchronized void set (T value) {
+    public void set (T value) {
         this.prevValue = this.value;
         this.value = value;
         valueEpoch = parent.getEpoch();

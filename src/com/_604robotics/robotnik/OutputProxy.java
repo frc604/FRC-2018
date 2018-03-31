@@ -20,11 +20,11 @@ class OutputProxy<T> implements Output<T> {
     }
 
     @Override
-    public synchronized T get () {
+    public T get () {
         return value;
     }
 
-    synchronized void update () {
+    void update () {
         value = source.get();
     }
 }

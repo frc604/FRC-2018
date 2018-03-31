@@ -36,7 +36,7 @@ public abstract class Action {
         return running;
     }
 
-    synchronized protected <T> Input<T> addInput (String name, T defaultValue) {
+    protected <T> Input<T> addInput (String name, T defaultValue) {
         parent.assertUnsealed();
 
         if (name.isEmpty()) {
@@ -52,7 +52,7 @@ public abstract class Action {
         return input;
     }
 
-    synchronized protected <T> Output<T> addOutput (String name, T initialValue, Output<T> output) {
+    protected <T> Output<T> addOutput (String name, T initialValue, Output<T> output) {
         parent.assertUnsealed();
 
         if (name.isEmpty()) {
@@ -78,7 +78,7 @@ public abstract class Action {
         activeActionTable.putString("outputList", outputListValue);
     }
 
-    synchronized void updateInputs (ITable activeActionInputsTable) {
+    void updateInputs (ITable activeActionInputsTable) {
         for (@SuppressWarnings("rawtypes") Input input : inputs) {
             Object res=input.get();
             if (res==null) {
@@ -90,7 +90,7 @@ public abstract class Action {
         }
     }
 
-    synchronized void updateOutputs (ITable activeActionOutputsTable) {
+    void updateOutputs (ITable activeActionOutputsTable) {
         for (@SuppressWarnings("rawtypes") OutputProxy output : outputs) {
             Reliability.swallowThrowables(output::update,
                     "Error updating output " + output.getName() + " of action " + getName());
@@ -98,7 +98,7 @@ public abstract class Action {
         }
     }
 
-    synchronized void initiate () {
+    void initiate () {
         running = true;
         begin();
     }
