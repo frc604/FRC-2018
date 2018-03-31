@@ -148,21 +148,6 @@ public class AutonomousMode extends StatefulCoordinator {
 
             addState("Raise elevator", new TimeLimitCoordinator(0.3, new ActionCoordinator(robot.elevator.raise)));
 
-            // Forward distance between front bumper and scale -76 XX
-            addState("Drive away from wall", new Coordinator() {
-                private final Drive.ArcadeServo arcadeServo = robot.drive.new ArcadeServo(
-                        AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, 23),0);
-
-                @Override
-                protected boolean run () {
-                    robot.elevator.raise.activate();
-                    robot.arm.mid.activate();
-
-                    arcadeServo.activate();
-                    return arcadeServo.onTarget.get();
-                }
-            });
-
             addState("Turn toward switch based on game data", new CenterSwitchDecisionMacro());
 
             addState("Drive toward switch", new Coordinator() {
@@ -324,6 +309,21 @@ public class AutonomousMode extends StatefulCoordinator {
         public CenterLeftSwitchMacro () {
             super(CenterLeftSwitchMacro.class);
 
+            addState("Drive away from wall", new Coordinator() {
+                private final Drive.ArcadeServo arcadeServo = robot.drive.new ArcadeServo(
+                        AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, 9),0);
+
+                @Override
+                protected boolean run () {
+                    robot.elevator.raise.activate();
+                    robot.arm.mid.activate();
+
+                    arcadeServo.activate();
+                    return arcadeServo.onTarget.get();
+                }
+            });
+
+
             addState("Turn left", new Coordinator() {
                 private final Drive.ArcadeServo arcadeServo = robot.drive.new ArcadeServo(
                         0, AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, -45));
@@ -340,7 +340,7 @@ public class AutonomousMode extends StatefulCoordinator {
 
             addState("Drive toward switch", new Coordinator() {
                 private final Drive.ArcadeServo arcadeServo = robot.drive.new ArcadeServo(
-                        AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, 76+15+1),0);
+                        AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, 76+20+1),0);
 
                 @Override
                 protected boolean run () {
@@ -354,7 +354,7 @@ public class AutonomousMode extends StatefulCoordinator {
 
             addState("Turn toward switch", new Coordinator() {
                 private final Drive.ArcadeServo arcadeServo = robot.drive.new ArcadeServo(
-                        0, AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, 30));
+                        0, AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, 45));
 
                 @Override
                 protected boolean run () {
@@ -371,6 +371,20 @@ public class AutonomousMode extends StatefulCoordinator {
     private class CenterRightSwitchMacro extends StatefulCoordinator {
         public CenterRightSwitchMacro () {
             super(CenterLeftSwitchMacro.class);
+
+            addState("Drive away from wall", new Coordinator() {
+                private final Drive.ArcadeServo arcadeServo = robot.drive.new ArcadeServo(
+                        AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, 23),0);
+
+                @Override
+                protected boolean run () {
+                    robot.elevator.raise.activate();
+                    robot.arm.mid.activate();
+
+                    arcadeServo.activate();
+                    return arcadeServo.onTarget.get();
+                }
+            });
 
             addState("Turn right", new Coordinator() {
                 private final Drive.ArcadeServo arcadeServo = robot.drive.new ArcadeServo(
