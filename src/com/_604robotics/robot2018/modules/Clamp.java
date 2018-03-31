@@ -35,8 +35,6 @@ public class Clamp extends Module {
 	}
 	public final Release release = new Release();
 
-	public final Output<Boolean> clamped = addOutput("clamped", engage::isRunning);
-
 	public Clamp() {
 		super(Clamp.class);
 		setDefaultAction(engage);

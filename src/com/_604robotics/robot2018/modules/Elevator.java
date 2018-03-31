@@ -15,9 +15,11 @@ public class Elevator extends Module {
     private final WPI_TalonSRX motorA = new WPI_TalonSRX(Ports.ELEVATOR_MOTOR_A);
     private final WPI_TalonSRX motorB = new WPI_TalonSRX(Ports.ELEVATOR_MOTOR_B);
 
-    public final TalonPWMEncoder encoder = new TalonPWMEncoder(motorA);
-    public final Output<Double> encoderRate = addOutput("Elevator Rate", encoder::getVelocity);
-    public final Output<Double> encoderClicks = addOutput("Elevator Clicks", encoder::getPosition);
+    private final TalonPWMEncoder encoder = new TalonPWMEncoder(motorA);
+    public final Output<Double> encoderRate = addOutput("encoderRate", encoder::getVelocity);
+    public final Output<Double> encoderClicks = addOutput("encoderClicks", encoder::getPosition);
+    public final Output<Boolean> bumperClear = addOutput("bumperClear",
+            () -> encoderClicks.get() >= Calibration.ELEVATOR_BUMPER_CLEAR);
 
     private final ClampedIntegralPIDController pid = new ClampedIntegralPIDController(
             Calibration.ELEVATOR_P,
@@ -39,6 +41,19 @@ public class Elevator extends Module {
         }
     }
     public final Idle idle = new Idle();
+
+    public class Zero extends Action {
+        private Zero () {
+            super(Elevator.this, Zero.class);
+        }
+
+        @Override
+        protected void run () {
+            motorA.set(0);
+            encoder.zero();
+        }
+    }
+    public final Zero zero = new Zero();
 
     public class Manual extends Action {
         public final Input<Double> power;

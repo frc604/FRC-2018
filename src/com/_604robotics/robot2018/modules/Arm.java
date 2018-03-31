@@ -15,143 +15,137 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import edu.wpi.first.wpilibj.DigitalInput;
 
 public class Arm extends Module {
+    private final WPI_TalonSRX motorA = new WPI_TalonSRX(Ports.ARM_MOTOR_A);
+    private final WPI_TalonSRX motorB = new WPI_TalonSRX(Ports.ARM_MOTOR_B);
 
-    private WPI_TalonSRX motorA = new WPI_TalonSRX(Ports.ARM_MOTOR_A);
-    private WPI_TalonSRX motorB = new WPI_TalonSRX(Ports.ARM_MOTOR_B);
-    public TalonPWMEncoder encoder = new TalonPWMEncoder(motorB);
+    private final TalonPWMEncoder encoder = new TalonPWMEncoder(motorB);
+    public final Output<Double> encoderRate = addOutput("encoderRate", encoder::getVelocity);
+    public final Output<Double> encoderClicks = addOutput("encoderClicks", encoder::getPosition);
+    public final Output<Boolean> raised = addOutput("raised",
+            () -> encoderClicks.get() >= Calibration.ARM_RAISE_TARGET);
 
-    public double persistent = 0;
-    
-    public final Setpoint setpoint = new Setpoint(Calibration.ARM_LOW_TARGET);
-    public final PersistentSetpoint persistentSetpoint = new PersistentSetpoint();
-    
-    public final DigitalInput bottomLimit = new DigitalInput(Ports.ARM_BOTTOM_SWITCH);
+    private final DigitalInput bottomLimit = new DigitalInput(Ports.ARM_BOTTOM_SWITCH);
+    public final Output<Boolean> atBottomLimit = addOutput("atBottomLimit", bottomLimit::get);
 
-    public final Output<Double> encoderRate = addOutput("Arm Rate", encoder::getVelocity);
-    public final Output<Double> encoderClicks = addOutput("Arm Clicks", encoder::getPosition);
+    private final RotatingArmPIDController pid = new RotatingArmPIDController(
+            Calibration.ARM_P,
+            Calibration.ARM_I,
+            Calibration.ARM_D,
+            Calibration.ARM_F,
+            encoder,
+            motorA,
+            Calibration.ARM_PID_PERIOD);
+    public final Output<Double> pidError = addOutput("pidError", pid::getError);
 
-    private final RotatingArmPIDController pid;
-    
-    public final Output<Double> pidError;
-    
-    public void resetIntegral(double sum) {
-        pid.setErrorSum(sum);
+    public class Idle extends Action {
+        private Idle () {
+            super(Arm.this, Idle.class);
+        }
+
+        @Override
+        public void run () {
+            motorA.set(0);
+        }
     }
-    
-    public boolean getBottomLimit() {
-        return bottomLimit.get();
+    public final Idle idle = new Idle();
+
+    public class Zero extends Action {
+        private Zero () {
+            super(Arm.this, Zero.class);
+        }
+
+        @Override
+        public void run () {
+            motorA.set(0);
+            zeroEncoder();
+        }
     }
+    public final Zero zero = new Zero();
 
-    public class Move extends Action {
-        public final Input<Double> liftPower;
+    public class Manual extends Action {
+        public final Input<Double> power;
 
-        public Move() {
+        public Manual () {
             this(0);
         }
 
-        public Move (double power) {
-            super(Arm.this, Move.class);
-            liftPower = addInput("Lift Power", power, true);
+        public Manual (double defaultPower) {
+            super(Arm.this, Manual.class);
+            power = addInput("power", defaultPower);
         }
 
         @Override
-        public void begin() {
-            setDefaultAction(setpoint);
-        }
-        
-        @Override
         public void run () {
-            motorA.set(liftPower.get());
+            motorA.set(power.get());
         }
     }
 
     public class Setpoint extends Action {
-        public final Input<Double> target_clicks;
+        public final double targetClicks;
 
-        public Setpoint() {
-            this(0);
-        }
-
-        public Setpoint(double clicks) {
+        private Setpoint (double targetClicks) {
             super(Arm.this, Setpoint.class);
-            target_clicks = addInput("Target Arm Clicks", clicks, true);
+            this.targetClicks = targetClicks;
         }
         
-        public boolean atTolerance() {
-            return pid.onTarget();
-        }
-
         @Override
         public void begin() {
+            pid.setSetpoint(targetClicks);
             pid.enable();
-            setDefaultAction(setpoint);
         }
-        @Override
-        public void run () {
-            pid.setSetpoint(target_clicks.get());
-        }
+
         @Override
         public void end () {
-            pid.disable();
+            pid.reset();
         }
     }
+    public final Setpoint low = new Setpoint(Calibration.ARM_LOW_TARGET);
+    public final Setpoint raise = new Setpoint(Calibration.ARM_RAISE_TARGET);
+    public final Setpoint mid = new Setpoint(Calibration.ARM_MID_TARGET);
+    public final Setpoint balance = new Setpoint(Calibration.ARM_BALANCE_TARGET);
+    public final Setpoint high = new Setpoint(Calibration.ARM_HIGH_TARGET);
 
-    public class SetPersistent extends Action {
-        public final Input<Double> target_clicks;
-    	
-    	public SetPersistent(double target) {
-    		super(Arm.this, PersistentSetpoint.class);
-    		target_clicks = addInput("Persistent Setpoint", target, true);
-    	}
-    	
-    	@Override
-    	public void begin() {
-    		persistent = target_clicks.get();
-    		setDefaultAction(persistentSetpoint);
-    	}
+    public class Hold extends Action {
+        private double targetClicks;
+
+        private Hold () {
+            super(Arm.this, Hold.class);
+        }
+
+        @Override
+        public void begin () {
+            targetClicks = encoderClicks.get();
+            pid.setErrorSum(Calibration.ARM_RESET_SUM);
+            pid.setSetpoint(targetClicks);
+            pid.enable();
+        }
+
+        @Override
+        public void end () {
+            pid.reset();
+        }
     }
-    
-    public class PersistentSetpoint extends Action {
-    	public PersistentSetpoint() {
-    		super(Arm.this, PersistentSetpoint.class);
-    	}
-    	
-    	@Override
-    	public void begin() {
-    		pid.enable();
-    	}
-    	
-    	@Override
-    	public void run() {
-    		pid.setSetpoint(persistent);
-    	}
-    	
-    	@Override
-    	public void end() {
-    		pid.disable();
-    	}
-    }
-    
+    public final Hold hold = new Hold();
+
     public Arm() {
         super(Arm.class);
-        encoder.setInverted(true);
-        encoder.zero(Calibration.ARM_BOTTOM_LOCATION);
-        //encoder.setOffset(Calibration.ARM_ENCODER_ZERO);
+
         motorA.setInverted(true);
         motorB.setInverted(false);
         motorB.set(ControlMode.Follower,Ports.ARM_MOTOR_A);
-        pid = new RotatingArmPIDController(Calibration.ARM_P,
-                Calibration.ARM_I,
-                Calibration.ARM_D,
-                Calibration.ARM_F,
-                encoder,
-                motorA,
-                Calibration.ARM_PID_PERIOD);
+
+        encoder.setInverted(true);
+        zeroEncoder();
+
         pid.setEncoderPeriod(Calibration.ARM_ENCODER_FULL_ROT);
-        pidError = addOutput("Arm PID Error", pid::getError);
         pid.setIntegralLimits(Calibration.ARM_MIN_SUM, Calibration.ARM_MAX_SUM);
         pid.setOutputRange(Calibration.ARM_MIN_SPEED, Calibration.ARM_MAX_SPEED);
         pid.setAbsoluteTolerance(Calibration.ARM_CLICK_TOLERANCE);
-        setDefaultAction(setpoint);
+
+        setDefaultAction(idle);
+    }
+
+    private void zeroEncoder () {
+        encoder.zero(Calibration.ARM_BOTTOM_LOCATION);
     }
 }

@@ -3,17 +3,16 @@ package com._604robotics.robot2018.modes;
 import com._604robotics.robot2018.Robot2018;
 import com._604robotics.robot2018.constants.Calibration;
 import com._604robotics.robot2018.modules.Arm;
-import com._604robotics.robot2018.modules.Clamp;
 import com._604robotics.robot2018.modules.Drive;
 import com._604robotics.robot2018.modules.Elevator;
 import com._604robotics.robot2018.modules.Intake;
 import com._604robotics.robotnik.Coordinator;
 import com._604robotics.robotnik.Logger;
-import com._604robotics.robotnik.prefabs.flow.Pulse;
 import com._604robotics.robotnik.prefabs.flow.Toggle;
 import com._604robotics.robotnik.prefabs.inputcontroller.xbox.XboxController;
 
 public class TeleopMode extends Coordinator {
+    private static final Logger logger = new Logger(TeleopMode.class);
 
     private final XboxController driver = new XboxController(0);
     private final XboxController manip = new XboxController(1);
@@ -21,11 +20,9 @@ public class TeleopMode extends Coordinator {
     private final Robot2018 robot;
 
     private final DriveManager driveManager;
-    private final ElevatorManager elevatorManager;
     private final IntakeManager intakeManager;
-    private final ArmManager armManager;
     private final ClampManager clampManager;
-    private final Logger test = new Logger("Teleop");
+    private final ElevatorArmManager elevatorArmManager;
 
     public TeleopMode (Robot2018 robot) {
         driver.leftStick.x.setDeadband(Calibration.TELEOP_DRIVE_DEADBAND);
@@ -56,10 +53,9 @@ public class TeleopMode extends Coordinator {
         this.robot = robot;
 
         driveManager = new DriveManager();
-        elevatorManager = new ElevatorManager();
         intakeManager = new IntakeManager();
-        armManager = new ArmManager();
         clampManager = new ClampManager();
+        elevatorArmManager = new ElevatorArmManager();
     }
     
     private boolean getHoldArmClicks = false;
@@ -111,17 +107,38 @@ public class TeleopMode extends Coordinator {
     private boolean manipB= false;
     private boolean manipX= false;
     private boolean manipY= false;
-    
+
     private boolean manipDPad = false;
-    
+
+    @Override
+    protected void begin () {
+        driveManager.start();
+        intakeManager.start();
+        clampManager.start();
+        elevatorArmManager.start();
+    }
+
     @Override
     public boolean run () {
     	updateControls();
-        process();
+
+        driveManager.execute();
+        intakeManager.execute();
+        clampManager.execute();
+        elevatorArmManager.execute();
+
         return true;
     }
-   
-    private void updateControls() {
+
+    @Override
+    protected void end () {
+        driveManager.stop();
+        intakeManager.stop();
+        clampManager.stop();
+        elevatorArmManager.stop();
+    }
+
+    private void updateControls () {
     	driverLeftJoystickY = driver.leftStick.y.get();
         driverLeftJoystickX = driver.leftStick.x.get();
         driverLeftTrigger = driver.triggers.left.get();
@@ -175,15 +192,11 @@ public class TeleopMode extends Coordinator {
                 +", driverRightY"+driverRightJoystickY);*/
     }
     
-    private void process() {
-    	driveManager.run();
-        intakeManager.run();
-        armManager.run();
-        elevatorManager.run();
-        clampManager.run();
+    private enum CurrentDrive {
+        IDLE, ARCADE, TANK
     }
-    
-    private class DriveManager {
+
+    private class DriveManager extends Coordinator {
         private final Drive.ArcadeDrive arcade;
         private final Drive.TankDrive tank;
         private final Drive.Idle idle;
@@ -202,7 +215,8 @@ public class TeleopMode extends Coordinator {
             gearState=new Toggle(false);
         }
 
-        public void run() {
+        @Override
+        protected boolean run () {
         	double leftY = driver.leftStick.y.get();
         	double rightY = driver.rightStick.y.get();
         	double rightX = driver.rightStick.x.get();
@@ -245,8 +259,8 @@ public class TeleopMode extends Coordinator {
                     }
                     break;
                 default:
-                    System.out.println("This should never happen!");
-                    System.out.println("Current value is:"+robot.dashboard.driveMode.get());
+                    logger.warn("Unrecognized driveMode! Current value: " + robot.dashboard.driveMode.get());
+                    break;
             }
 
             // Set appropriate drive mode depending on dashboard option
@@ -265,19 +279,20 @@ public class TeleopMode extends Coordinator {
                     tank.activate();
                     break;
             }
+
+            return true;
         }
     }
-    
-    private boolean clampingOverride = false;
-    
-    private class IntakeManager {
-    	private final Intake.Run run;
+
+    private class IntakeManager extends Coordinator {
+    	private final Intake.Run runIntake;
 
     	public IntakeManager() {
-    		run = robot.intake.new Run();
+    		runIntake = robot.intake.new Run();
     	}
-    	
-    	public void run() {
+
+    	@Override
+    	protected boolean run() {
             double output = 0;
 
     		if (driverLeftTrigger != 0 || driverRightTrigger != 0) {
@@ -300,260 +315,138 @@ public class TeleopMode extends Coordinator {
                 } else if (manipRightBumper) {
                     output = 1;
                 }
-    		} else if (clampingOverride) {
+    		} else if (robot.clamp.engage.isRunning()) {
     		    output = Calibration.INTAKE_PASSIVE_POWER;
     		}
 
-            run.power.set(output);
-            run.activate();
+            runIntake.power.set(output);
+            runIntake.activate();
+
+            return true;
     	}
     }
     
-    private class ClampManager {
-    	private final Clamp.Release extend;
-    	private final Clamp.Engage engage;
-    	private final Toggle clamping;
-    	
-    	public ClampManager() {
-    		extend = robot.clamp.new Release();
-    		engage = robot.clamp.new Engage();
-    		clamping = new Toggle(false);
-    	}
-    	
-    	public void run() { //testme
-    		clamping.update(manipX);
-            if (clamping.isInOnState()) {
-                engage.activate();
-                clampingOverride = true;
-            } else if (clamping.isInOffState()) {
-                extend.activate();
-                clampingOverride = false;
+    private class ClampManager extends Coordinator {
+    	private final Toggle toggle = new Toggle(false);
+
+    	@Override
+    	protected boolean run () {
+    		toggle.update(manipX);
+
+            if (toggle.isInOnState()) {
+                robot.clamp.engage.activate();
+            } else if (toggle.isInOffState()) {
+                robot.clamp.release.activate();
             }
+
+            return true;
     	}
     }
-    
-    private boolean elevatorOverride = false;
-    
-    private class ElevatorManager {
-        private final Elevator.Manual move;
-        private final Elevator.Setpoint setpoint;
-        private double holdSetpoint;
 
-        public ElevatorManager() {
-            move = robot.elevator.new Manual();
-            setpoint = robot.elevator.new Setpoint();
-        }
+    private class ElevatorArmManager extends Coordinator {
+        private final Elevator.Manual elevatorManual = robot.elevator.new Manual();
+        private final Arm.Manual armManual = robot.arm.new Manual();
 
-        public void run() {
-            // Only use when absolutely necessary
-        	if( manipBack ) {
-        		 robot.elevator.encoder.zero();
-                 setpoint.targetClicks.set(robot.elevator.encoderClicks.get());
-                 setpoint.activate();
-        	} 
-        	if( Calibration.TANDEM_ACTIVE && !manipLeftTriggerButton && elevatorOverride ) {
-        	    System.out.println("Warning: overriding elevator");
-        		setpoint.targetClicks.set(Calibration.ELEVATOR_RAISE_TARGET);
-        		setpoint.activate();
-        	} else if( manipLeftJoystickY != 0 ) {
-        	    // Scale negative power for safety
-        	    double elevPower = manipLeftJoystickY;
-        	    if (elevPower<0) {
-        	        elevPower*=0.5;
-        	    }
-        		move.power.set(elevPower);
-        		move.activate();
-        	} else if( manipA ) {
-        		setpoint.targetClicks.set(Calibration.ELEVATOR_LOW_TARGET);
-        		setpoint.activate();
-        	} else if( manipB && manipLeftBumper ) {
-        		setpoint.targetClicks.set(Calibration.ELEVATOR_MID_TARGET);
-        		setpoint.activate();
-        	} else if( manipY && manipLeftBumper ) {
-        		setpoint.targetClicks.set(Calibration.ELEVATOR_HIGH_TARGET);
-        		setpoint.activate();
-        	} else if( driverA ) {
-        		setpoint.targetClicks.set(Calibration.ELEVATOR_LOW_TARGET);
-        		setpoint.activate();
-        	} else if( driverB && driverLeftJoystickButton ) {
-        		setpoint.targetClicks.set(Calibration.ELEVATOR_MID_TARGET);
-        		setpoint.activate();
-        	} else if( driverY && driverLeftJoystickButton ) {
-        		setpoint.targetClicks.set(Calibration.ELEVATOR_HIGH_TARGET);
-        		setpoint.activate();
-        	} else {
-        	    // test.log("ERROR","Reaching set logic");
-        	    // This should only be called once
-        		if( robot.elevator.getHoldElevatorClicks ) {
-        			holdSetpoint=robot.elevator.encoderClicks.get();
-        			robot.elevator.resetIntegral(Calibration.ELEVATOR_RESET_SUM);
-        			robot.elevator.getHoldElevatorClicks = false;
-        		}
-        		setpoint.targetClicks.set(holdSetpoint);
-        		setpoint.activate();
-        	}
-        }
-    }
-    
-    private enum CurrentDrive {
-        IDLE, ARCADE, TANK
-    }
+        @Override
+        protected boolean run () {
+            boolean goingUp = false;
 
-    private class ArmManager {
-    	private final Arm.Move move;
-    	private final Arm.Setpoint setpoint;
-    	private double holdSetpoint = Calibration.ARM_LOW_TARGET;
-    	private final Pulse bottomPulse = new Pulse();
-    	
-    	public ArmManager() {
-    		move = robot.arm.new Move();
-    		setpoint = robot.arm.new Setpoint(Calibration.ARM_LOW_TARGET);
-    		bottomPulse.update(false);
-    	}
-    	
-    	public void run() {
-    	    bottomPulse.update(robot.arm.getBottomLimit());
-    	    if (manipStart /*|| bottomPulse.isRisingEdge()*/) {
-    	        // offset -= (lowtarget - current)
-    	        // TODO: Remeber to properly handle inversion
-    	        // System.out.println( robot.arm.encoder.isInverted() ? "Safe" : "ERROR: Not Inverted");
-    	        // robot.arm.encoder.setOffset(robot.arm.encoder.getOffset() - robot.arm.encoder.getPosition() + Calibration.ARM_LOW_TARGET);
-    	        // System.out.println("Warning: " + (robot.arm.encoder.getOffset() - robot.arm.encoder.getPosition() + Calibration.ARM_LOW_TARGET));
-    	        robot.arm.encoder.zero(Calibration.ARM_BOTTOM_LOCATION);
-    	        getHoldArmClicks = true; // Need to get hold setpoint again
-    	    }
-    		if( manipRightJoystickY != 0 ) {
-    			if( Calibration.TANDEM_ACTIVE && !manipLeftTriggerButton && robot.elevator.encoder.getPosition() < Calibration.ELEVATOR_BUMPER_CLEAR && 
-        				robot.arm.encoder.getPosition() < Calibration.ARM_RAISE_TARGET  && 
-        				manipRightJoystickY > 0 ) {
-    			    
-        			elevatorOverride = true;
-        			setpoint.target_clicks.set(holdSetpoint);
-                    setpoint.activate();
-        		} else {
-        			elevatorOverride = false;
-        			double motorPower = manipRightJoystickY;
-        			if (motorPower<0 && !manipRightJoystickButton) {
-        			    motorPower*=0.6;
-        			}
-        	        // Calculate cosine for torque factor
-        	        double angle = robot.arm.encoder.getPosition();
-        	        // Cosine is periodic so sawtooth wraparound is not a concern
-        	        angle/=Calibration.ARM_ENCODER_FULL_ROT;
-        	        angle*=(2*Math.PI);
-        	        double cosine = Math.cos(angle);
-        	        if (robot.arm.encoderClicks.get()<4700 && robot.arm.encoderClicks.get()> -2500
-        	                && motorPower<0) {
-        	            motorPower+=Calibration.ARM_F*cosine;
-        	        }
-        			move.liftPower.set(motorPower);
-        			move.activate();
-        		}
-    			getHoldArmClicks = true;
-    		} else if( manipA ) {
-    			elevatorOverride = false;
-    			setpoint.target_clicks.set(Calibration.ARM_LOW_TARGET);
-    			setpoint.activate();
-    			getHoldArmClicks = true;
-    		} else if( manipB ) {
-    		    if (manipLeftBumper) {
-    		    	if( Calibration.TANDEM_ACTIVE && !manipLeftTriggerButton && robot.elevator.encoder.getPosition() < Calibration.ELEVATOR_BUMPER_CLEAR && 
-            				robot.arm.encoder.getPosition() < Calibration.ARM_RAISE_TARGET  && 
-            				robot.arm.encoder.getPosition() < Calibration.ARM_HIGH_TARGET ) {
-    		    	    
-            			elevatorOverride = true;
-            			setpoint.target_clicks.set(holdSetpoint);
-                        setpoint.activate();
-            		} else {
-            			elevatorOverride = false;
-            			setpoint.target_clicks.set(Calibration.ARM_HIGH_TARGET);
-            			setpoint.activate();
-            		}
-    		    } else {
-    		    	if( Calibration.TANDEM_ACTIVE && !manipLeftTriggerButton && robot.elevator.encoder.getPosition() < Calibration.ELEVATOR_BUMPER_CLEAR && 
-            				robot.arm.encoder.getPosition() < Calibration.ARM_RAISE_TARGET  && 
-            				robot.arm.encoder.getPosition() < Calibration.ARM_MID_TARGET ) {
-    		    	    
-            			elevatorOverride = true;
-            			setpoint.target_clicks.set(holdSetpoint);
-                        setpoint.activate();
-            		} else {
-            			elevatorOverride = false;
-            			setpoint.target_clicks.set(Calibration.ARM_MID_TARGET);
-            			setpoint.activate();
-            		}
-    		    }
-    			getHoldArmClicks = true;
-    		} else if( manipY ) {
-    			if( Calibration.TANDEM_ACTIVE && !manipLeftTriggerButton && robot.elevator.encoder.getPosition() < Calibration.ELEVATOR_BUMPER_CLEAR && 
-        				robot.arm.encoder.getPosition() < Calibration.ARM_RAISE_TARGET  && 
-        				robot.arm.encoder.getPosition() < Calibration.ARM_HIGH_TARGET ) {
-    			    System.out.println("Warning: activating tandem");
-        			elevatorOverride = true;
-        			setpoint.target_clicks.set(holdSetpoint);
-                    setpoint.activate();
-        		} else {
-        			elevatorOverride = false;
-        			setpoint.target_clicks.set(Calibration.ARM_HIGH_TARGET);
-        			setpoint.activate();
-        		}
-    			getHoldArmClicks = true;
-    		} else if( driverA ) {
-    			elevatorOverride = false;
-    			setpoint.target_clicks.set(Calibration.ARM_LOW_TARGET);
-    			setpoint.activate();
-    			getHoldArmClicks = true;
-    		} else if( driverB ) {
-                if (driverLeftJoystickButton) {
-                	if( Calibration.TANDEM_ACTIVE && !manipLeftTriggerButton && robot.elevator.encoder.getPosition() < Calibration.ELEVATOR_BUMPER_CLEAR && 
-            				robot.arm.encoder.getPosition() < Calibration.ARM_RAISE_TARGET  && 
-            				robot.arm.encoder.getPosition() < Calibration.ARM_HIGH_TARGET ) {
-            			elevatorOverride = true;
-            			setpoint.target_clicks.set(holdSetpoint);
-                        setpoint.activate();
-            		} else {
-            			elevatorOverride = false;
-            			setpoint.target_clicks.set(Calibration.ARM_HIGH_TARGET);
-            			setpoint.activate();
-            		}
+            robot.elevator.hold.activate();
+            robot.arm.hold.activate();
+
+            if (manipRightJoystickY != 0) {
+                if (manipRightJoystickY > 0) {
+                    goingUp = true;
+                }
+
+                // Scale negative power for safety
+                double elevatorPower = manipLeftJoystickY;
+                if (elevatorPower < 0) {
+                    elevatorPower *=0.5;
+                }
+
+                elevatorManual.power.set(elevatorPower);
+                elevatorManual.activate();
+
+                double armPower = manipRightJoystickY;
+                if (armPower < 0 && !manipRightJoystickButton) {
+                    armPower *= 0.6;
+                }
+
+                // Calculate cosine for torque factor
+                double angle = robot.arm.encoderClicks.get();
+
+                // Cosine is periodic so sawtooth wraparound is not a concern
+                angle /= Calibration.ARM_ENCODER_FULL_ROT;
+                angle *= 2*Math.PI;
+
+                double cosine = Math.cos(angle);
+                if (robot.arm.encoderClicks.get() < 4700 &&
+                        robot.arm.encoderClicks.get() > -2500 &&
+                        armPower < 0) {
+                    armPower += Calibration.ARM_F * cosine;
+                }
+
+                armManual.power.set(armPower);
+                armManual.activate();
+            } else if (manipA) {
+                robot.elevator.low.activate();
+                robot.arm.low.activate();
+            } else if (manipB) {
+                goingUp = true;
+
+                if (manipLeftBumper) {
+                    robot.elevator.mid.activate();
+                    robot.arm.high.activate();
                 } else {
-                	if( Calibration.TANDEM_ACTIVE && !manipLeftTriggerButton && robot.elevator.encoder.getPosition() < Calibration.ELEVATOR_BUMPER_CLEAR && 
-            				robot.arm.encoder.getPosition() < Calibration.ARM_RAISE_TARGET  && 
-            				robot.arm.encoder.getPosition() < Calibration.ARM_MID_TARGET ) {
-            			elevatorOverride = true;
-            			setpoint.target_clicks.set(holdSetpoint);
-                        setpoint.activate();
-            		} else {
-            			elevatorOverride = false;
-            			setpoint.target_clicks.set(Calibration.ARM_MID_TARGET);
-            			setpoint.activate();
-            		}
+                    robot.arm.mid.activate();
                 }
-    			getHoldArmClicks = true;
-    		} else if( driverY ) {
-    			if( Calibration.TANDEM_ACTIVE && !manipLeftTriggerButton && robot.elevator.encoder.getPosition() < Calibration.ELEVATOR_BUMPER_CLEAR && 
-        				robot.arm.encoder.getPosition() < Calibration.ARM_RAISE_TARGET  && 
-        				robot.arm.encoder.getPosition() < Calibration.ARM_HIGH_TARGET ) {
-        			elevatorOverride = true;
-        			setpoint.target_clicks.set(holdSetpoint);
-                    setpoint.activate();
-        		} else {
-        			elevatorOverride = false;
-        			setpoint.target_clicks.set(Calibration.ARM_HIGH_TARGET);
-        			setpoint.activate();
-        		}
-    			getHoldArmClicks = true;
-    		} else {
-    		    // This should only be called once
-                if( getHoldArmClicks ) {
-                    holdSetpoint=robot.arm.encoderClicks.get();
-                    robot.arm.resetIntegral(Calibration.ARM_RESET_SUM);
-                    getHoldArmClicks = false;
+            } else if (manipY) {
+                goingUp = true;
+
+                if (manipLeftBumper) {
+                    robot.elevator.high.activate();
                 }
-                elevatorOverride = false;
-                setpoint.target_clicks.set(holdSetpoint);
-                setpoint.activate();
-    		}
-    	}
+
+                robot.arm.high.activate();
+            } else if (driverA) {
+                robot.elevator.low.activate();
+                robot.arm.low.activate();
+            } else if (driverB) {
+                goingUp = true;
+
+                if (driverLeftJoystickButton) {
+                    robot.elevator.mid.activate();
+                    robot.arm.high.activate();
+                } else {
+                    robot.arm.mid.activate();
+                }
+            } else if (driverY) {
+                goingUp = true;
+
+                if (driverLeftJoystickButton) {
+                    robot.elevator.high.activate();
+                }
+
+                robot.arm.high.activate();
+            }
+
+            if (goingUp &&
+                    Calibration.TANDEM_ACTIVE && !manipLeftTriggerButton &&
+                    !robot.elevator.bumperClear.get() && !robot.arm.raised.get()) {
+                robot.elevator.raise.activate();
+                robot.arm.hold.activate();
+            }
+
+            // Only use when absolutely necessary
+            if (manipStart) {
+                robot.arm.zero.activate();
+            }
+            if (manipBack) {
+                robot.elevator.zero.activate();
+            }
+
+            return true;
+        }
     }
 }

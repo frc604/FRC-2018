@@ -66,6 +66,14 @@ public class Logger {
     }
 
     /**
+     * Logs a message to the console with a level of "WARN".
+     * @param message the message to log
+     */
+    public void warn (String message) {
+        log("WARN", message);
+    }
+
+    /**
      * Prints the stack trace of an exception and logs a message to the console with a level of "ERROR".
      * @param message the message to log
      * @param t the throwable for which a stack trace should be printed

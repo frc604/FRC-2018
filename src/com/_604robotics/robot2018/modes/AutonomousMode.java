@@ -11,13 +11,13 @@ import com._604robotics.robotnik.utils.annotations.Unreal;
 
 import java.util.EnumMap;
 
-public class AutonomousMode extends Coordinator {
+public class AutonomousMode extends StatefulCoordinator {
     private final Robot2018 robot;
-
     private final EnumMap<Dashboard.AutonMode, Coordinator> autonModes = new EnumMap<>(Dashboard.AutonMode.class);
-    private Coordinator selectedMode;
 
     public AutonomousMode (Robot2018 robot) {
+        super(AutonomousMode.class);
+
         this.robot = robot;
 
         autonModes.put(Dashboard.AutonMode.CENTER_SWITCH, new CenterSwitchMacro());
@@ -39,34 +39,37 @@ public class AutonomousMode extends Coordinator {
 
         autonModes.put(Dashboard.AutonMode.NEW_SCALE_BACKWARD_LEFT, new NewScaleBackwardMacroLeft());
         autonModes.put(Dashboard.AutonMode.NEW_SCALE_BACKWARD_RIGHT, new NewScaleBackwardMacroRight());
-    }
 
-    @Override
-    public void begin () {
-        // reset arm encoder (again)
-        robot.arm.encoder.zero(Calibration.ARM_BOTTOM_LOCATION);
+        addState("Zero arm encoder", new ActionCoordinator(robot.arm.zero, () -> true));
 
-        selectedMode = autonModes.getOrDefault(robot.dashboard.autonMode.get(), null);
+        addState("Execute selected autonomous mode", new Coordinator() {
+            private Coordinator selectedMode;
 
-        if (selectedMode != null) {
-            selectedMode.start();
-        }
-    }
+            @Override
+            protected void begin () {
+                selectedMode = autonModes.getOrDefault(robot.dashboard.autonMode.get(), null);
 
-    @Override
-    public boolean run () {
-        if (selectedMode == null) {
-            return false;
-        }
+                if (selectedMode != null) {
+                    selectedMode.start();
+                }
+            }
 
-        return selectedMode.execute();
-    }
+            @Override
+            protected boolean run () {
+                if (selectedMode == null) {
+                    return false;
+                }
 
-    @Override
-    public void end () {
-        if (selectedMode != null) {
-            selectedMode.stop();
-        }
+                return selectedMode.execute();
+            }
+
+            @Override
+            protected void end () {
+                if (selectedMode != null) {
+                    selectedMode.stop();
+                }
+            }
+        });
     }
 
     private class GrabPreloadedCubeMacro extends StatefulCoordinator {
