@@ -6,12 +6,12 @@ import com._604robotics.robotnik.Action;
 import com._604robotics.robotnik.Input;
 import com._604robotics.robotnik.Module;
 import com._604robotics.robotnik.Output;
+import com._604robotics.robotnik.prefabs.devices.wrappers.ArcadeDrivePIDOutput;
 import com._604robotics.robotnik.prefabs.devices.wrappers.RampMotor;
 
-import edu.wpi.first.wpilibj.CounterBase;
-import edu.wpi.first.wpilibj.Encoder;
-import edu.wpi.first.wpilibj.PWMVictorSPX;
-import edu.wpi.first.wpilibj.SpeedControllerGroup;
+import com._604robotics.robotnik.prefabs.devices.wrappers.SimplePIDSource;
+import com._604robotics.robotnik.prefabs.flow.SmartTimer;
+import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -36,7 +36,7 @@ public class Drive extends Module {
             true,
             CounterBase.EncodingType.k4X);
     
-    public void resetEncoders () {
+    private void resetEncoders () {
         encoderLeft.reset();
         encoderRight.reset();
     }
@@ -117,6 +117,104 @@ public class Drive extends Module {
         @Override
         public void run () {
             robotDrive.arcadeDrive(movePower.get(), rotatePower.get(), squaredInputs.get());
+        }
+    }
+
+    public class ArcadeServo extends Action {
+        private final PIDSource encoderDiffPIDSource = new SimplePIDSource(PIDSourceType.kDisplacement) {
+            @Override
+            public double pidGet () {
+                return -rightClicks.get() + leftClicks.get();
+            }
+        };
+
+        private final PIDSource encoderAvgPIDSource = new SimplePIDSource(PIDSourceType.kDisplacement) {
+            @Override
+            public double pidGet () {
+                return (rightClicks.get() + leftClicks.get()) / 2;
+            }
+        };
+
+        private final ArcadeDrivePIDOutput arcadeDrivePIDOutput = new ArcadeDrivePIDOutput(robotDrive);
+
+        private final PIDController moveController = new PIDController(
+                Calibration.DRIVE_MOVE_PID_P,
+                Calibration.DRIVE_MOVE_PID_I,
+                Calibration.DRIVE_MOVE_PID_D,
+                encoderAvgPIDSource,
+                arcadeDrivePIDOutput.move,
+                Calibration.DRIVE_PID_SAMPLE_RATE);
+
+        private final PIDController rotController = new PIDController(
+                Calibration.DRIVE_ROTATE_PID_P,
+                Calibration.DRIVE_ROTATE_PID_I,
+                Calibration.DRIVE_ROTATE_PID_D,
+                encoderDiffPIDSource,
+                arcadeDrivePIDOutput.rotate,
+                Calibration.DRIVE_PID_SAMPLE_RATE);
+
+        private final SmartTimer targetTimer = new SmartTimer();
+        public final Output<Boolean> onTarget = addOutput("done",
+            () -> targetTimer.hasReachedTime(Calibration.DRIVE_PID_AFTER_TIMING));
+
+        private final double moveSetpoint;
+        private final double rotSetpoint;
+
+        public ArcadeServo (double moveSetpoint, double rotSetpoint) {
+            super(Drive.this, ArcadeServo.class);
+            this.moveSetpoint = moveSetpoint;
+            this.rotSetpoint = rotSetpoint;
+        }
+
+        @Override
+        protected void begin () {
+            resetEncoders();
+
+            moveController.setOutputRange(
+                    -Calibration.DRIVE_MOVE_PID_MAX,
+                    Calibration.DRIVE_MOVE_PID_MAX
+            );
+            moveController.setAbsoluteTolerance(Calibration.DRIVE_MOVE_TOLERANCE);
+            moveController.setSetpoint(moveSetpoint);
+
+            rotController.setOutputRange(
+                    -Calibration.DRIVE_ROTATE_PID_MAX,
+                    Calibration.DRIVE_ROTATE_PID_MAX
+            );
+            rotController.setAbsoluteTolerance(Calibration.DRIVE_ROTATE_TOLERANCE);
+            rotController.setSetpoint(rotSetpoint);
+
+            rotController.enable();
+
+            // Stagger the timings of the PIDs slightly
+            try {
+                // 500 = 1000 / 2
+                // Set up PIDs to output in even staggering
+                Thread.sleep((long) (Calibration.DRIVE_PID_SAMPLE_RATE*500));
+            } catch (InterruptedException e) {
+                // Do nothing
+            }
+
+            moveController.enable();
+        }
+
+        @Override
+        protected void run () {
+            if (moveController.onTarget() && rotController.onTarget()) {
+                targetTimer.startIfNotRunning();
+            } else {
+                targetTimer.stopAndReset();
+            }
+
+            arcadeDrivePIDOutput.update();
+        }
+
+        @Override
+        protected void end () {
+            moveController.reset();
+            rotController.reset();
+
+            targetTimer.stopAndReset();
         }
     }
 

@@ -18,7 +18,6 @@ class OutputProxy<T> implements Output<T> {
         return name;
     }
 
-
     @Override
     public synchronized T get () {
         return value;

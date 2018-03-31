@@ -51,26 +51,11 @@ public class Dashboard extends DashboardModule {
         LEFT_SCALE_WITHOUT_CROSS,
         RIGHT_SCALE_WITH_CROSS,
         RIGHT_SCALE_WITHOUT_CROSS,
-        // Calibration autons to verify angles and distances
-        ROTATE_LEFT_TEST,
-        ROTATE_RIGHT_TEST,
         FAILSAFE_FORWARD_12,
         FAILSAFE_BACKWARD_12,
-        // Demo auton into which arbitrary stuff can be stashed for testing
-        DEMO_NEW_AUTON,
-        // Remnants of various tests
         FORWARD_SWITCH,
-        // CENTER_SWITCH_LEFT,
-        // CENTER_SWITCH_RIGHT,
-//        SWITCH_FORWARD,
-        NEW_SCALE_BACKWARD,
-//        SWERVE_SCALE_OPPOSITE_LEFT,
-//        BALANCED_LEFT_TURN_TEST,
-//        SWEPT_LEFT_TURN_TEST,
-//        BALANCED_SWEPT_LEFT_TURN_TEST,
-//        BALANCED_RIGHT_TURN_TEST,
-//        SWEPT_RIGHT_TURN_TEST,
-//        BALANCED_SWEPT_RIGHT_TURN_TEST,
+        NEW_SCALE_BACKWARD_LEFT,
+        NEW_SCALE_BACKWARD_RIGHT,
     }
     
     public enum DriveMode {
