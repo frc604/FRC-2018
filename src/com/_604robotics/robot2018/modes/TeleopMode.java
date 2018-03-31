@@ -58,8 +58,6 @@ public class TeleopMode extends Coordinator {
         elevatorArmManager = new ElevatorArmManager();
     }
     
-    private boolean getHoldArmClicks = false;
-    
     private double driverLeftJoystickY = 0.0;
     private double driverLeftJoystickX = 0.0;
     private double driverLeftTrigger = 0.0;
