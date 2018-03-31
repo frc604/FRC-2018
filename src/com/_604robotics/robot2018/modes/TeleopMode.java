@@ -271,48 +271,41 @@ public class TeleopMode extends Coordinator {
     private boolean clampingOverride = false;
     
     private class IntakeManager {
-    	private final Intake.Idle idle;
     	private final Intake.Run run;
-    	private final Intake.Passive passive;
-    	
+
     	public IntakeManager() {
-    		idle = robot.intake.new Idle();
     		run = robot.intake.new Run();
-    		passive = robot.intake.new Passive();
     	}
     	
     	public void run() {
-    		if( driverLeftTrigger != 0 || driverRightTrigger != 0 ) {
-    			double output = 0;
-    			if( driverRightTrigger >= driverLeftTrigger ) {
-    				output = (driverRightTrigger*driverRightTrigger);
-    			} else if( driverLeftTrigger > driverRightTrigger ) {
-    			    if( driverDPad ) {
-    			        output = -Calibration.INTAKE_OUTAKE_OVERDRIVE_MODIFIER*driverLeftTrigger;
+            double output = 0;
+
+    		if (driverLeftTrigger != 0 || driverRightTrigger != 0) {
+    			if (driverRightTrigger >= driverLeftTrigger) {
+    				output = driverRightTrigger*driverRightTrigger;
+    			} else if (driverLeftTrigger > driverRightTrigger) {
+    			    if (driverDPad) {
+    			        output = -Calibration.INTAKE_OUTAKE_OVERDRIVE_MODIFIER * driverLeftTrigger;
     			    } else {
-    			        output = -Calibration.INTAKE_OUTAKE_MODIFIER*(driverLeftTrigger);
+    			        output = -Calibration.INTAKE_OUTAKE_MODIFIER * driverLeftTrigger;
     			    }
     			}
-    			run.runPower.set(output);
-    			run.activate();
-    		} else if( manipRightBumper || manipRightTrigger != 0 ) {
-    			double output = 0;
-    			if( manipRightTrigger != 0 ) {
-    			    if( manipDPad ) {
+    		} else if (manipRightBumper || manipRightTrigger != 0) {
+    			if (manipRightTrigger != 0) {
+    			    if (manipDPad) {
                         output = -Calibration.INTAKE_OUTAKE_OVERDRIVE_MODIFIER;
                     } else {
-                        output = -Calibration.INTAKE_OUTAKE_MODIFIER*(manipRightTrigger);
+                        output = -Calibration.INTAKE_OUTAKE_MODIFIER * manipRightTrigger;
                     }
-                } else if( manipRightBumper ) {
+                } else if (manipRightBumper) {
                     output = 1;
                 }
-    		    run.runPower.set(output);
-    		    run.activate();
-    		} else if(clampingOverride) {
-    		    passive.activate();
-    		} else {
-    			idle.activate();
+    		} else if (clampingOverride) {
+    		    output = Calibration.INTAKE_PASSIVE_POWER;
     		}
+
+            run.power.set(output);
+            run.activate();
     	}
     }
     
