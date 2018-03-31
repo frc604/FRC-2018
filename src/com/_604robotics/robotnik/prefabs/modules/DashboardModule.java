@@ -56,22 +56,21 @@ public class DashboardModule extends Module {
 
     protected Output<Boolean> addDashboardOutput (String name, boolean defaultValue) {
         SmartDashboard.putBoolean(name, defaultValue);
-        return addOutput(name, () -> SmartDashboard.getBoolean(name, defaultValue));
+        return addOutput(name, defaultValue, () -> SmartDashboard.getBoolean(name, defaultValue));
     }
 
     protected Output<Double> addDashboardOutput (String name, double defaultValue) {
         SmartDashboard.putNumber(name, defaultValue);
-        return addOutput(name, () -> SmartDashboard.getNumber(name, defaultValue));
+        return addOutput(name, defaultValue, () -> SmartDashboard.getNumber(name, defaultValue));
     }
 
     protected Output<String> addDashboardOutput (String name, String defaultValue) {
         SmartDashboard.putString(name, defaultValue);
-        return addOutput(name, () -> SmartDashboard.getString(name, defaultValue));
+        return addOutput(name, defaultValue, () -> SmartDashboard.getString(name, defaultValue));
     }
 
     protected <E extends Enum<E>> Output<E> addDashboardOutput (String name, E defaultValue, Class<E> klass) {
         final SendableChooser<E> chooser = new SendableChooser<>();
-        //SmartDashboard.putData(name,chooser);
         for (E option : EnumSet.allOf(klass)) {
             if (option == defaultValue) {
                 chooser.addDefault(option.toString(), option);
@@ -80,7 +79,7 @@ public class DashboardModule extends Module {
             }
         }
         SmartDashboard.putData(name, chooser);
-        return addOutput(name, chooser::getSelected);
+        return addOutput(name, defaultValue, chooser::getSelected);
     }
 
     public DashboardModule (String name) {

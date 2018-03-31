@@ -52,7 +52,7 @@ public abstract class Action {
         return input;
     }
 
-    synchronized protected <T> Output<T> addOutput (String name, Output<T> output) {
+    synchronized protected <T> Output<T> addOutput (String name, T initialValue, Output<T> output) {
         parent.assertUnsealed();
 
         if (name.isEmpty()) {
@@ -62,7 +62,7 @@ public abstract class Action {
             throw new IllegalArgumentException("Output names may not contain commas");
         }
 
-        final OutputProxy<T> proxy = new OutputProxy<>(name, output);
+        final OutputProxy<T> proxy = new OutputProxy<>(name, initialValue, output);
         outputs.add(proxy);
         outputListValue = outputListValue.isEmpty() ? name : outputListValue + "," + name;
         return proxy;

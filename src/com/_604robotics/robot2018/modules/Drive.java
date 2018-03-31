@@ -41,11 +41,11 @@ public class Drive extends Module {
         encoderRight.reset();
     }
 
-    public final Output<Integer> leftClicks = addOutput("leftClicks", encoderLeft::get);
-    public final Output<Integer> rightClicks = addOutput("rightClicks", encoderRight::get);
+    public final Output<Integer> leftClicks = addOutput("leftClicks", 0, encoderLeft::get);
+    public final Output<Integer> rightClicks = addOutput("rightClicks", 0, encoderRight::get);
     
-    public final Output<Double> leftClickRate = addOutput("leftClickRate", encoderLeft::getRate);
-    public final Output<Double> rightClickRate = addOutput("rightClickRate", encoderRight::getRate);
+    public final Output<Double> leftClickRate = addOutput("leftClickRate", 0d, encoderLeft::getRate);
+    public final Output<Double> rightClickRate = addOutput("rightClickRate", 0d, encoderRight::getRate);
 
     public class Idle extends Action {
         private Idle () {
@@ -154,7 +154,7 @@ public class Drive extends Module {
                 Calibration.DRIVE_PID_SAMPLE_RATE);
 
         private final SmartTimer targetTimer = new SmartTimer();
-        public final Output<Boolean> onTarget = addOutput("done",
+        public final Output<Boolean> onTarget = addOutput("done", false,
             () -> targetTimer.hasReachedTime(Calibration.DRIVE_PID_AFTER_TIMING));
 
         private final double moveSetpoint;

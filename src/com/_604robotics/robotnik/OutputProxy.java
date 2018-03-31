@@ -5,13 +5,14 @@ class OutputProxy<T> implements Output<T> {
     private final Output<T> source;
     private T value;
 
-    public OutputProxy (String name, Output<T> source) {
+    public OutputProxy (String name, T initialValue, Output<T> source) {
         if (name.contains(",")) {
             throw new IllegalArgumentException("Output names may not contain commas");
         }
 
         this.name = name;
         this.source = source;
+        value = initialValue;
     }
 
 	public String getName () {

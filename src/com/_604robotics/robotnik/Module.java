@@ -93,9 +93,9 @@ public abstract class Module {
         return input;
     }
 
-    protected <T> Output<T> addOutput (String name, Output<T> output) {
+    protected <T> Output<T> addOutput (String name, T initialValue, Output<T> output) {
         assertUnsealed();
-        final OutputProxy<T> proxy = new OutputProxy<>(name, output);
+        final OutputProxy<T> proxy = new OutputProxy<>(name, initialValue, output);
         outputs.add(proxy);
         outputsTableIndex.add("Output", name);
         return proxy;

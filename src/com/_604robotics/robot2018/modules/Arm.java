@@ -19,13 +19,13 @@ public class Arm extends Module {
     private final WPI_TalonSRX motorB = new WPI_TalonSRX(Ports.ARM_MOTOR_B);
 
     private final TalonPWMEncoder encoder = new TalonPWMEncoder(motorB);
-    public final Output<Double> encoderRate = addOutput("encoderRate", encoder::getVelocity);
-    public final Output<Double> encoderClicks = addOutput("encoderClicks", encoder::getPosition);
-    public final Output<Boolean> raised = addOutput("raised",
+    public final Output<Double> encoderRate = addOutput("encoderRate", 0d, encoder::getVelocity);
+    public final Output<Double> encoderClicks = addOutput("encoderClicks", 0d, encoder::getPosition);
+    public final Output<Boolean> raised = addOutput("raised", false,
             () -> encoderClicks.get() >= Calibration.ARM_RAISE_TARGET);
 
     private final DigitalInput bottomLimit = new DigitalInput(Ports.ARM_BOTTOM_SWITCH);
-    public final Output<Boolean> atBottomLimit = addOutput("atBottomLimit", bottomLimit::get);
+    public final Output<Boolean> atBottomLimit = addOutput("atBottomLimit", false, bottomLimit::get);
 
     private final RotatingArmPIDController pid = new RotatingArmPIDController(
             Calibration.ARM_P,
@@ -35,7 +35,6 @@ public class Arm extends Module {
             encoder,
             motorA,
             Calibration.ARM_PID_PERIOD);
-    public final Output<Double> pidError = addOutput("pidError", pid::getError);
 
     public class Idle extends Action {
         private Idle () {

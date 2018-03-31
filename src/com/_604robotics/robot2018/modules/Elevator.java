@@ -16,9 +16,9 @@ public class Elevator extends Module {
     private final WPI_TalonSRX motorB = new WPI_TalonSRX(Ports.ELEVATOR_MOTOR_B);
 
     private final TalonPWMEncoder encoder = new TalonPWMEncoder(motorA);
-    public final Output<Double> encoderRate = addOutput("encoderRate", encoder::getVelocity);
-    public final Output<Double> encoderClicks = addOutput("encoderClicks", encoder::getPosition);
-    public final Output<Boolean> bumperClear = addOutput("bumperClear",
+    public final Output<Double> encoderRate = addOutput("encoderRate", 0d, encoder::getVelocity);
+    public final Output<Double> encoderClicks = addOutput("encoderClicks", 0d, encoder::getPosition);
+    public final Output<Boolean> bumperClear = addOutput("bumperClear", false,
             () -> encoderClicks.get() >= Calibration.ELEVATOR_BUMPER_CLEAR);
 
     private final ClampedIntegralPIDController pid = new ClampedIntegralPIDController(
@@ -28,7 +28,6 @@ public class Elevator extends Module {
             encoder,
             motorA,
             Calibration.ELEVATOR_PID_PERIOD);
-    public final Output<Double> pidError = addOutput("Elevator PID Error", pid::getError);
 
     public class Idle extends Action {
         private Idle () {
