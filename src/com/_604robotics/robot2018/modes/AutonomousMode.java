@@ -124,24 +124,6 @@ public class AutonomousMode extends Coordinator {
             case NEW_SCALE_BACKWARD:
                 selectedModeMacro = new NewScaleBackwardMacroLeft();
                 break;
-//            case BALANCED_LEFT_TURN_TEST:
-//            	selectedModeMacro = new BalancedLeftTurnMacro();
-//            	break;
-//            case SWEPT_LEFT_TURN_TEST:
-//            	selectedModeMacro = new SweptLeftTurnMacro();
-//            	break;
-//            case BALANCED_SWEPT_LEFT_TURN_TEST:
-//            	selectedModeMacro = new BalancedSweptLeftTurnMacro();
-//            	break;
-//            case BALANCED_RIGHT_TURN_TEST:
-//            	selectedModeMacro = new BalancedRightTurnMacro();
-//            	break;
-//            case SWEPT_RIGHT_TURN_TEST:
-//            	selectedModeMacro = new SweptRightTurnMacro();
-//            	break;
-//            case BALANCED_SWEPT_RIGHT_TURN_TEST:
-//            	selectedModeMacro = new BalancedSweptRightTurnMacro();
-//            	break;
             case OFF:
             default:
                 selectedModeMacro = null;

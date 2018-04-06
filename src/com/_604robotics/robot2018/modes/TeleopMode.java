@@ -289,7 +289,7 @@ public class TeleopMode extends Coordinator {
     				output = (driverRightTrigger*driverRightTrigger);
     			} else if( driverLeftTrigger > driverRightTrigger ) {
     			    if( driverDPad ) {
-    			        output = -Calibration.INTAKE_OUTAKE_MANIPULATOR_OVERDRIVE_MODIFIER*driverLeftTrigger;//fix later
+    			        output = -Calibration.INTAKE_OUTAKE_MANIPULATOR_OVERDRIVE_MODIFIER*driverLeftTrigger;
     			    } else {
     			        output = -Calibration.INTAKE_OUTAKE_DRIVER_MODIFIER*(driverLeftTrigger);
     			    }
@@ -328,7 +328,7 @@ public class TeleopMode extends Coordinator {
     		clamping = new Toggle(true);
     	}
     	
-    	public void run() { //testme
+    	public void run() {
     		clamping.update(manipX);
             if (clamping.isInOnState()) {
                 retract.activate();
@@ -422,11 +422,6 @@ public class TeleopMode extends Coordinator {
     	public void run() {
     	    bottomPulse.update(robot.arm.getBottomLimit());
     	    if (manipStart || bottomPulse.isRisingEdge()) {
-    	        // offset -= (lowtarget - current)
-    	        // TODO: Remeber to properly handle inversion
-    	        // System.out.println( robot.arm.encoder.isInverted() ? "Safe" : "ERROR: Not Inverted");
-    	        // robot.arm.encoder.setOffset(robot.arm.encoder.getOffset() - robot.arm.encoder.getPosition() + Calibration.ARM_LOW_TARGET);
-    	        // System.out.println("Warning: " + (robot.arm.encoder.getOffset() - robot.arm.encoder.getPosition() + Calibration.ARM_LOW_TARGET));
     	        robot.arm.encoder.zero(Calibration.ARM_BOTTOM_LOCATION);
     	        getHoldArmClicks = true; // Need to get hold setpoint again
     	    }
