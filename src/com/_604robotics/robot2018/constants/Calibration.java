@@ -8,6 +8,8 @@ public class Calibration {
     private Calibration () {}
     
     public static final boolean TANDEM_ACTIVE = true;
+    public static final boolean ELEVATOR_HOLD_ACTIVE = true;
+    public static final boolean ARM_HOLD_ACTIVE = true;
     
     public static final double TELEOP_DRIVE_DEADBAND = 0.3;
     public static final double TELEOP_MANIP_DEADBAND = 0.2;

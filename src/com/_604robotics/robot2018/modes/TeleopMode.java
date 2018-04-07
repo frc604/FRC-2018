@@ -389,17 +389,21 @@ public class TeleopMode extends Coordinator {
         	} else if( driverY && driverLeftJoystickButton ) {
         		setpoint.target_clicks.set(Calibration.ELEVATOR_HIGH_TARGET);
         		setpoint.activate();
-        	} else {
-        	    // test.log("ERROR","Reaching set logic");
-        	    // This should only be called once
-        		if( robot.elevator.getHoldElevatorClicks ) {
-        			holdSetpoint=robot.elevator.encoderClicks.get();
-        			robot.elevator.resetIntegral(Calibration.ELEVATOR_RESET_SUM);
-        			robot.elevator.getHoldElevatorClicks = false;
-        		}
-        		setpoint.target_clicks.set(holdSetpoint);
-        		setpoint.activate();
-        	}
+            } else {
+                if (Calibration.ELEVATOR_HOLD_ACTIVE) {
+                    // This should only be called once
+                    if (robot.elevator.getHoldElevatorClicks) {
+                        holdSetpoint = robot.elevator.encoderClicks.get();
+                        robot.elevator.resetIntegral(Calibration.ELEVATOR_RESET_SUM);
+                        robot.elevator.getHoldElevatorClicks = false;
+                    }
+                    setpoint.target_clicks.set(holdSetpoint);
+                    setpoint.activate();
+                } else {
+                    move.liftPower.set(0.0);
+                    move.activate();
+                }
+            }
         }
     }
     
@@ -546,17 +550,22 @@ public class TeleopMode extends Coordinator {
         			setpoint.activate();
         		}
     			getHoldArmClicks = true;
-    		} else {
-    		    // This should only be called once
-                if( getHoldArmClicks ) {
-                    holdSetpoint=robot.arm.encoderClicks.get();
-                    robot.arm.resetIntegral(Calibration.ARM_RESET_SUM);
-                    getHoldArmClicks = false;
+            } else {
+                // This should only be called once
+                if (Calibration.ARM_HOLD_ACTIVE) {
+                    if (getHoldArmClicks) {
+                        holdSetpoint = robot.arm.encoderClicks.get();
+                        robot.arm.resetIntegral(Calibration.ARM_RESET_SUM);
+                        getHoldArmClicks = false;
+                    }
+                    elevatorOverride = false;
+                    setpoint.target_clicks.set(holdSetpoint);
+                    setpoint.activate();
+                } else {
+                    move.liftPower.set(0.0);
+                    move.activate();
                 }
-                elevatorOverride = false;
-                setpoint.target_clicks.set(holdSetpoint);
-                setpoint.activate();
-    		}
-    	}
+            }
+        }
     }
 }
