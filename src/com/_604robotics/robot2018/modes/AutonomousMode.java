@@ -66,16 +66,16 @@ public class AutonomousMode extends Coordinator {
         		marionetteDriver = new MarionetteDriver(primaryFileName);
         		break;
         	case SWITCH:
-        		primaryFileName = "switchLeft.marionette";
-        		secondaryFileName = "switchRight.marionette";
+        		primaryFileName = Calibration.SWITCH_LEFT_FILENAME;
+        		secondaryFileName = Calibration.SWITCH_RIGHT_FILENAME;
         		marionetteDriver = new MarionetteSwitch();
         		break;
         	case SCALE_LEFT:
-        		primaryFileName = "scaleLeft.marionette";
+        		primaryFileName = Calibration.SCALE_LEFT_FILENAME;
         		marionetteDriver = new MarionetteLeftScale();
         		break;
         	case SCALE_RIGHT:
-        		primaryFileName = "scaleRight.marionette";
+        		primaryFileName = Calibration.SCALE_RIGHT_FILENAME;
         		marionetteDriver = new MarionetteRightScale();
         		break;
         	default:
