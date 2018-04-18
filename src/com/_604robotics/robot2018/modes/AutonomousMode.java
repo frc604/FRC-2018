@@ -202,8 +202,8 @@ public class AutonomousMode extends Coordinator {
     	public MarionetteLeftScale() {
     		super(MarionetteLeftScale.class);
     		addDefault(new SleepCoordinator(0.1)); // Lucky randomness guaranteed by coin flip
-    		addCase(new String[]{"LLL", "LLR", "LRL", "LRR"}, new MarionetteDriver(primaryFileName));
-    		addCase(new String[]{"RLL", "RLR", "RRL", "RRR"}, new LeftScaleMacro());
+    		addCase(new String[]{"LLL", "LLR", "RLL", "RLR"}, new MarionetteDriver(primaryFileName));
+    		addCase(new String[]{"LRL", "LRR", "RRL", "RRR"}, new LeftScaleMacro());
     	}
     }
     
@@ -211,8 +211,8 @@ public class AutonomousMode extends Coordinator {
     	public MarionetteRightScale() {
     		super(MarionetteRightScale.class);
     		addDefault(new SleepCoordinator(0.1)); // Lucky randomness guaranteed by coin flip
-    		addCase(new String[]{"LLL", "LLR", "LRL", "LRR"}, new RightScaleMacro());
-    		addCase(new String[]{"RLL", "RLR", "RRL", "RRR"}, new MarionetteDriver(primaryFileName));
+    		addCase(new String[]{"LLL", "LLR", "RLL", "RLR"}, new RightScaleMacro());
+    		addCase(new String[]{"LRL", "LRR", "RRL", "RRR"}, new MarionetteDriver(primaryFileName));
     	}
     }
     
