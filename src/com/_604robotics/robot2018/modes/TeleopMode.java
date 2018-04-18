@@ -8,6 +8,7 @@ import com._604robotics.robot2018.Robot2018;
 import com._604robotics.robot2018.constants.Calibration;
 import com._604robotics.robot2018.modules.Arm;
 import com._604robotics.robot2018.modules.Clamp;
+import com._604robotics.robot2018.modules.Dashboard.MarionetteOutput;
 import com._604robotics.robot2018.modules.Drive;
 import com._604robotics.robot2018.modules.Elevator;
 import com._604robotics.robot2018.modules.Intake;
@@ -166,6 +167,9 @@ public class TeleopMode extends Coordinator {
                 String fileName = robot.dashboard.recordAutonFile.get();
                 switch( robot.dashboard.marionetteRecorder.get() ) {
                 	case MANUAL:
+                		if( Calibration.AUTO_APPEND_TIMESTAMP ) {
+                			fileName = System.currentTimeMillis() + "_" + fileName;
+                		}
                 		break;
                 	case SWITCH_LEFT:
                 		fileName = Calibration.SWITCH_LEFT_FILENAME;

@@ -142,6 +142,7 @@ public class Calibration {
     public static final double INTAKE_PASSIVE_POWER = 0.1;
     
     /* Marionette */
+    public static final boolean AUTO_APPEND_TIMESTAMP = true;
     public static final String SWITCH_LEFT_FILENAME = "switchLeft.marionette";
     public static final String SWITCH_RIGHT_FILENAME = "switchRight.marionette";
     public static final String SCALE_LEFT_FILENAME = "scaleLeft.marionette";
