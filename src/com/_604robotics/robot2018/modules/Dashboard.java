@@ -66,7 +66,7 @@ public class Dashboard extends DashboardModule {
         FORWARD_SWITCH,
         // CENTER_SWITCH_LEFT,
         // CENTER_SWITCH_RIGHT,
-//        SWITCH_FORWARD,
+        // SWITCH_FORWARD,
         NEW_SCALE_BACKWARD,
 //        SWERVE_SCALE_OPPOSITE_LEFT,
 //        BALANCED_LEFT_TURN_TEST,
