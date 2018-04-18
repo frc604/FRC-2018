@@ -133,6 +133,7 @@ public class InputRecording {
             for (int i = 0; i < frameCount * joystickDescriptors.length; ++i) {
                 out.writeInt(buttonBuffer[i]);
             }
+            out.flush();
         }
     }
 }
