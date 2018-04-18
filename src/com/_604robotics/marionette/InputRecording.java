@@ -30,7 +30,7 @@ public class InputRecording {
         buttonBuffer = new int[frameCount * joystickDescriptors.length];
     }
 
-    public int getFrameCount () {
+    public synchronized int getFrameCount () {
         return frameCount;
     }
 
@@ -40,50 +40,52 @@ public class InputRecording {
                     "newFrameCount > frameCount (" + newFrameCount + " > " + frameCount + ")");
         }
 
-        frameCount = newFrameCount;
+        synchronized (this) {
+            frameCount = newFrameCount;
+        }
     }
 
-    public int getJoystickCount () {
+    public synchronized int getJoystickCount () {
         return joystickDescriptors.length;
     }
 
-    public int getAxisCount (final int joystick) {
+    public synchronized int getAxisCount (final int joystick) {
         return joystickDescriptors[joystick].getAxisCount();
     }
 
-    public int getButtonCount (final int joystick) {
+    public synchronized int getButtonCount (final int joystick) {
         return joystickDescriptors[joystick].getButtonCount();
     }
 
-    public double getTimestamp (final int frame) {
+    public synchronized double getTimestamp (final int frame) {
         return timestampBuffer[frame];
     }
 
-    public void setTimestamp (final int frame, final double value) {
+    public synchronized void setTimestamp (final int frame, final double value) {
         timestampBuffer[frame] = value;
     }
 
-    private int getAxisIndex (final int frame, final int joystick, int axis) {
+    private synchronized int getAxisIndex (final int frame, final int joystick, int axis) {
         return frame * totalAxisCount + axisOffsets[joystick] + axis;
     }
 
-    public double getRawAxis (final int frame, final int joystick, final int axis) {
+    public synchronized double getRawAxis (final int frame, final int joystick, final int axis) {
         return axisBuffer[getAxisIndex(frame, joystick, axis)];
     }
 
-    public void setRawAxis (final int frame, final int joystick, final int axis, final double value) {
+    public synchronized void setRawAxis (final int frame, final int joystick, final int axis, final double value) {
         axisBuffer[getAxisIndex(frame, joystick, axis)] = value;
     }
 
-    private int getButtonsIndex (final int frame, final int joystick) {
+    private synchronized int getButtonsIndex (final int frame, final int joystick) {
         return frame * joystickDescriptors.length + joystick;
     }
 
-    public boolean getRawButton (final int frame, final int joystick, final int button) {
+    public synchronized boolean getRawButton (final int frame, final int joystick, final int button) {
         return ((buttonBuffer[getButtonsIndex(frame, joystick)] >> (button - 1)) & 1) == 1;
     }
 
-    public void setRawButton (final int frame, final int joystick, final int button, final boolean value) {
+    public synchronized void setRawButton (final int frame, final int joystick, final int button, final boolean value) {
         buttonBuffer[getButtonsIndex(frame, joystick)] |= (value ? 1 : 0) << (button - 1);
     }
 
@@ -101,21 +103,24 @@ public class InputRecording {
             }
 
             final InputRecording recording = new InputRecording(frameCount, joystickDescriptors);
-            for (int i = 0; i < recording.timestampBuffer.length; ++i) {
-                recording.timestampBuffer[i] = in.readDouble();
-            }
-            for (int i = 0; i < recording.axisBuffer.length; ++i) {
-                recording.axisBuffer[i] = in.readDouble();
-            }
-            for (int i = 0; i < recording.buttonBuffer.length; ++i) {
-                recording.buttonBuffer[i] = in.readInt();
+            synchronized (recording) {
+                for (int i = 0; i < recording.timestampBuffer.length; ++i) {
+                    recording.timestampBuffer[i] = in.readDouble();
+                }
+                for (int i = 0; i < recording.axisBuffer.length; ++i) {
+                    recording.axisBuffer[i] = in.readDouble();
+                }
+                for (int i = 0; i < recording.buttonBuffer.length; ++i) {
+                    recording.buttonBuffer[i] = in.readInt();
+                }
             }
 
             return recording;
         }
     }
 
-    public void save (final String path) throws IOException {
+    // Do not want the recording to change while it is being saved
+    public synchronized void save (final String path) throws IOException {
         try (final DataOutputStream out = new DataOutputStream(new FileOutputStream(path))) {
             out.writeInt(frameCount);
             out.writeInt(joystickDescriptors.length);
@@ -133,6 +138,7 @@ public class InputRecording {
             for (int i = 0; i < frameCount * joystickDescriptors.length; ++i) {
                 out.writeInt(buttonBuffer[i]);
             }
+            out.flush();
         }
     }
 }
