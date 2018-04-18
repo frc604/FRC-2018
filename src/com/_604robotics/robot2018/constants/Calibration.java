@@ -141,4 +141,11 @@ public class Calibration {
     public static final double INTAKE_OUTAKE_MANIPULATOR_OVERDRIVE_MODIFIER = 0.4;
     public static final double INTAKE_PASSIVE_POWER = 0.1;
     
+    /* Marionette */
+    public static final String SWITCH_LEFT_FILENAME = "switchLeft.marionette";
+    public static final String SWITCH_RIGHT_FILENAME = "switchRight.marionette";
+    public static final String SCALE_LEFT_FILENAME = "scaleLeft.marionette";
+    public static final String SCALE_RIGHT_FILENAME = "scaleRight.marionette";
+    
+    
 }

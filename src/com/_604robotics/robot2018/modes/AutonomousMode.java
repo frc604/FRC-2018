@@ -42,6 +42,9 @@ public class AutonomousMode extends Coordinator {
 
     private Coordinator selectedModeMacro;
 
+    public String primaryFileName;
+    public String secondaryFileName;
+    
     public AutonomousMode (Robot2018 robot) {
         this.robot = robot;
 
@@ -55,36 +58,30 @@ public class AutonomousMode extends Coordinator {
         backwardStateMacro = new ArcadePIDStateMacro(Calibration.DRIVE_MOVE_BACKWARD_TARGET,
                 Calibration.DRIVE_ROTATE_STILL_TARGET);
 
-        marionetteDriver = new Coordinator() {
-            @Override
-            protected void begin () {
-                final String fileName = robot.dashboard.recordAutonFile.get();
-
-                logger.info("Loading Marionette recording from \"" + fileName + "\"");
-                final InputRecording recording;
-                try {
-                    recording = InputRecording.load("/home/lvuser/" + fileName);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-
-                logger.info("Starting Marionette playback");
-                robot.teleopMode.startPlayback(recording);
-                robot.teleopMode.start();
-            }
-
-            @Override
-            protected boolean run () {
-                return robot.teleopMode.execute();
-            }
-
-            @Override
-            protected void end () {
-                logger.info("Stopping Marionette playback");
-                robot.teleopMode.stop();
-                robot.teleopMode.stopPlayback();
-            }
-        };
+        primaryFileName = robot.dashboard.recordAutonFile.get();
+        secondaryFileName = "";
+        
+        switch( robot.dashboard.marionetteOutput.get() ) {
+        	case MANUAL:
+        		marionetteDriver = new MarionetteDriver(primaryFileName);
+        		break;
+        	case SWITCH:
+        		primaryFileName = "switchLeft.marionette";
+        		secondaryFileName = "switchRight.marionette";
+        		marionetteDriver = new MarionetteSwitch();
+        		break;
+        	case SCALE_LEFT:
+        		primaryFileName = "scaleLeft.marionette";
+        		marionetteDriver = new MarionetteLeftScale();
+        		break;
+        	case SCALE_RIGHT:
+        		primaryFileName = "scaleRight.marionette";
+        		marionetteDriver = new MarionetteRightScale();
+        		break;
+        	default:
+        		marionetteDriver = new FallForwardMacro();
+        		break;
+        }
     }
 
     @Override
@@ -189,6 +186,68 @@ public class AutonomousMode extends Coordinator {
     public void end () {
         if (selectedModeMacro != null) {
             selectedModeMacro.stop();
+        }
+    }
+    
+    private class MarionetteSwitch extends SwitchCoordinator {
+    	public MarionetteSwitch() {
+    		super(MarionetteSwitch.class);
+    		addDefault(new SleepCoordinator(0.1)); // Lucky randomness guaranteed by coin flip
+    		addCase(new String[]{"LLL", "LLR", "LRL", "LRR"}, new MarionetteDriver(primaryFileName));
+    		addCase(new String[]{"RLL", "RLR", "RRL", "RRR"}, new MarionetteDriver(secondaryFileName));
+    	}
+    }
+    
+    private class MarionetteLeftScale extends SwitchCoordinator {
+    	public MarionetteLeftScale() {
+    		super(MarionetteLeftScale.class);
+    		addDefault(new SleepCoordinator(0.1)); // Lucky randomness guaranteed by coin flip
+    		addCase(new String[]{"LLL", "LLR", "LRL", "LRR"}, new MarionetteDriver(primaryFileName));
+    		addCase(new String[]{"RLL", "RLR", "RRL", "RRR"}, new LeftScaleMacro());
+    	}
+    }
+    
+    private class MarionetteRightScale extends SwitchCoordinator {
+    	public MarionetteRightScale() {
+    		super(MarionetteRightScale.class);
+    		addDefault(new SleepCoordinator(0.1)); // Lucky randomness guaranteed by coin flip
+    		addCase(new String[]{"LLL", "LLR", "LRL", "LRR"}, new RightScaleMacro());
+    		addCase(new String[]{"RLL", "RLR", "RRL", "RRR"}, new MarionetteDriver(primaryFileName));
+    	}
+    }
+    
+    private class MarionetteDriver extends Coordinator {
+    	private String fileName;
+    	
+    	public MarionetteDriver(String fileName) {
+    		this.fileName = fileName;
+    	}
+    	
+    	@Override
+        protected void begin () {
+            logger.info("Loading Marionette recording from \"" + fileName + "\"");
+            final InputRecording recording;
+            try {
+                recording = InputRecording.load("/home/lvuser/" + fileName);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
+            logger.info("Starting Marionette playback");
+            robot.teleopMode.startPlayback(recording);
+            robot.teleopMode.start();
+        }
+
+        @Override
+        protected boolean run () {
+            return robot.teleopMode.execute();
+        }
+
+        @Override
+        protected void end () {
+            logger.info("Stopping Marionette playback");
+            robot.teleopMode.stop();
+            robot.teleopMode.stopPlayback();
         }
     }
     

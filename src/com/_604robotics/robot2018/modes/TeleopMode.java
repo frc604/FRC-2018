@@ -163,9 +163,27 @@ public class TeleopMode extends Coordinator {
                 logger.info("Terminating Marionette recording");
                 oldInputRecorder.close();
 
-                final String fileName = robot.dashboard.recordAutonFile.get();
+                String fileName = robot.dashboard.recordAutonFile.get();
+                switch( robot.dashboard.marionetteRecorder.get() ) {
+                	case MANUAL:
+                		break;
+                	case SWITCH_LEFT:
+                		fileName = Calibration.SWITCH_LEFT_FILENAME;
+                		break;
+                	case SWITCH_RIGHT:
+                		fileName = Calibration.SWITCH_RIGHT_FILENAME;
+                		break;
+                	case SCALE_LEFT:
+                		fileName = Calibration.SCALE_LEFT_FILENAME;
+                		break;
+                	case SCALE_RIGHT:
+                		fileName = Calibration.SCALE_RIGHT_FILENAME;
+                		break;
+                	default:
+            			break;
+                }
                 logger.info("Saving Marionette recording to \"" + fileName + "\"");
-                oldInputRecorder.getRecording().save("/home/lvuser/" + robot.dashboard.recordAutonFile.get());
+                oldInputRecorder.getRecording().save("/home/lvuser/" + fileName);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

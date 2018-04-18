@@ -84,11 +84,30 @@ public class Dashboard extends DashboardModule {
         TANK,
         DYNAMIC
     }
+    
+    public enum MarionetteRecorder {
+    	MANUAL,
+    	SWITCH_LEFT,
+    	SWITCH_RIGHT,
+    	SCALE_LEFT,
+    	SCALE_RIGHT
+    }
+    
+    public enum MarionetteOutput {
+    	MANUAL,
+    	SWITCH,
+    	SCALE_LEFT,
+    	SCALE_RIGHT
+    }
 
     public final Output<AutonMode> autonMode = addDashboardOutput("autonMode", AutonMode.OFF, AutonMode.class);
     
     public final Output<DriveMode> driveMode = addDashboardOutput("driveMode", DriveMode.DYNAMIC, DriveMode.class);
 
+    public final Output<MarionetteRecorder> marionetteRecorder = addDashboardOutput("marionetteRecorder", MarionetteRecorder.MANUAL, MarionetteRecorder.class);
+    
+    public final Output<MarionetteOutput> marionetteOutput = addDashboardOutput("marionetteOutput", MarionetteOutput.MANUAL, MarionetteOutput.class);
+    
     public final Output<Boolean> recordAuton = addDashboardOutput("recordAuton", false);
     public final Output<String> recordAutonFile = addDashboardOutput("recordAutonFile", "autonomous.marionette");
 
