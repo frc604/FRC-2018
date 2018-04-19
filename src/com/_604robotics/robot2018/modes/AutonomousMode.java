@@ -38,8 +38,6 @@ public class AutonomousMode extends Coordinator {
     private final Coordinator forwardSwitchMacro;
     private final Coordinator backwardStateMacro;
 
-    private final Coordinator marionetteDriver;
-
     private Coordinator selectedModeMacro;
 
     public String primaryFileName;
@@ -57,37 +55,6 @@ public class AutonomousMode extends Coordinator {
         forwardSwitchMacro = new ArcadePIDStateMacro(Calibration.DRIVE_MOVE_FORWARD_SWITCH_INCHES, 0);
         backwardStateMacro = new ArcadePIDStateMacro(Calibration.DRIVE_MOVE_BACKWARD_TARGET,
                 Calibration.DRIVE_ROTATE_STILL_TARGET);
-
-        marionetteDriver = new Coordinator() {
-            @Override
-            protected void begin () {
-                final String fileName = robot.dashboard.recordAutonFile.get();
-
-                logger.info("Loading Marionette recording from \"" + fileName + "\"");
-                final InputRecording recording;
-                try {
-                    recording = InputRecording.load("/home/lvuser/" + fileName);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-
-                logger.info("Starting Marionette playback");
-                robot.teleopMode.startPlayback(recording);
-                robot.teleopMode.start();
-            }
-
-            @Override
-            protected boolean run () {
-                return robot.teleopMode.execute();
-            }
-
-            @Override
-            protected void end () {
-                logger.info("Stopping Marionette playback");
-                robot.teleopMode.stop();
-                robot.teleopMode.stopPlayback();
-            }
-        };
     }
 
     @Override
