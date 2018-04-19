@@ -38,8 +38,6 @@ public class AutonomousMode extends Coordinator {
     private final Coordinator forwardSwitchMacro;
     private final Coordinator backwardStateMacro;
 
-    private final Coordinator marionetteDriver;
-
     private Coordinator selectedModeMacro;
 
     public String primaryFileName;
@@ -57,9 +55,14 @@ public class AutonomousMode extends Coordinator {
         forwardSwitchMacro = new ArcadePIDStateMacro(Calibration.DRIVE_MOVE_FORWARD_SWITCH_INCHES, 0);
         backwardStateMacro = new ArcadePIDStateMacro(Calibration.DRIVE_MOVE_BACKWARD_TARGET,
                 Calibration.DRIVE_ROTATE_STILL_TARGET);
+    }
 
-        primaryFileName = robot.dashboard.recordAutonFile.get();
+    @Override
+    public void begin () {
+    	primaryFileName = robot.dashboard.recordAutonFile.get();
         secondaryFileName = "";
+        
+        Coordinator marionetteDriver;
         
         switch( robot.dashboard.marionetteOutput.get() ) {
         	case MANUAL:
@@ -82,10 +85,6 @@ public class AutonomousMode extends Coordinator {
         		marionetteDriver = new FallForwardMacro();
         		break;
         }
-    }
-
-    @Override
-    public void begin () {
         // reset arm encoder (again)
         robot.arm.encoder.zero(Calibration.ARM_BOTTOM_LOCATION);
         
