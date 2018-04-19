@@ -1,5 +1,20 @@
 <xml version="1.0">
 <dashboard>
+	<widget field="recordAuton" type="Boolean" class="edu.wpi.first.smartdashboard.gui.elements.CheckBox">
+		<location x="1268" y="629"/>
+	</widget>
+	<widget field="marionetteOutput" type="String Chooser" class="edu.wpi.first.smartdashboard.gui.elements.Chooser">
+		<location x="1276" y="700"/>
+	</widget>
+	<widget field="marionetteRecorder" type="String Chooser" class="edu.wpi.first.smartdashboard.gui.elements.Chooser">
+		<location x="1468" y="708"/>
+	</widget>
+	<widget field="recordAutonFile" type="String" class="edu.wpi.first.smartdashboard.gui.elements.TextBox">
+		<location x="1214" y="672"/>
+	</widget>
+	<widget field="Auto choices" type="String Chooser" class="edu.wpi.first.smartdashboard.gui.elements.Chooser">
+		<location x="1077" y="632"/>
+	</widget>
 	<widget field="Arm Encoder Status" type="Boolean" class="edu.wpi.first.smartdashboard.gui.elements.BooleanBox">
 		<location x="1276" y="339"/>
 		<width>497</width>
