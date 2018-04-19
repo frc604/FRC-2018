@@ -8,6 +8,8 @@ public class Calibration {
     private Calibration () {}
     
     public static final boolean TANDEM_ACTIVE = true;
+    public static final boolean ELEVATOR_HOLD_ACTIVE = true;
+    public static final boolean ARM_HOLD_ACTIVE = true;
     
     public static final double TELEOP_DRIVE_DEADBAND = 0.3;
     public static final double TELEOP_MANIP_DEADBAND = 0.2;
@@ -140,5 +142,13 @@ public class Calibration {
     public static final double INTAKE_OUTAKE_DRIVER_OVERDRIVE_MODIFIER = 0.35;
     public static final double INTAKE_OUTAKE_MANIPULATOR_OVERDRIVE_MODIFIER = 0.4;
     public static final double INTAKE_PASSIVE_POWER = 0.1;
+    
+    /* Marionette */
+    public static final boolean AUTO_APPEND_TIMESTAMP = true;
+    public static final String SWITCH_LEFT_FILENAME = "switchLeft.marionette";
+    public static final String SWITCH_RIGHT_FILENAME = "switchRight.marionette";
+    public static final String SCALE_LEFT_FILENAME = "scaleLeft.marionette";
+    public static final String SCALE_RIGHT_FILENAME = "scaleRight.marionette";
+    
     
 }

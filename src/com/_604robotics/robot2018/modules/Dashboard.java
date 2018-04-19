@@ -51,8 +51,10 @@ public class Dashboard extends DashboardModule {
         RIGHT_SWITCH,
         LEFT_SCALE_WITH_CROSS,
         LEFT_SCALE_WITHOUT_CROSS,
+        LEFT_SCALE_HALF_CROSS,
         RIGHT_SCALE_WITH_CROSS,
         RIGHT_SCALE_WITHOUT_CROSS,
+        RIGHT_SCALE_HALF_CROSS,
         // Calibration autons to verify angles and distances
         ROTATE_LEFT_TEST,
         ROTATE_RIGHT_TEST,
@@ -64,7 +66,7 @@ public class Dashboard extends DashboardModule {
         FORWARD_SWITCH,
         // CENTER_SWITCH_LEFT,
         // CENTER_SWITCH_RIGHT,
-//        SWITCH_FORWARD,
+        // SWITCH_FORWARD,
         NEW_SCALE_BACKWARD,
 //        SWERVE_SCALE_OPPOSITE_LEFT,
 //        BALANCED_LEFT_TURN_TEST,
@@ -82,11 +84,30 @@ public class Dashboard extends DashboardModule {
         TANK,
         DYNAMIC
     }
+    
+    public enum MarionetteRecorder {
+    	MANUAL,
+    	SWITCH_LEFT,
+    	SWITCH_RIGHT,
+    	SCALE_LEFT,
+    	SCALE_RIGHT
+    }
+    
+    public enum MarionetteOutput {
+    	MANUAL,
+    	SWITCH,
+    	SCALE_LEFT,
+    	SCALE_RIGHT
+    }
 
     public final Output<AutonMode> autonMode = addDashboardOutput("autonMode", AutonMode.OFF, AutonMode.class);
     
     public final Output<DriveMode> driveMode = addDashboardOutput("driveMode", DriveMode.DYNAMIC, DriveMode.class);
 
+    public final Output<MarionetteRecorder> marionetteRecorder = addDashboardOutput("marionetteRecorder", MarionetteRecorder.MANUAL, MarionetteRecorder.class);
+    
+    public final Output<MarionetteOutput> marionetteOutput = addDashboardOutput("marionetteOutput", MarionetteOutput.MANUAL, MarionetteOutput.class);
+    
     public final Output<Boolean> recordAuton = addDashboardOutput("recordAuton", false);
     public final Output<String> recordAutonFile = addDashboardOutput("recordAutonFile", "autonomous.marionette");
 

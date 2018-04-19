@@ -42,6 +42,9 @@ public class AutonomousMode extends Coordinator {
 
     private Coordinator selectedModeMacro;
 
+    public String primaryFileName;
+    public String secondaryFileName;
+    
     public AutonomousMode (Robot2018 robot) {
         this.robot = robot;
 
@@ -89,6 +92,32 @@ public class AutonomousMode extends Coordinator {
 
     @Override
     public void begin () {
+    	primaryFileName = robot.dashboard.recordAutonFile.get();
+        secondaryFileName = "";
+        
+        Coordinator marionetteDriver;
+        
+        switch( robot.dashboard.marionetteOutput.get() ) {
+        	case MANUAL:
+        		marionetteDriver = new MarionetteDriver(primaryFileName);
+        		break;
+        	case SWITCH:
+        		primaryFileName = Calibration.SWITCH_LEFT_FILENAME;
+        		secondaryFileName = Calibration.SWITCH_RIGHT_FILENAME;
+        		marionetteDriver = new MarionetteSwitch();
+        		break;
+        	case SCALE_LEFT:
+        		primaryFileName = Calibration.SCALE_LEFT_FILENAME;
+        		marionetteDriver = new MarionetteLeftScale();
+        		break;
+        	case SCALE_RIGHT:
+        		primaryFileName = Calibration.SCALE_RIGHT_FILENAME;
+        		marionetteDriver = new MarionetteRightScale();
+        		break;
+        	default:
+        		marionetteDriver = new FallForwardMacro();
+        		break;
+        }
         // reset arm encoder (again)
         robot.arm.encoder.zero(Calibration.ARM_BOTTOM_LOCATION);
         
@@ -122,6 +151,12 @@ public class AutonomousMode extends Coordinator {
                 break;
             case RIGHT_SCALE_WITHOUT_CROSS:
                 selectedModeMacro = new RightScaleSameOnlyMacro();
+                break;
+            case LEFT_SCALE_HALF_CROSS:
+                selectedModeMacro = new LeftScaleHalfCrossMacro();
+                break;
+            case RIGHT_SCALE_HALF_CROSS:
+                selectedModeMacro = new RightScaleHalfCrossMacro();
                 break;
             case ROTATE_LEFT_TEST:
                 selectedModeMacro = rotateLeftStateMacro;
@@ -201,6 +236,68 @@ public class AutonomousMode extends Coordinator {
     public void end () {
         if (selectedModeMacro != null) {
             selectedModeMacro.stop();
+        }
+    }
+    
+    private class MarionetteSwitch extends SwitchCoordinator {
+    	public MarionetteSwitch() {
+    		super(MarionetteSwitch.class);
+    		addDefault(new SleepCoordinator(0.1)); // Lucky randomness guaranteed by coin flip
+    		addCase(new String[]{"LLL", "LLR", "LRL", "LRR"}, new MarionetteDriver(primaryFileName));
+    		addCase(new String[]{"RLL", "RLR", "RRL", "RRR"}, new MarionetteDriver(secondaryFileName));
+    	}
+    }
+    
+    private class MarionetteLeftScale extends SwitchCoordinator {
+    	public MarionetteLeftScale() {
+    		super(MarionetteLeftScale.class);
+    		addDefault(new SleepCoordinator(0.1)); // Lucky randomness guaranteed by coin flip
+    		addCase(new String[]{"LLL", "LLR", "RLL", "RLR"}, new MarionetteDriver(primaryFileName));
+    		addCase(new String[]{"LRL", "LRR", "RRL", "RRR"}, new LeftScaleMacro());
+    	}
+    }
+    
+    private class MarionetteRightScale extends SwitchCoordinator {
+    	public MarionetteRightScale() {
+    		super(MarionetteRightScale.class);
+    		addDefault(new SleepCoordinator(0.1)); // Lucky randomness guaranteed by coin flip
+    		addCase(new String[]{"LLL", "LLR", "RLL", "RLR"}, new RightScaleMacro());
+    		addCase(new String[]{"LRL", "LRR", "RRL", "RRR"}, new MarionetteDriver(primaryFileName));
+    	}
+    }
+    
+    private class MarionetteDriver extends Coordinator {
+    	private String fileName;
+    	
+    	public MarionetteDriver(String fileName) {
+    		this.fileName = fileName;
+    	}
+    	
+    	@Override
+        protected void begin () {
+            logger.info("Loading Marionette recording from \"" + fileName + "\"");
+            final InputRecording recording;
+            try {
+                recording = InputRecording.load("/home/lvuser/" + fileName);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
+            logger.info("Starting Marionette playback");
+            robot.teleopMode.startPlayback(recording);
+            robot.teleopMode.start();
+        }
+
+        @Override
+        protected boolean run () {
+            return robot.teleopMode.execute();
+        }
+
+        @Override
+        protected void end () {
+            logger.info("Stopping Marionette playback");
+            robot.teleopMode.stop();
+            robot.teleopMode.stopPlayback();
         }
     }
     
@@ -756,6 +853,16 @@ public class AutonomousMode extends Coordinator {
         }
     }
     
+    private class LeftScaleHalfCrossMacro extends StatefulCoordinator {
+        public LeftScaleHalfCrossMacro() {
+            super(LeftScaleHalfCrossMacro.class);
+            addStates(new IntakeMacro());
+            addState("Set Elevator Persistent", new ElevatorSetPersistent(Calibration.ELEVATOR_MID_TARGET));
+            addState("Backward 219 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(219+1)), 0));
+            addState("Scale chooser", new LeftScaleChooserHalfCrossMacro());
+        }
+    }
+    
     private class RightScaleMacro extends StatefulCoordinator {
         public RightScaleMacro() {
             super(RightScaleMacro.class);
@@ -765,6 +872,16 @@ public class AutonomousMode extends Coordinator {
             //addState("Set Arm Persistent", new ArmSetPersistent(Calibration.ARM_BALANCE_TARGET));
             //addState("Sleep 0.2 seconds", new SleepCoordinator(0.2));
             addState("Scale chooser", new RightScaleChooserMacro());
+        }
+    }
+    
+    private class RightScaleHalfCrossMacro extends StatefulCoordinator {
+        public RightScaleHalfCrossMacro() {
+            super(RightScaleHalfCrossMacro.class);
+            addStates(new IntakeMacro());
+            addState("Set Elevator Persistent", new ElevatorSetPersistent(Calibration.ELEVATOR_MID_TARGET));
+            addState("Backward 219 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(219+1)), 0));
+            addState("Scale chooser", new RightScaleChooserHalfCrossMacro());
         }
     }
     
@@ -788,6 +905,14 @@ public class AutonomousMode extends Coordinator {
     	}
     }
     
+    private class LeftScaleChooserHalfCrossMacro extends SwitchCoordinator {
+        public LeftScaleChooserHalfCrossMacro() {
+            super(LeftScaleChooserHalfCrossMacro.class);
+            addCase(new String[]{"LLL", "LLR", "RLL", "RLR"}, new NewScaleBackwardMacroLeft());
+            addCase(new String[]{"LRL", "LRR", "RRL", "RRR"}, new NewScaleHalfCrossMacroLeft());
+        }
+    }
+    
     private class LeftScaleChooserSameOnlyMacro extends SwitchCoordinator {
         public LeftScaleChooserSameOnlyMacro() {
             super(LeftScaleChooserSameOnlyMacro.class);
@@ -802,6 +927,14 @@ public class AutonomousMode extends Coordinator {
     		addCase(new String[]{"LLL", "LLR", "RLL", "RLR"}, new NewScaleOppositeMacroRight());
     		addCase(new String[]{"LRL", "LRR", "RRL", "RRR"}, new NewScaleBackwardMacroRight());
     	}
+    }
+    
+    private class RightScaleChooserHalfCrossMacro extends SwitchCoordinator {
+        public RightScaleChooserHalfCrossMacro() {
+            super(RightScaleChooserHalfCrossMacro.class);
+            addCase(new String[]{"LLL", "LLR", "RLL", "RLR"}, new NewScaleHalfCrossMacroRight());
+            addCase(new String[]{"LRL", "LRR", "RRL", "RRR"}, new NewScaleBackwardMacroRight());
+        }
     }
     
     private class RightScaleChooserSameOnlyMacro extends SwitchCoordinator {
@@ -915,6 +1048,22 @@ public class AutonomousMode extends Coordinator {
             addState("Retract arm", new ArmSetPersistent(Calibration.ARM_LOW_TARGET));
             addState("Retract elevator", new ElevatorSetPersistent(Calibration.ELEVATOR_LOW_TARGET));
             addState("Unclamp", new ClampExtend());
+        }
+    }
+    
+    private class NewScaleHalfCrossMacroLeft extends StatefulCoordinator {
+        public NewScaleHalfCrossMacroLeft() {
+            super(NewScaleHalfCrossMacroLeft.class);
+            addState("Rotate 90 right", new ArcadePIDCoordinator(0, AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, 90)));
+            addState("Backward 100 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(100+1)), 0));
+        }
+    }
+    
+    private class NewScaleHalfCrossMacroRight extends StatefulCoordinator {
+        public NewScaleHalfCrossMacroRight() {
+            super(NewScaleHalfCrossMacroRight.class);
+            addState("Rotate 90 left", new ArcadePIDCoordinator(0, AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, -90)));
+            addState("Backward 100 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(100+1)), 0));
         }
     }
     

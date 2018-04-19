@@ -8,6 +8,7 @@ import com._604robotics.robot2018.Robot2018;
 import com._604robotics.robot2018.constants.Calibration;
 import com._604robotics.robot2018.modules.Arm;
 import com._604robotics.robot2018.modules.Clamp;
+import com._604robotics.robot2018.modules.Dashboard.MarionetteOutput;
 import com._604robotics.robot2018.modules.Drive;
 import com._604robotics.robot2018.modules.Elevator;
 import com._604robotics.robot2018.modules.Intake;
@@ -163,9 +164,30 @@ public class TeleopMode extends Coordinator {
                 logger.info("Terminating Marionette recording");
                 oldInputRecorder.close();
 
-                final String fileName = robot.dashboard.recordAutonFile.get();
+                String fileName = robot.dashboard.recordAutonFile.get();
+                switch( robot.dashboard.marionetteRecorder.get() ) {
+                	case MANUAL:
+                		if( Calibration.AUTO_APPEND_TIMESTAMP ) {
+                			fileName = System.currentTimeMillis() + "_" + fileName;
+                		}
+                		break;
+                	case SWITCH_LEFT:
+                		fileName = Calibration.SWITCH_LEFT_FILENAME;
+                		break;
+                	case SWITCH_RIGHT:
+                		fileName = Calibration.SWITCH_RIGHT_FILENAME;
+                		break;
+                	case SCALE_LEFT:
+                		fileName = Calibration.SCALE_LEFT_FILENAME;
+                		break;
+                	case SCALE_RIGHT:
+                		fileName = Calibration.SCALE_RIGHT_FILENAME;
+                		break;
+                	default:
+            			break;
+                }
                 logger.info("Saving Marionette recording to \"" + fileName + "\"");
-                oldInputRecorder.getRecording().save("/home/lvuser/" + robot.dashboard.recordAutonFile.get());
+                oldInputRecorder.getRecording().save("/home/lvuser/" + fileName);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -339,9 +361,9 @@ public class TeleopMode extends Coordinator {
     				output = Calibration.INTAKE_INTAKE_MODIFIER*(driverRightTrigger);
     			} else if( driverLeftTrigger > driverRightTrigger ) {
     			    if( driverDPad ) {
-    			        output = -Calibration.INTAKE_OUTAKE_DRIVER_OVERDRIVE_MODIFIER*driverLeftTrigger;
+    			        output = -Calibration.INTAKE_OUTAKE_DRIVER_OVERDRIVE_MODIFIER*Math.sqrt(driverLeftTrigger);
     			    } else {
-    			        output = -Calibration.INTAKE_OUTAKE_DRIVER_MODIFIER*(driverLeftTrigger);
+    			        output = -Calibration.INTAKE_OUTAKE_DRIVER_MODIFIER*Math.sqrt(driverLeftTrigger);
     			    }
     			}
     			run.runPower.set(output);
@@ -352,7 +374,7 @@ public class TeleopMode extends Coordinator {
     			    if( manipDPad ) {
                         output = -Calibration.INTAKE_OUTAKE_MANIPULATOR_OVERDRIVE_MODIFIER;
                     } else {
-                        output = -Calibration.INTAKE_OUTAKE_MANIPULATOR_MODIFIER*(manipRightTrigger);
+                        output = -Calibration.INTAKE_OUTAKE_MANIPULATOR_MODIFIER*Math.sqrt(manipRightTrigger);
                     }
                 } else if( manipRightBumper ) {
                     output = Calibration.INTAKE_INTAKE_MODIFIER;
@@ -375,10 +397,10 @@ public class TeleopMode extends Coordinator {
     	public ClampManager() {
     		extend = robot.clamp.new Extend();
     		retract = robot.clamp.new Retract();
-    		clamping = new Toggle(false);
+    		clamping = new Toggle(true);
     	}
     	
-    	public void run() { //testme
+    	public void run() {
     		clamping.update(manipX);
             if (clamping.isInOnState()) {
                 retract.activate();
@@ -439,17 +461,21 @@ public class TeleopMode extends Coordinator {
         	} else if( driverY && driverLeftJoystickButton ) {
         		setpoint.target_clicks.set(Calibration.ELEVATOR_HIGH_TARGET);
         		setpoint.activate();
-        	} else {
-        	    // test.log("ERROR","Reaching set logic");
-        	    // This should only be called once
-        		if( robot.elevator.getHoldElevatorClicks ) {
-        			holdSetpoint=robot.elevator.encoderClicks.get();
-        			robot.elevator.resetIntegral(Calibration.ELEVATOR_RESET_SUM);
-        			robot.elevator.getHoldElevatorClicks = false;
-        		}
-        		setpoint.target_clicks.set(holdSetpoint);
-        		setpoint.activate();
-        	}
+            } else {
+                if (Calibration.ELEVATOR_HOLD_ACTIVE) {
+                    // This should only be called once
+                    if (robot.elevator.getHoldElevatorClicks) {
+                        holdSetpoint = robot.elevator.encoderClicks.get();
+                        robot.elevator.resetIntegral(Calibration.ELEVATOR_RESET_SUM);
+                        robot.elevator.getHoldElevatorClicks = false;
+                    }
+                    setpoint.target_clicks.set(holdSetpoint);
+                    setpoint.activate();
+                } else {
+                    move.liftPower.set(0.0);
+                    move.activate();
+                }
+            }
         }
     }
     
@@ -471,12 +497,7 @@ public class TeleopMode extends Coordinator {
     	
     	public void run() {
     	    bottomPulse.update(robot.arm.getBottomLimit());
-    	    if (manipStart /*|| bottomPulse.isRisingEdge()*/) {
-    	        // offset -= (lowtarget - current)
-    	        // TODO: Remeber to properly handle inversion
-    	        // System.out.println( robot.arm.encoder.isInverted() ? "Safe" : "ERROR: Not Inverted");
-    	        // robot.arm.encoder.setOffset(robot.arm.encoder.getOffset() - robot.arm.encoder.getPosition() + Calibration.ARM_LOW_TARGET);
-    	        // System.out.println("Warning: " + (robot.arm.encoder.getOffset() - robot.arm.encoder.getPosition() + Calibration.ARM_LOW_TARGET));
+    	    if (manipStart || bottomPulse.isRisingEdge()) {
     	        robot.arm.encoder.zero(Calibration.ARM_BOTTOM_LOCATION);
     	        getHoldArmClicks = true; // Need to get hold setpoint again
     	    }
@@ -604,17 +625,22 @@ public class TeleopMode extends Coordinator {
         			setpoint.activate();
         		}
     			getHoldArmClicks = true;
-    		} else {
-    		    // This should only be called once
-                if( getHoldArmClicks ) {
-                    holdSetpoint=robot.arm.encoderClicks.get();
-                    robot.arm.resetIntegral(Calibration.ARM_RESET_SUM);
-                    getHoldArmClicks = false;
+            } else {
+                // This should only be called once
+                if (Calibration.ARM_HOLD_ACTIVE) {
+                    if (getHoldArmClicks) {
+                        holdSetpoint = robot.arm.encoderClicks.get();
+                        robot.arm.resetIntegral(Calibration.ARM_RESET_SUM);
+                        getHoldArmClicks = false;
+                    }
+                    elevatorOverride = false;
+                    setpoint.target_clicks.set(holdSetpoint);
+                    setpoint.activate();
+                } else {
+                    move.liftPower.set(0.0);
+                    move.activate();
                 }
-                elevatorOverride = false;
-                setpoint.target_clicks.set(holdSetpoint);
-                setpoint.activate();
-    		}
-    	}
+            }
+        }
     }
 }
