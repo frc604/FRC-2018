@@ -167,9 +167,9 @@ public class TeleopMode extends Coordinator {
                 String fileName = robot.dashboard.recordAutonFile.get();
                 switch( robot.dashboard.marionetteRecorder.get() ) {
                 	case MANUAL:
-                		if( Calibration.AUTO_APPEND_TIMESTAMP ) {
-                			fileName = System.currentTimeMillis() + "_" + fileName;
-                		}
+//                		if( Calibration.AUTO_APPEND_TIMESTAMP ) {
+//                			fileName = System.currentTimeMillis() + "_" + fileName;
+//                		}
                 		break;
                 	case SWITCH_LEFT:
                 		fileName = Calibration.SWITCH_LEFT_FILENAME;
