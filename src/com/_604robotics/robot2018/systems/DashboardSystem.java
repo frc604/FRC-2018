@@ -1,6 +1,7 @@
 package com._604robotics.robot2018.systems;
 
 import com._604robotics.robot2018.Robot2018;
+import com._604robotics.robot2018.constants.Calibration;
 import com._604robotics.robotnik.Coordinator;
 
 public class DashboardSystem extends Coordinator {
@@ -34,6 +35,44 @@ public class DashboardSystem extends Coordinator {
         robot.dashboard.armEncoderStatus.set(robot.arm.encoderClicks.get()>4700 || robot.arm.encoderClicks.get() < -2500);
         robot.dashboard.limitPressed.set(robot.arm.getBottomLimit());
         //robot.powermonitor.initDashboardSendables();
+        
+        switch( robot.dashboard.marionetteRecorder.get() ) {
+            case MANUAL:
+                robot.dashboard.writeFile.set(robot.dashboard.filePrefix.get() + robot.dashboard.marionetteFile.get());
+                break;
+            case SWITCH_LEFT:
+                robot.dashboard.writeFile.set(robot.dashboard.filePrefix.get() + Calibration.SWITCH_LEFT_FILENAME);
+                break;
+            case SWITCH_RIGHT:
+                robot.dashboard.writeFile.set(robot.dashboard.filePrefix.get() + Calibration.SWITCH_RIGHT_FILENAME);
+                break;
+            case SCALE_LEFT:
+                robot.dashboard.writeFile.set(robot.dashboard.filePrefix.get() + Calibration.SCALE_LEFT_FILENAME);
+                break;
+            case SCALE_RIGHT:
+                robot.dashboard.writeFile.set(robot.dashboard.filePrefix.get() + Calibration.SCALE_RIGHT_FILENAME);
+                break;
+            default:
+                break;
+        }
+        
+        switch( robot.dashboard.marionetteOutput.get() ) {
+            case MANUAL:
+                robot.dashboard.primaryReadFile.set(robot.dashboard.filePrefix.get() + robot.dashboard.marionetteFile.get());
+                break;
+            case SWITCH:
+                robot.dashboard.primaryReadFile.set(robot.dashboard.filePrefix.get() + Calibration.SWITCH_LEFT_FILENAME);
+                robot.dashboard.secondaryReadFile.set(robot.dashboard.filePrefix.get() + Calibration.SWITCH_RIGHT_FILENAME);
+                break;
+            case SCALE_LEFT:
+                robot.dashboard.primaryReadFile.set(robot.dashboard.filePrefix.get() + Calibration.SCALE_LEFT_FILENAME);
+                break;
+            case SCALE_RIGHT:
+                robot.dashboard.primaryReadFile.set(robot.dashboard.filePrefix.get() + Calibration.SCALE_RIGHT_FILENAME);
+                break;
+            default:
+                break;
+        }
         return true;
     }
 }
