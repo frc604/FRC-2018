@@ -830,7 +830,7 @@ public class AutonomousMode extends Coordinator {
             addState("Backward 6 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(6)), 0));
             addState("Set Arm High Persistent", new ArmSetPersistent(Calibration.ARM_HIGH_TARGET));
             addState("Sleep 1.3 seconds", new SleepCoordinator(1.3));
-            addState("Eject cube", new IntakeMove(-0.5,0.5));
+            addState("Eject cube", new IntakeMove(-0.35,0.5));
             addState("Retract arm", new ArmSetPersistent(Calibration.ARM_LOW_TARGET));
             addState("Retract elevator", new ElevatorSetPersistent(Calibration.ELEVATOR_LOW_TARGET));
             addState("Unclamp", new ClampExtend());
@@ -842,7 +842,7 @@ public class AutonomousMode extends Coordinator {
     		super(NewScaleBackwardMacroRight.class);
     		addStates(new IntakeMacro());
     		//addState("Set Elevator Persistent", new ElevatorSetPersistent(Calibration.ELEVATOR_MID_TARGET));
-            addState("Backward 39 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(39+1)), 0));
+            addState("Backward 39 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(39+1)), 3));
             //addState("Set Arm Persistent", new ArmSetPersistent(Calibration.ARM_BALANCE_TARGET));
             //addState("Sleep 0.5 seconds", new SleepCoordinator(0.5));
             addState("Rotate 35 left", new ArcadePIDCoordinator(0, AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, -35)));
@@ -867,12 +867,12 @@ public class AutonomousMode extends Coordinator {
             //addState("Backward 50 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(50+1)), 0));
             addState("Rotate 90 right", new ArcadePIDCoordinator(0, AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, 90)));
             //238.5
-            addState("Backward 193 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(193+1)), 0));
+            addState("Backward 193 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(193+1)), 3));
             addState("Rotate 90 left", new ArcadePIDCoordinator(0, AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, -90)));
-            addState("Backward 27 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(27+1)), 0));
+            addState("Backward 27 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(27+1)), 3));
             addState("Set Arm High Persistent", new ArmSetPersistent(Calibration.ARM_HIGH_TARGET));
             addState("Sleep 1.3 seconds", new SleepCoordinator(1.3));
-            addState("Eject cube", new IntakeMove(-0.5,0.5));
+            addState("Eject cube", new IntakeMove(-0.35,0.5));
             addState("Retract arm", new ArmSetPersistent(Calibration.ARM_LOW_TARGET));
             addState("Retract elevator", new ElevatorSetPersistent(Calibration.ELEVATOR_LOW_TARGET));
             addState("Unclamp", new ClampExtend());
@@ -889,12 +889,12 @@ public class AutonomousMode extends Coordinator {
             //addState("Sleep 0.5 seconds", new SleepCoordinator(0.5));
             //addState("Backward 50 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(50+1)), 0));
             addState("Rotate 90 left", new ArcadePIDCoordinator(0, AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, -90)));
-            addState("Backward 193 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(193+1)), 0));
+            addState("Backward 193 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(193+1)), 3));
             addState("Rotate 90 right", new ArcadePIDCoordinator(0, AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, 90)));
-            addState("Backward 27 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(27+1)), 0));
+            addState("Backward 27 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(27+1)), 3));
             addState("Set Arm High Persistent", new ArmSetPersistent(Calibration.ARM_HIGH_TARGET));
             addState("Sleep 1.3 seconds", new SleepCoordinator(1.3));
-            addState("Eject cube", new IntakeMove(-0.7,0.5));
+            addState("Eject cube", new IntakeMove(-0.5,0.5));
             addState("Retract arm", new ArmSetPersistent(Calibration.ARM_LOW_TARGET));
             addState("Retract elevator", new ElevatorSetPersistent(Calibration.ELEVATOR_LOW_TARGET));
             addState("Unclamp", new ClampExtend());
