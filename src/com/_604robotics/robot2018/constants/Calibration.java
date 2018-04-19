@@ -136,6 +136,7 @@ public class Calibration {
     public static final double ARM_RAISE_TARGET = 0;
     
     /* Intake */
+    public static final double INTAKE_INTAKE_MODIFIER = 0.5;
     public static final double INTAKE_OUTAKE_DRIVER_MODIFIER = 0.25;//0.35
     public static final double INTAKE_OUTAKE_MANIPULATOR_MODIFIER = 0.25;
     public static final double INTAKE_OUTAKE_DRIVER_OVERDRIVE_MODIFIER = 0.35;
