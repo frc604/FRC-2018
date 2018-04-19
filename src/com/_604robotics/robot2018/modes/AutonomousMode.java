@@ -59,7 +59,7 @@ public class AutonomousMode extends Coordinator {
     @Override
     public void begin () {
         // Filename is prefixed in MarionetteDriver
-    	primaryFileName = robot.dashboard.recordAutonFile.get();
+    	primaryFileName = robot.dashboard.marionetteFile.get();
         secondaryFileName = "";
         
         Coordinator marionetteDriver;
@@ -237,7 +237,7 @@ public class AutonomousMode extends Coordinator {
     	private String fileName;
     	
     	public MarionetteDriver(String fileName) {
-    		this.fileName = robot.dashboard.filePrefix + fileName;
+    		this.fileName = robot.dashboard.filePrefix.get() + fileName;
     	}
     	
     	@Override

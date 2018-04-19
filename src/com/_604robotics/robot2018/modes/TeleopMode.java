@@ -165,7 +165,7 @@ public class TeleopMode extends Coordinator {
                 oldInputRecorder.close();
 
                 // filename is prefixed when filename is saved to
-                String fileName = robot.dashboard.recordAutonFile.get();
+                String fileName = robot.dashboard.marionetteFile.get();
                 switch( robot.dashboard.marionetteRecorder.get() ) {
                 	case MANUAL:
 //                		if( Calibration.AUTO_APPEND_TIMESTAMP ) {
@@ -187,8 +187,8 @@ public class TeleopMode extends Coordinator {
                 	default:
             			break;
                 }
-                logger.info("Saving Marionette recording to \"" + robot.dashboard.filePrefix + fileName + "\"");
-                oldInputRecorder.getRecording().save("/home/lvuser/" + robot.dashboard.filePrefix + fileName);
+                logger.info("Saving Marionette recording to \"" + robot.dashboard.filePrefix.get() + fileName + "\"");
+                oldInputRecorder.getRecording().save("/home/lvuser/" + robot.dashboard.filePrefix.get() + fileName);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

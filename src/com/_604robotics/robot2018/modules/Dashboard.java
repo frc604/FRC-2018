@@ -109,8 +109,12 @@ public class Dashboard extends DashboardModule {
     public final Output<MarionetteOutput> marionetteOutput = addDashboardOutput("marionetteOutput", MarionetteOutput.MANUAL, MarionetteOutput.class);
     
     public final Output<Boolean> recordAuton = addDashboardOutput("recordAuton", false);
-    public final Output<String> recordAutonFile = addDashboardOutput("recordAutonFile", "autonomous.marionette");
+    public final Output<String> marionetteFile = addDashboardOutput("marionetteFile", "autonomous.marionette");
     public final Output<String> filePrefix = addDashboardOutput("filePrefix", "");
+    
+    public final Input<String> primaryReadFile = addDashboardInput("Primary Read File: ", "");
+    public final Input<String> secondaryReadFile = addDashboardInput("Secondary Read File: ", "");
+    public final Input<String> writeFile = addDashboardInput("Write File: ", "");
     
     public Dashboard () {
         super(Dashboard.class);
