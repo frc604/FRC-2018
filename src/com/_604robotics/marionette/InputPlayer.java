@@ -1,20 +1,28 @@
 package com._604robotics.marionette;
 
 import com._604robotics.robot2018.constants.Calibration;
+import com._604robotics.robotnik.prefabs.flow.SmartTimer;
 
 public class InputPlayer {
     private InputRecording playbackRecording;
     private double playbackTimestamp;
     private int playbackFrame;
+    private SmartTimer timer;
+    private double timerSetpoint;
 
     public void startPlayback (final InputRecording recording) {
         playbackRecording = recording;
         playbackTimestamp = System.currentTimeMillis();
         playbackFrame = 0;
+        timer = new SmartTimer();
+        timerSetpoint = 0;
+        timer.start();
     }
 
     public void stopPlayback () {
         playbackRecording = null;
+        timer.stop();
+        timer.reset();
     }
 
     public boolean isPlaying () {
@@ -57,9 +65,9 @@ public class InputPlayer {
         }
 
         final double elapsedTime = getRawPlaybackTime();
-        while (playbackFrame < playbackRecording.getFrameCount() && elapsedTime >= Calibration.PLAYBACK_DELAY) {
+        while (playbackFrame < playbackRecording.getFrameCount() && timer.get() >= timerSetpoint + Calibration.PLAYBACK_DELAY) {
             ++playbackFrame;
-            playbackTimestamp = System.currentTimeMillis();
+            timerSetpoint = timer.get();
         }
 
         if (playbackFrame >= playbackRecording.getFrameCount()) {
