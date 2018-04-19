@@ -1,5 +1,7 @@
 package com._604robotics.marionette;
 
+import com._604robotics.robot2018.constants.Calibration;
+
 public class InputPlayer {
     private InputRecording playbackRecording;
     private double playbackTimestamp;
@@ -55,8 +57,9 @@ public class InputPlayer {
         }
 
         final double elapsedTime = getRawPlaybackTime();
-        while (playbackFrame < playbackRecording.getFrameCount() && elapsedTime >= playbackRecording.getTimestamp(playbackFrame + 1)) {
+        while (playbackFrame < playbackRecording.getFrameCount() && elapsedTime >= Calibration.PLAYBACK_DELAY) {
             ++playbackFrame;
+            playbackTimestamp = System.currentTimeMillis();
         }
 
         if (playbackFrame >= playbackRecording.getFrameCount()) {

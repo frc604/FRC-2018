@@ -143,7 +143,7 @@ public class TeleopMode extends Coordinator {
             logger.info("Playing back Marionette recording");
         } else if (robot.dashboard.recordAuton.get()) {
             logger.info("Recording inputs with Marionette");
-            inputRecorder = new InputRecorder(1200, driverJoystick, manipJoystick);
+            inputRecorder = new InputRecorder(Calibration.PLAYBACK_MAXFRAMES, driverJoystick, manipJoystick);
         }
     }
 

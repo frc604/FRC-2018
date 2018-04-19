@@ -5,13 +5,15 @@ import edu.wpi.first.wpilibj.GenericHID;
 import java.io.Closeable;
 import java.io.IOException;
 
+import com._604robotics.robot2018.constants.Calibration;
+
 public class InputRecorder implements Closeable {
     private final GenericHID[] sources;
     private final InputRecording recording;
     private final Thread thread;
 
     public InputRecorder (final int maxFrameCount, final GenericHID... sources) {
-        this(maxFrameCount, 25, sources);
+        this(maxFrameCount, Calibration.RECORD_DELAY, sources);
     }
 
     public InputRecorder (final int maxFrameCount, final long framePause, final GenericHID... sources) {

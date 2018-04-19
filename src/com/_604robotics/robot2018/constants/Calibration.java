@@ -150,5 +150,8 @@ public class Calibration {
     public static final String SCALE_LEFT_FILENAME = "scaleLeft.marionette";
     public static final String SCALE_RIGHT_FILENAME = "scaleRight.marionette";
     
+    public static final int PLAYBACK_DELAY = 50;
+    public static final int RECORD_DELAY = 25;
+    public static final int PLAYBACK_MAXFRAMES = 1200;
     
 }
