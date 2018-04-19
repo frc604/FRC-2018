@@ -336,12 +336,12 @@ public class TeleopMode extends Coordinator {
     		if( driverLeftTrigger != 0 || driverRightTrigger != 0 ) {
     			double output = 0;
     			if( driverRightTrigger >= driverLeftTrigger ) {
-    				output = (driverRightTrigger*driverRightTrigger);
+    				output = Calibration.INTAKE_INTAKE_MODIFIER*(driverRightTrigger);
     			} else if( driverLeftTrigger > driverRightTrigger ) {
     			    if( driverDPad ) {
-    			        output = -Calibration.INTAKE_OUTAKE_OVERDRIVE_MODIFIER*driverLeftTrigger;
+    			        output = -Calibration.INTAKE_OUTAKE_DRIVER_OVERDRIVE_MODIFIER*driverLeftTrigger;
     			    } else {
-    			        output = -Calibration.INTAKE_OUTAKE_MODIFIER*(driverLeftTrigger);
+    			        output = -Calibration.INTAKE_OUTAKE_DRIVER_MODIFIER*(driverLeftTrigger);
     			    }
     			}
     			run.runPower.set(output);
@@ -350,12 +350,12 @@ public class TeleopMode extends Coordinator {
     			double output = 0;
     			if( manipRightTrigger != 0 ) {
     			    if( manipDPad ) {
-                        output = -Calibration.INTAKE_OUTAKE_OVERDRIVE_MODIFIER;
+                        output = -Calibration.INTAKE_OUTAKE_MANIPULATOR_OVERDRIVE_MODIFIER;
                     } else {
-                        output = -Calibration.INTAKE_OUTAKE_MODIFIER*(manipRightTrigger);
+                        output = -Calibration.INTAKE_OUTAKE_MANIPULATOR_MODIFIER*(manipRightTrigger);
                     }
                 } else if( manipRightBumper ) {
-                    output = 1;
+                    output = Calibration.INTAKE_INTAKE_MODIFIER;
                 }
     		    run.runPower.set(output);
     		    run.activate();
