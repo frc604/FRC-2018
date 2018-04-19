@@ -105,6 +105,7 @@ public class Calibration {
     public static final double ARM_D = 0.000022;
     // This is multiplication by a cosine factor
     public static final double ARM_F = 0.25;
+    public static final double ARM_TELEOP_OFFSET_ENCODERFAIL = 0.15;
     public static final double ARM_PID_PERIOD = 0.02;
     
     @Unreal("Now using zero function so could have drifted arbitrarily") @Deprecated

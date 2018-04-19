@@ -500,9 +500,12 @@ public class TeleopMode extends Coordinator {
         	        angle/=Calibration.ARM_ENCODER_FULL_ROT;
         	        angle*=(2*Math.PI);
         	        double cosine = Math.cos(angle);
-        	        if (robot.arm.encoderClicks.get()<4700 && robot.arm.encoderClicks.get()> -2500
-        	                && motorPower<0) {
-        	            motorPower+=Calibration.ARM_F*cosine;
+        	        if (motorPower<0) {
+        	            if (robot.arm.encoderClicks.get()<4700 && robot.arm.encoderClicks.get()> -2500) {
+        	                motorPower+=Calibration.ARM_F*cosine;
+        	            } else {
+        	                motorPower+=Calibration.ARM_TELEOP_OFFSET_ENCODERFAIL;
+        	            }
         	        }
         			move.liftPower.set(motorPower);
         			move.activate();
