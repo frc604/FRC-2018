@@ -289,7 +289,7 @@ public class TeleopMode extends Coordinator {
     				output = Calibration.INTAKE_INTAKE_MODIFIER*(driverRightTrigger);
     			} else if( driverLeftTrigger > driverRightTrigger ) {
     			    if( driverDPad ) {
-    			        output = -Calibration.INTAKE_OUTAKE_MANIPULATOR_OVERDRIVE_MODIFIER*Math.sqrt(driverLeftTrigger);
+    			        output = -Calibration.INTAKE_OUTAKE_DRIVER_OVERDRIVE_MODIFIER*Math.sqrt(driverLeftTrigger);
     			    } else {
     			        output = -Calibration.INTAKE_OUTAKE_DRIVER_MODIFIER*Math.sqrt(driverLeftTrigger);
     			    }
