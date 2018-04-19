@@ -1,5 +1,7 @@
 package com._604robotics.robot2018.modes;
 
+import java.io.IOException;
+
 import com._604robotics.marionette.InputRecording;
 import com._604robotics.robot2018.Robot2018;
 import com._604robotics.robot2018.constants.Calibration;
@@ -11,7 +13,6 @@ import com._604robotics.robot2018.modules.Elevator;
 import com._604robotics.robot2018.modules.Intake;
 import com._604robotics.robotnik.Coordinator;
 import com._604robotics.robotnik.Logger;
-import com._604robotics.robotnik.prefabs.coordinators.SimultaneousCoordinator;
 import com._604robotics.robotnik.prefabs.coordinators.SleepCoordinator;
 import com._604robotics.robotnik.prefabs.coordinators.StatefulCoordinator;
 import com._604robotics.robotnik.prefabs.coordinators.SwitchCoordinator;
@@ -24,8 +25,6 @@ import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.PIDOutput;
 import edu.wpi.first.wpilibj.PIDSource;
 import edu.wpi.first.wpilibj.PIDSourceType;
-
-import java.io.IOException;
 
 public class AutonomousMode extends Coordinator {
     private static final Logger logger = new Logger(AutonomousMode.class);
@@ -59,6 +58,7 @@ public class AutonomousMode extends Coordinator {
 
     @Override
     public void begin () {
+        // Filename is prefixed in MarionetteDriver
     	primaryFileName = robot.dashboard.recordAutonFile.get();
         secondaryFileName = "";
         
@@ -237,7 +237,7 @@ public class AutonomousMode extends Coordinator {
     	private String fileName;
     	
     	public MarionetteDriver(String fileName) {
-    		this.fileName = fileName;
+    		this.fileName = robot.dashboard.filePrefix + fileName;
     	}
     	
     	@Override

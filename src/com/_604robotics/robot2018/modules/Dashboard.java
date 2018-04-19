@@ -110,7 +110,8 @@ public class Dashboard extends DashboardModule {
     
     public final Output<Boolean> recordAuton = addDashboardOutput("recordAuton", false);
     public final Output<String> recordAutonFile = addDashboardOutput("recordAutonFile", "autonomous.marionette");
-
+    public final Output<String> filePrefix = addDashboardOutput("filePrefix", "");
+    
     public Dashboard () {
         super(Dashboard.class);
     }
