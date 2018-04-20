@@ -82,6 +82,13 @@ public class AutonomousMode extends Coordinator {
         		marionetteDriver = new MarionetteRightScale();
         		break;
         	case CUSTOM_SWITCH:
+        	    primaryFileName = Calibration.CUSTOM_PRIMARY;
+        	    secondaryFileName = Calibration.CUSTOM_SECONDARY;
+        	    marionetteDriver = new CustomMarionetteSwitch();
+        	    break;
+        	case MANUAL_SWITCH:
+        	    primaryFileName = robot.dashboard.manualPrimaryReadFile.get();
+        	    secondaryFileName = robot.dashboard.manualSecondaryReadFile.get();
         	    marionetteDriver = new CustomMarionetteSwitch();
         	    break;
         	default:
@@ -213,8 +220,8 @@ public class AutonomousMode extends Coordinator {
         public CustomMarionetteSwitch() {
             super(CustomMarionetteSwitch.class);
             addDefault(new SleepCoordinator(0.1)); // Lucky randomness guaranteed by coin flip
-            addCase(new String[]{"LLL", "LLR", "LRL", "LRR"}, new CustomMarionetteDriver(Calibration.CUSTOM_PRIMARY));
-            addCase(new String[]{"RLL", "RLR", "RRL", "RRR"}, new CustomMarionetteDriver(Calibration.CUSTOM_SECONDARY));
+            addCase(new String[]{"LLL", "LLR", "LRL", "LRR"}, new CustomMarionetteDriver(primaryFileName));
+            addCase(new String[]{"RLL", "RLR", "RRL", "RRR"}, new CustomMarionetteDriver(secondaryFileName));
         }
     }
     

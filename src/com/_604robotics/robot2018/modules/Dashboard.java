@@ -98,7 +98,8 @@ public class Dashboard extends DashboardModule {
     	SWITCH,
     	SCALE_LEFT,
     	SCALE_RIGHT,
-    	CUSTOM_SWITCH
+    	CUSTOM_SWITCH,
+    	MANUAL_SWITCH
     }
 
     public final Output<AutonMode> autonMode = addDashboardOutput("autonMode", AutonMode.OFF, AutonMode.class);
@@ -116,6 +117,9 @@ public class Dashboard extends DashboardModule {
     public final Input<String> primaryReadFile = addDashboardInput("Primary Read File: ", "");
     public final Input<String> secondaryReadFile = addDashboardInput("Secondary Read File: ", "");
     public final Input<String> writeFile = addDashboardInput("Write File: ", "");
+    
+    public final Input<String> manualPrimaryReadFile = addDashboardInput("Manual Primary Read File: ", "");
+    public final Input<String> manualSecondaryReadFile = addDashboardInput("Manual Secondary Read File: ", "");
     
     public Dashboard () {
         super(Dashboard.class);

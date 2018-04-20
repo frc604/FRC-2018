@@ -74,6 +74,10 @@ public class DashboardSystem extends Coordinator {
                 robot.dashboard.primaryReadFile.set(Calibration.CUSTOM_PRIMARY);
                 robot.dashboard.secondaryReadFile.set(Calibration.CUSTOM_SECONDARY);
                 break;
+            case MANUAL_SWITCH:
+                robot.dashboard.primaryReadFile.set(robot.dashboard.manualPrimaryReadFile.get());
+                robot.dashboard.secondaryReadFile.set(robot.dashboard.manualSecondaryReadFile.get());
+                break;
             default:
                 break;
         }
