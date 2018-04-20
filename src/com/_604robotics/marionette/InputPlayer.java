@@ -9,10 +9,13 @@ public class InputPlayer {
         playbackRecording = recording;
         playbackTimestamp = System.currentTimeMillis();
         playbackFrame = 0;
+
+        System.out.println("MARIONETTE PLAYBACK START [frameCount = " + playbackRecording.getFrameCount() + "]");
     }
 
     public void stopPlayback () {
         playbackRecording = null;
+        System.out.println("MARIONETTE PLAYBACK STOP");
     }
 
     public boolean isPlaying () {
@@ -56,13 +59,18 @@ public class InputPlayer {
 
         final double elapsedTime = getRawPlaybackTime();
         while (playbackFrame < playbackRecording.getFrameCount() && elapsedTime >= playbackRecording.getTimestamp(playbackFrame + 1)) {
+            System.out.println(
+                    "* advancing frame [" + playbackRecording.getTimestamp(playbackFrame) + " -> " +
+                            playbackRecording.getTimestamp(playbackFrame + 1) + "]");
             ++playbackFrame;
         }
 
         if (playbackFrame >= playbackRecording.getFrameCount()) {
+            System.out.println("(out of frames)");
             stopPlayback();
             return false;
         }
+        System.out.println("elapsedTime = " + elapsedTime + "; frameTime = " + playbackRecording.getTimestamp(playbackFrame) + "; frame = " + playbackFrame);
 
         return true;
     }
