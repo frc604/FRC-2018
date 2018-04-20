@@ -42,7 +42,7 @@ public class TeleopMode extends Coordinator {
     private final ArmManager armManager;
     private final ClampManager clampManager;
     private final Logger test = new Logger("Teleop");
-
+    
     public TeleopMode (Robot2018 robot) {
         driver.leftStick.x.setDeadband(Calibration.TELEOP_DRIVE_DEADBAND);
         driver.leftStick.y.setDeadband(Calibration.TELEOP_DRIVE_DEADBAND);
@@ -76,6 +76,7 @@ public class TeleopMode extends Coordinator {
         intakeManager = new IntakeManager();
         armManager = new ArmManager();
         clampManager = new ClampManager();
+        
     }
 
     private boolean getHoldArmClicks = false;
@@ -375,7 +376,11 @@ public class TeleopMode extends Coordinator {
     			    if( manipDPad ) {
                         output = -Calibration.INTAKE_OUTAKE_MANIPULATOR_OVERDRIVE_MODIFIER;
                     } else {
-                        output = -Calibration.INTAKE_OUTAKE_MANIPULATOR_MODIFIER*Math.sqrt(manipRightTrigger);
+                        if( manipB || driverB ) {
+                            output = -Calibration.INTAKE_OUTAKE_MANIPULATOR_SWITCH_MODIFIER*Math.sqrt(manipRightTrigger);
+                        } else {
+                            output = -Calibration.INTAKE_OUTAKE_MANIPULATOR_SCALE_MODIFIER*Math.sqrt(manipRightTrigger);
+                        }
                     }
                 } else if( manipRightBumper ) {
                     output = Calibration.INTAKE_INTAKE_MODIFIER;
