@@ -81,6 +81,9 @@ public class AutonomousMode extends Coordinator {
         		primaryFileName = Calibration.SCALE_RIGHT_FILENAME;
         		marionetteDriver = new MarionetteRightScale();
         		break;
+        	case CUSTOM_SWITCH:
+        	    marionetteDriver = new CustomMarionetteSwitch();
+        	    break;
         	default:
         		marionetteDriver = new FallForwardMacro();
         		break;
@@ -206,6 +209,15 @@ public class AutonomousMode extends Coordinator {
         }
     }
     
+    private class CustomMarionetteSwitch extends SwitchCoordinator {
+        public CustomMarionetteSwitch() {
+            super(CustomMarionetteSwitch.class);
+            addDefault(new SleepCoordinator(0.1)); // Lucky randomness guaranteed by coin flip
+            addCase(new String[]{"LLL", "LLR", "LRL", "LRR"}, new CustomMarionetteDriver(Calibration.CUSTOM_PRIMARY));
+            addCase(new String[]{"RLL", "RLR", "RRL", "RRR"}, new CustomMarionetteDriver(Calibration.CUSTOM_SECONDARY));
+        }
+    }
+    
     private class MarionetteSwitch extends SwitchCoordinator {
     	public MarionetteSwitch() {
     		super(MarionetteSwitch.class);
@@ -233,6 +245,41 @@ public class AutonomousMode extends Coordinator {
     	}
     }
     
+    private class CustomMarionetteDriver extends Coordinator {
+        private String fileName;
+        
+        public CustomMarionetteDriver(String fileName) {
+            this.fileName = fileName;
+        }
+        
+        @Override
+        protected void begin () {
+            logger.info("Loading Marionette recording from \"" + fileName + "\"");
+            final InputRecording recording;
+            try {
+                recording = InputRecording.load("/home/lvuser/" + fileName);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
+            logger.info("Starting Marionette playback");
+            robot.teleopMode.startPlayback(recording);
+            robot.teleopMode.start();
+        }
+
+        @Override
+        protected boolean run () {
+            return robot.teleopMode.execute();
+        }
+
+        @Override
+        protected void end () {
+            logger.info("Stopping Marionette playback");
+            robot.teleopMode.stop();
+            robot.teleopMode.stopPlayback();
+        }
+    }
+    
     private class MarionetteDriver extends Coordinator {
     	private String fileName;
     	
@@ -242,10 +289,10 @@ public class AutonomousMode extends Coordinator {
     	
     	@Override
         protected void begin () {
-            logger.info("Loading Marionette recording from \"" + fileName + "\"");
+            logger.info("Loading Marionette recording from \"" + robot.dashboard.filePrefix.get() + fileName + "\"");
             final InputRecording recording;
             try {
-                recording = InputRecording.load("/home/lvuser/" + fileName);
+                recording = InputRecording.load("/home/lvuser/" + robot.dashboard.filePrefix.get() + fileName);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

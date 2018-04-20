@@ -150,5 +150,6 @@ public class Calibration {
     public static final String SCALE_LEFT_FILENAME = "scaleLeft.marionette";
     public static final String SCALE_RIGHT_FILENAME = "scaleRight.marionette";
     
-    
+    public static final String CUSTOM_PRIMARY = "single00.switchLeft.marionette";
+    public static final String CUSTOM_SECONDARY = "half00.switchRight.marionette";
 }

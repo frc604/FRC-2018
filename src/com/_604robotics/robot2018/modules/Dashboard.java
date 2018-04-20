@@ -97,7 +97,8 @@ public class Dashboard extends DashboardModule {
     	MANUAL,
     	SWITCH,
     	SCALE_LEFT,
-    	SCALE_RIGHT
+    	SCALE_RIGHT,
+    	CUSTOM_SWITCH
     }
 
     public final Output<AutonMode> autonMode = addDashboardOutput("autonMode", AutonMode.OFF, AutonMode.class);

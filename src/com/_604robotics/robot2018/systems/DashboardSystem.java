@@ -70,6 +70,10 @@ public class DashboardSystem extends Coordinator {
             case SCALE_RIGHT:
                 robot.dashboard.primaryReadFile.set(robot.dashboard.filePrefix.get() + Calibration.SCALE_RIGHT_FILENAME);
                 break;
+            case CUSTOM_SWITCH:
+                robot.dashboard.primaryReadFile.set(Calibration.CUSTOM_PRIMARY);
+                robot.dashboard.secondaryReadFile.set(Calibration.CUSTOM_SECONDARY);
+                break;
             default:
                 break;
         }

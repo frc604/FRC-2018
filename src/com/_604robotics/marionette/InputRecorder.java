@@ -11,7 +11,7 @@ public class InputRecorder implements Closeable {
     private final Thread thread;
 
     public InputRecorder (final int maxFrameCount, final GenericHID... sources) {
-        this(maxFrameCount, 25, sources);
+        this(maxFrameCount, 12, sources);
     }
 
     public InputRecorder (final int maxFrameCount, final long framePause, final GenericHID... sources) {
