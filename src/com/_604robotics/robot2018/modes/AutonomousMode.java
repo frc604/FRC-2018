@@ -1069,7 +1069,7 @@ public class AutonomousMode extends Coordinator {
         public NewScaleHalfCrossMacroLeft() {
             super(NewScaleHalfCrossMacroLeft.class);
             addState("Rotate 90 right", new ArcadePIDCoordinator(0, AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, 90)));
-            addState("Backward 100 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(100+1)), 0));
+            addState("Backward 100 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(100+1)), 10));
         }
     }
     
@@ -1077,7 +1077,7 @@ public class AutonomousMode extends Coordinator {
         public NewScaleHalfCrossMacroRight() {
             super(NewScaleHalfCrossMacroRight.class);
             addState("Rotate 90 left", new ArcadePIDCoordinator(0, AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, -90)));
-            addState("Backward 100 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(100+1)), 0));
+            addState("Backward 100 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(100+1)), 10));
         }
     }
     
