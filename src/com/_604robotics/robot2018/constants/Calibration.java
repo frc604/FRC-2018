@@ -137,10 +137,20 @@ public class Calibration {
     
     /* Intake */
     public static final double INTAKE_INTAKE_MODIFIER = 0.5;
-    public static final double INTAKE_OUTAKE_DRIVER_MODIFIER = 0.27;//0.35
-    public static final double INTAKE_OUTAKE_MANIPULATOR_MODIFIER = 0.35;
+    public static final double INTAKE_OUTAKE_DRIVER_MODIFIER = 0.25;//0.35
+    public static final double INTAKE_OUTAKE_SCALE_MANIPULATOR_MODIFIER = 0.25;
+    public static final double INTAKE_OUTAKE_SWITCH_MANIPULATOR_MODIFIER = 0.4;
     public static final double INTAKE_OUTAKE_DRIVER_OVERDRIVE_MODIFIER = 0.8; //0.4
-    public static final double INTAKE_OUTAKE_MANIPULATOR_OVERDRIVE_MODIFIER = 0.6;
+    public static final double INTAKE_OUTAKE_MANIPULATOR_OVERDRIVE_MODIFIER = 0.4;
     public static final double INTAKE_PASSIVE_POWER = 0.1;
     
+    /* Marionette */
+    public static final boolean AUTO_APPEND_TIMESTAMP = true;
+    public static final String SWITCH_LEFT_FILENAME = "switchLeft.marionette";
+    public static final String SWITCH_RIGHT_FILENAME = "switchRight.marionette";
+    public static final String SCALE_LEFT_FILENAME = "scaleLeft.marionette";
+    public static final String SCALE_RIGHT_FILENAME = "scaleRight.marionette";
+    
+    public static final String CUSTOM_PRIMARY = "single00.switchLeft.marionette";
+    public static final String CUSTOM_SECONDARY = "half00.switchRight.marionette";
 }

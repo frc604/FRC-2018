@@ -1,5 +1,8 @@
 package com._604robotics.robot2018.modes;
 
+import java.io.IOException;
+
+import com._604robotics.marionette.InputRecording;
 import com._604robotics.robot2018.Robot2018;
 import com._604robotics.robot2018.constants.Calibration;
 import com._604robotics.robot2018.macros.ArcadeTimedDriveMacro;
@@ -10,7 +13,6 @@ import com._604robotics.robot2018.modules.Elevator;
 import com._604robotics.robot2018.modules.Intake;
 import com._604robotics.robotnik.Coordinator;
 import com._604robotics.robotnik.Logger;
-import com._604robotics.robotnik.prefabs.coordinators.SimultaneousCoordinator;
 import com._604robotics.robotnik.prefabs.coordinators.SleepCoordinator;
 import com._604robotics.robotnik.prefabs.coordinators.StatefulCoordinator;
 import com._604robotics.robotnik.prefabs.coordinators.SwitchCoordinator;
@@ -25,6 +27,8 @@ import edu.wpi.first.wpilibj.PIDSource;
 import edu.wpi.first.wpilibj.PIDSourceType;
 
 public class AutonomousMode extends Coordinator {
+    private static final Logger logger = new Logger(AutonomousMode.class);
+
     private final Robot2018 robot;
 
     private final Coordinator rotateLeftStateMacro;
@@ -35,6 +39,9 @@ public class AutonomousMode extends Coordinator {
 
     private Coordinator selectedModeMacro;
 
+    public String primaryFileName;
+    public String secondaryFileName;
+    
     public AutonomousMode (Robot2018 robot) {
         this.robot = robot;
 
@@ -51,6 +58,43 @@ public class AutonomousMode extends Coordinator {
 
     @Override
     public void begin () {
+        // Filename is prefixed in MarionetteDriver
+    	primaryFileName = robot.dashboard.marionetteFile.get();
+        secondaryFileName = "";
+        
+        Coordinator marionetteDriver;
+        
+        switch( robot.dashboard.marionetteOutput.get() ) {
+        	case MANUAL:
+        		marionetteDriver = new MarionetteDriver(primaryFileName);
+        		break;
+        	case SWITCH:
+        		primaryFileName = Calibration.SWITCH_LEFT_FILENAME;
+        		secondaryFileName = Calibration.SWITCH_RIGHT_FILENAME;
+        		marionetteDriver = new MarionetteSwitch();
+        		break;
+        	case SCALE_LEFT:
+        		primaryFileName = Calibration.SCALE_LEFT_FILENAME;
+        		marionetteDriver = new MarionetteLeftScale();
+        		break;
+        	case SCALE_RIGHT:
+        		primaryFileName = Calibration.SCALE_RIGHT_FILENAME;
+        		marionetteDriver = new MarionetteRightScale();
+        		break;
+        	case CUSTOM_SWITCH:
+        	    primaryFileName = Calibration.CUSTOM_PRIMARY;
+        	    secondaryFileName = Calibration.CUSTOM_SECONDARY;
+        	    marionetteDriver = new CustomMarionetteSwitch();
+        	    break;
+        	case MANUAL_SWITCH:
+        	    primaryFileName = robot.dashboard.manualPrimaryReadFile.get();
+        	    secondaryFileName = robot.dashboard.manualSecondaryReadFile.get();
+        	    marionetteDriver = new CustomMarionetteSwitch();
+        	    break;
+        	default:
+        		marionetteDriver = new FallForwardMacro();
+        		break;
+        }
         // reset arm encoder (again)
         robot.arm.encoder.zero(Calibration.ARM_BOTTOM_LOCATION);
         
@@ -124,6 +168,27 @@ public class AutonomousMode extends Coordinator {
             case NEW_SCALE_BACKWARD:
                 selectedModeMacro = new NewScaleBackwardMacroLeft();
                 break;
+//            case BALANCED_LEFT_TURN_TEST:
+//            	selectedModeMacro = new BalancedLeftTurnMacro();
+//            	break;
+//            case SWEPT_LEFT_TURN_TEST:
+//            	selectedModeMacro = new SweptLeftTurnMacro();
+//            	break;
+//            case BALANCED_SWEPT_LEFT_TURN_TEST:
+//            	selectedModeMacro = new BalancedSweptLeftTurnMacro();
+//            	break;
+//            case BALANCED_RIGHT_TURN_TEST:
+//            	selectedModeMacro = new BalancedRightTurnMacro();
+//            	break;
+//            case SWEPT_RIGHT_TURN_TEST:
+//            	selectedModeMacro = new SweptRightTurnMacro();
+//            	break;
+//            case BALANCED_SWEPT_RIGHT_TURN_TEST:
+//            	selectedModeMacro = new BalancedSweptRightTurnMacro();
+//            	break;
+            case MARIONETTE:
+                selectedModeMacro = marionetteDriver;
+                break;
             case OFF:
             default:
                 selectedModeMacro = null;
@@ -148,6 +213,112 @@ public class AutonomousMode extends Coordinator {
     public void end () {
         if (selectedModeMacro != null) {
             selectedModeMacro.stop();
+        }
+    }
+    
+    private class CustomMarionetteSwitch extends SwitchCoordinator {
+        public CustomMarionetteSwitch() {
+            super(CustomMarionetteSwitch.class);
+            addDefault(new SleepCoordinator(0.1)); // Lucky randomness guaranteed by coin flip
+            addCase(new String[]{"LLL", "LLR", "LRL", "LRR"}, new CustomMarionetteDriver(primaryFileName));
+            addCase(new String[]{"RLL", "RLR", "RRL", "RRR"}, new CustomMarionetteDriver(secondaryFileName));
+        }
+    }
+    
+    private class MarionetteSwitch extends SwitchCoordinator {
+    	public MarionetteSwitch() {
+    		super(MarionetteSwitch.class);
+    		addDefault(new SleepCoordinator(0.1)); // Lucky randomness guaranteed by coin flip
+    		addCase(new String[]{"LLL", "LLR", "LRL", "LRR"}, new MarionetteDriver(primaryFileName));
+    		addCase(new String[]{"RLL", "RLR", "RRL", "RRR"}, new MarionetteDriver(secondaryFileName));
+    	}
+    }
+    
+    private class MarionetteLeftScale extends SwitchCoordinator {
+    	public MarionetteLeftScale() {
+    		super(MarionetteLeftScale.class);
+    		addDefault(new SleepCoordinator(0.1)); // Lucky randomness guaranteed by coin flip
+    		addCase(new String[]{"LLL", "LLR", "RLL", "RLR"}, new MarionetteDriver(primaryFileName));
+    		addCase(new String[]{"LRL", "LRR", "RRL", "RRR"}, new LeftScaleMacro());
+    	}
+    }
+    
+    private class MarionetteRightScale extends SwitchCoordinator {
+    	public MarionetteRightScale() {
+    		super(MarionetteRightScale.class);
+    		addDefault(new SleepCoordinator(0.1)); // Lucky randomness guaranteed by coin flip
+    		addCase(new String[]{"LLL", "LLR", "RLL", "RLR"}, new RightScaleMacro());
+    		addCase(new String[]{"LRL", "LRR", "RRL", "RRR"}, new MarionetteDriver(primaryFileName));
+    	}
+    }
+    
+    private class CustomMarionetteDriver extends Coordinator {
+        private String fileName;
+        
+        public CustomMarionetteDriver(String fileName) {
+            this.fileName = fileName;
+        }
+        
+        @Override
+        protected void begin () {
+            logger.info("Loading Marionette recording from \"" + fileName + "\"");
+            final InputRecording recording;
+            try {
+                recording = InputRecording.load("/home/lvuser/" + fileName);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
+            logger.info("Starting Marionette playback");
+            robot.teleopMode.startPlayback(recording);
+            robot.teleopMode.start();
+        }
+
+        @Override
+        protected boolean run () {
+            return robot.teleopMode.execute();
+        }
+
+        @Override
+        protected void end () {
+            logger.info("Stopping Marionette playback");
+            robot.teleopMode.stop();
+            robot.teleopMode.stopPlayback();
+        }
+    }
+    
+    private class MarionetteDriver extends Coordinator {
+    	private String fileName;
+    	
+    	public MarionetteDriver(String fileName) {
+    		this.fileName = robot.dashboard.filePrefix.get() + fileName;
+    	}
+    	
+    	@Override
+        protected void begin () {
+            logger.info("Loading Marionette recording from \"" + robot.dashboard.filePrefix.get() + fileName + "\"");
+            final InputRecording recording;
+            try {
+                recording = InputRecording.load("/home/lvuser/" + robot.dashboard.filePrefix.get() + fileName);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
+            logger.info("Starting Marionette playback");
+            robot.teleopMode.startPlayback(recording);
+            robot.teleopMode.start();
+        }
+
+        @Override
+        protected boolean run () {
+            return robot.teleopMode.execute();
+        }
+
+        @Override
+        protected void end () {
+            logger.info("Stopping Marionette playback");
+            robot.teleopMode.stop();
+            robot.teleopMode.stopPlayback();
         }
     }
     
@@ -842,11 +1013,11 @@ public class AutonomousMode extends Coordinator {
     		super(NewScaleBackwardMacroRight.class);
     		addStates(new IntakeMacro());
     		//addState("Set Elevator Persistent", new ElevatorSetPersistent(Calibration.ELEVATOR_MID_TARGET));
-            addState("Backward 39 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(39+1)), 10));
+            addState("Backward 39 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(39+1)), 14));
             //addState("Set Arm Persistent", new ArmSetPersistent(Calibration.ARM_BALANCE_TARGET));
             //addState("Sleep 0.5 seconds", new SleepCoordinator(0.5));
             addState("Rotate 35 left", new ArcadePIDCoordinator(0, AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, -35)));
-            addState("Backward 6 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(6)), 10));
+            addState("Backward 6 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(6)), 14));
             addState("Set Arm High Persistent", new ArmSetPersistent(Calibration.ARM_HIGH_TARGET));
             addState("Sleep 1.3 seconds", new SleepCoordinator(1.3));
             addState("Eject cube", new IntakeMove(-0.4,0.5));
@@ -865,11 +1036,11 @@ public class AutonomousMode extends Coordinator {
             //addState("Set Arm Persistent", new ArmSetPersistent(Calibration.ARM_BALANCE_TARGET));
             //addState("Sleep 0.5 seconds", new SleepCoordinator(0.5));
             //addState("Backward 50 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(50+1)), 0));
-            addState("Rotate 90 right", new ArcadePIDCoordinator(0, AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, 90)));
+            addState("Rotate 86 right", new ArcadePIDCoordinator(0, AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, 86)));
             //238.5
-            addState("Backward 193 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(193+1)), 10));
+            addState("Backward 193 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(193+1)), 14));
             addState("Rotate 90 left", new ArcadePIDCoordinator(0, AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, -90)));
-            addState("Backward 27 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(27+1)), 10));
+            addState("Backward 27 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(27+1)), 14));
             addState("Set Arm High Persistent", new ArmSetPersistent(Calibration.ARM_HIGH_TARGET));
             addState("Sleep 1.3 seconds", new SleepCoordinator(1.3));
             addState("Eject cube", new IntakeMove(-0.4,0.5));
@@ -889,9 +1060,9 @@ public class AutonomousMode extends Coordinator {
             //addState("Sleep 0.5 seconds", new SleepCoordinator(0.5));
             //addState("Backward 50 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(50+1)), 0));
             addState("Rotate 90 left", new ArcadePIDCoordinator(0, AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, -90)));
-            addState("Backward 193 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(193+1)), 10));
+            addState("Backward 193 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(193+1)), 14));
             addState("Rotate 90 right", new ArcadePIDCoordinator(0, AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, 90)));
-            addState("Backward 27 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(27+1)), 10));
+            addState("Backward 27 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(27+1)), 14));
             addState("Set Arm High Persistent", new ArmSetPersistent(Calibration.ARM_HIGH_TARGET));
             addState("Sleep 1.3 seconds", new SleepCoordinator(1.3));
             addState("Eject cube", new IntakeMove(-0.4,0.5));
@@ -905,7 +1076,7 @@ public class AutonomousMode extends Coordinator {
         public NewScaleHalfCrossMacroLeft() {
             super(NewScaleHalfCrossMacroLeft.class);
             addState("Rotate 90 right", new ArcadePIDCoordinator(0, AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, 90)));
-            addState("Backward 100 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(100+1)), 0));
+            addState("Backward 100 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(100+1)), 10));
         }
     }
     
@@ -913,7 +1084,7 @@ public class AutonomousMode extends Coordinator {
         public NewScaleHalfCrossMacroRight() {
             super(NewScaleHalfCrossMacroRight.class);
             addState("Rotate 90 left", new ArcadePIDCoordinator(0, AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, -90)));
-            addState("Backward 100 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(100+1)), 0));
+            addState("Backward 100 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(100+1)), 10));
         }
     }
     

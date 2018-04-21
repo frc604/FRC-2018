@@ -1,9 +1,14 @@
 package com._604robotics.robot2018.modes;
 
+import com._604robotics.marionette.InputPlayer;
+import com._604robotics.marionette.InputRecorder;
+import com._604robotics.marionette.InputRecording;
+import com._604robotics.marionette.MarionetteJoystick;
 import com._604robotics.robot2018.Robot2018;
 import com._604robotics.robot2018.constants.Calibration;
 import com._604robotics.robot2018.modules.Arm;
 import com._604robotics.robot2018.modules.Clamp;
+import com._604robotics.robot2018.modules.Dashboard.MarionetteOutput;
 import com._604robotics.robot2018.modules.Drive;
 import com._604robotics.robot2018.modules.Elevator;
 import com._604robotics.robot2018.modules.Intake;
@@ -14,10 +19,20 @@ import com._604robotics.robotnik.prefabs.flow.Pulse;
 import com._604robotics.robotnik.prefabs.flow.Toggle;
 import com._604robotics.robotnik.prefabs.inputcontroller.xbox.XboxController;
 
+import java.io.IOException;
+
 public class TeleopMode extends Coordinator {
 
-    private final XboxController driver = new XboxController(0);
-    private final XboxController manip = new XboxController(1);
+    private static final Logger logger = new Logger(TeleopMode.class);
+
+    private final InputPlayer inputPlayer = new InputPlayer();
+    private InputRecorder inputRecorder;
+
+    private final MarionetteJoystick driverJoystick = new MarionetteJoystick(0, inputPlayer, 0);
+    private final MarionetteJoystick manipJoystick = new MarionetteJoystick(1, inputPlayer, 1);
+
+    private final XboxController driver = new XboxController(driverJoystick);
+    private final XboxController manip = new XboxController(manipJoystick);
 
     private final Robot2018 robot;
 
@@ -62,7 +77,7 @@ public class TeleopMode extends Coordinator {
         armManager = new ArmManager();
         clampManager = new ClampManager();
     }
-    
+
     private boolean getHoldArmClicks = false;
     
     private double driverLeftJoystickY = 0.0;
@@ -112,16 +127,74 @@ public class TeleopMode extends Coordinator {
     private boolean manipB= false;
     private boolean manipX= false;
     private boolean manipY= false;
-    
     private boolean manipDPad = false;
-    
+
+    public void startPlayback (InputRecording recording) {
+        inputPlayer.startPlayback(recording);
+    }
+
+    public void stopPlayback () {
+        inputPlayer.stopPlayback();
+    }
+
     @Override
-    public boolean run () {
+    protected void begin () {
+        if (inputPlayer.isPlaying()) {
+            logger.info("Playing back Marionette recording");
+        } else if (robot.dashboard.recordAuton.get()) {
+            logger.info("Recording inputs with Marionette");
+            inputRecorder = new InputRecorder(2400, driverJoystick, manipJoystick);
+        }
+    }
+
+    @Override
+    protected boolean run () {
     	updateControls();
         process();
         return true;
     }
-   
+
+    @Override
+    protected void end () {
+        if (inputRecorder != null) {
+            final InputRecorder oldInputRecorder = inputRecorder;
+            inputRecorder = null;
+
+            try {
+                logger.info("Terminating Marionette recording");
+                oldInputRecorder.close();
+
+                // filename is prefixed when filename is saved to
+                String fileName = robot.dashboard.marionetteFile.get();
+                switch( robot.dashboard.marionetteRecorder.get() ) {
+                	case MANUAL:
+                		if( Calibration.AUTO_APPEND_TIMESTAMP ) {
+                			fileName = System.currentTimeMillis() + "_" + fileName;
+                		}
+                		break;
+                	case SWITCH_LEFT:
+                		fileName = Calibration.SWITCH_LEFT_FILENAME;
+                		break;
+                	case SWITCH_RIGHT:
+                		fileName = Calibration.SWITCH_RIGHT_FILENAME;
+                		break;
+                	case SCALE_LEFT:
+                		fileName = Calibration.SCALE_LEFT_FILENAME;
+                		break;
+                	case SCALE_RIGHT:
+                		fileName = Calibration.SCALE_RIGHT_FILENAME;
+                		break;
+                	default:
+            			break;
+                }
+                logger.info("Saving Marionette recording to \"" + robot.dashboard.filePrefix.get() + fileName + "\"");
+                oldInputRecorder.getRecording().save("/home/lvuser/" + robot.dashboard.filePrefix.get() + fileName);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
     private void updateControls() {
     	driverLeftJoystickY = driver.leftStick.y.get();
         driverLeftJoystickX = driver.leftStick.x.get();
@@ -302,7 +375,10 @@ public class TeleopMode extends Coordinator {
     			    if( manipDPad ) {
                         output = -Calibration.INTAKE_OUTAKE_MANIPULATOR_OVERDRIVE_MODIFIER;
                     } else {
-                        output = -Calibration.INTAKE_OUTAKE_MANIPULATOR_MODIFIER*Math.sqrt(manipRightTrigger);
+                        if( manipB || driverB ) {
+                            output = -Calibration.INTAKE_OUTAKE_SWITCH_MANIPULATOR_MODIFIER*Math.sqrt(manipRightTrigger);
+                        }
+                            output = -Calibration.INTAKE_OUTAKE_SCALE_MANIPULATOR_MODIFIER*Math.sqrt(manipRightTrigger);
                     }
                 } else if( manipRightBumper ) {
                     output = Calibration.INTAKE_INTAKE_MODIFIER;

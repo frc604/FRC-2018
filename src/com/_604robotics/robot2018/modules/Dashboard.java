@@ -68,7 +68,14 @@ public class Dashboard extends DashboardModule {
         // CENTER_SWITCH_RIGHT,
         // SWITCH_FORWARD,
         NEW_SCALE_BACKWARD,
-        // SWERVE_SCALE_OPPOSITE_LEFT,
+//        SWERVE_SCALE_OPPOSITE_LEFT,
+//        BALANCED_LEFT_TURN_TEST,
+//        SWEPT_LEFT_TURN_TEST,
+//        BALANCED_SWEPT_LEFT_TURN_TEST,
+//        BALANCED_RIGHT_TURN_TEST,
+//        SWEPT_RIGHT_TURN_TEST,
+//        BALANCED_SWEPT_RIGHT_TURN_TEST,
+        MARIONETTE
     }
     
     public enum DriveMode {
@@ -77,11 +84,43 @@ public class Dashboard extends DashboardModule {
         TANK,
         DYNAMIC
     }
+    
+    public enum MarionetteRecorder {
+    	MANUAL,
+    	SWITCH_LEFT,
+    	SWITCH_RIGHT,
+    	SCALE_LEFT,
+    	SCALE_RIGHT
+    }
+    
+    public enum MarionetteOutput {
+    	MANUAL,
+    	SWITCH,
+    	SCALE_LEFT,
+    	SCALE_RIGHT,
+    	CUSTOM_SWITCH,
+    	MANUAL_SWITCH
+    }
 
     public final Output<AutonMode> autonMode = addDashboardOutput("autonMode", AutonMode.OFF, AutonMode.class);
     
     public final Output<DriveMode> driveMode = addDashboardOutput("driveMode", DriveMode.DYNAMIC, DriveMode.class);
 
+    public final Output<MarionetteRecorder> marionetteRecorder = addDashboardOutput("marionetteRecorder", MarionetteRecorder.MANUAL, MarionetteRecorder.class);
+    
+    public final Output<MarionetteOutput> marionetteOutput = addDashboardOutput("marionetteOutput", MarionetteOutput.MANUAL, MarionetteOutput.class);
+    
+    public final Output<Boolean> recordAuton = addDashboardOutput("recordAuton", false);
+    public final Output<String> marionetteFile = addDashboardOutput("marionetteFile", "autonomous.marionette");
+    public final Output<String> filePrefix = addDashboardOutput("filePrefix", "");
+    
+    public final Input<String> primaryReadFile = addDashboardInput("Primary Read File: ", "");
+    public final Input<String> secondaryReadFile = addDashboardInput("Secondary Read File: ", "");
+    public final Input<String> writeFile = addDashboardInput("Write File: ", "");
+    
+    public final Input<String> manualPrimaryReadFile = addDashboardInput("Manual Primary Read File: ", "");
+    public final Input<String> manualSecondaryReadFile = addDashboardInput("Manual Secondary Read File: ", "");
+    
     public Dashboard () {
         super(Dashboard.class);
     }
