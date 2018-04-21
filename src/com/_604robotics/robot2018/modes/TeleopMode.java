@@ -375,7 +375,10 @@ public class TeleopMode extends Coordinator {
     			    if( manipDPad ) {
                         output = -Calibration.INTAKE_OUTAKE_MANIPULATOR_OVERDRIVE_MODIFIER;
                     } else {
-                        output = -Calibration.INTAKE_OUTAKE_MANIPULATOR_MODIFIER*Math.sqrt(manipRightTrigger);
+                        if( manipB || driverB ) {
+                            output = -Calibration.INTAKE_OUTAKE_SWITCH_MANIPULATOR_MODIFIER*Math.sqrt(manipRightTrigger);
+                        }
+                            output = -Calibration.INTAKE_OUTAKE_SCALE_MANIPULATOR_MODIFIER*Math.sqrt(manipRightTrigger);
                     }
                 } else if( manipRightBumper ) {
                     output = Calibration.INTAKE_INTAKE_MODIFIER;

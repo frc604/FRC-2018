@@ -138,7 +138,8 @@ public class Calibration {
     /* Intake */
     public static final double INTAKE_INTAKE_MODIFIER = 0.5;
     public static final double INTAKE_OUTAKE_DRIVER_MODIFIER = 0.25;//0.35
-    public static final double INTAKE_OUTAKE_MANIPULATOR_MODIFIER = 0.25;
+    public static final double INTAKE_OUTAKE_SCALE_MANIPULATOR_MODIFIER = 0.25;
+    public static final double INTAKE_OUTAKE_SWITCH_MANIPULATOR_MODIFIER = 0.4;
     public static final double INTAKE_OUTAKE_DRIVER_OVERDRIVE_MODIFIER = 0.8; //0.4
     public static final double INTAKE_OUTAKE_MANIPULATOR_OVERDRIVE_MODIFIER = 0.4;
     public static final double INTAKE_PASSIVE_POWER = 0.1;
