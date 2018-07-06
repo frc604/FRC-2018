@@ -11,9 +11,9 @@ public class Dashboard extends DashboardModule {
     public final Input<Double> leftDriveRate = addDashboardInput("leftDriveRate", 0.0);
     public final Input<Double> rightDriveRate = addDashboardInput("rightDriveRate", 0.0);
     
-    public final Input<Double> xAccel = addDashboardInput("X Acceleration (ft/s)", 0.0);
-    public final Input<Double> yAccel = addDashboardInput("Y Acceleration (ft/s)", 0.0);
-    public final Input<Double> zAccel = addDashboardInput("Z Acceleration (ft/s)", 0.0);
+    public final Input<Double> xAccel = addDashboardInput("X Acceleration (g)", 0.0);
+    public final Input<Double> yAccel = addDashboardInput("Y Acceleration (g)", 0.0);
+    public final Input<Double> zAccel = addDashboardInput("Z Acceleration (g)", 0.0);
 
     //public final Input<Double> totalCurrent = addDashboardInput("Current Drawn",0.0);
 
@@ -64,6 +64,7 @@ public class Dashboard extends DashboardModule {
         FAILSAFE_BACKWARD_12,
         // Demo auton into which arbitrary stuff can be stashed for testing
         DEMO_NEW_AUTON,
+        PATHFIND,
         // Remnants of various tests
         FORWARD_SWITCH,
         // CENTER_SWITCH_LEFT,
@@ -104,7 +105,7 @@ public class Dashboard extends DashboardModule {
     	MANUAL_SWITCH
     }
 
-    public final Output<AutonMode> autonMode = addDashboardOutput("autonMode", AutonMode.OFF, AutonMode.class);
+    public final Output<AutonMode> autonMode = addDashboardOutput("autonMode", AutonMode.PATHFIND, AutonMode.class);
     
     public final Output<DriveMode> driveMode = addDashboardOutput("driveMode", DriveMode.DYNAMIC, DriveMode.class);
 

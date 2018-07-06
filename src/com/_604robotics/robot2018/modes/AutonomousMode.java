@@ -1,6 +1,7 @@
 package com._604robotics.robot2018.modes;
 
 import java.io.IOException;
+import java.util.TimerTask;
 
 import com._604robotics.marionette.InputRecording;
 import com._604robotics.robot2018.Robot2018;
@@ -9,6 +10,7 @@ import com._604robotics.robot2018.macros.ArcadeTimedDriveMacro;
 import com._604robotics.robot2018.modules.Arm;
 import com._604robotics.robot2018.modules.Clamp;
 import com._604robotics.robot2018.modules.Drive;
+import com._604robotics.robot2018.modules.Drive.ArcadeDrive;
 import com._604robotics.robot2018.modules.Elevator;
 import com._604robotics.robot2018.modules.Intake;
 import com._604robotics.robotnik.Coordinator;
@@ -25,6 +27,10 @@ import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.PIDOutput;
 import edu.wpi.first.wpilibj.PIDSource;
 import edu.wpi.first.wpilibj.PIDSourceType;
+import edu.wpi.first.wpilibj.Timer;
+import jaci.pathfinder.*;
+import jaci.pathfinder.followers.EncoderFollower;
+import jaci.pathfinder.modifiers.TankModifier;
 
 public class AutonomousMode extends Coordinator {
     private static final Logger logger = new Logger(AutonomousMode.class);
@@ -33,9 +39,8 @@ public class AutonomousMode extends Coordinator {
 
     private final Coordinator rotateLeftStateMacro;
     private final Coordinator rotateRightStateMacro;
-    private final Coordinator forwardStateMacro;
     private final Coordinator forwardSwitchMacro;
-    private final Coordinator backwardStateMacro;
+    private final Coordinator pathfinderMacro;
 
     private Coordinator selectedModeMacro;
 
@@ -49,11 +54,87 @@ public class AutonomousMode extends Coordinator {
                 Calibration.DRIVE_ROTATE_LEFT_TARGET);
         rotateRightStateMacro = new ArcadePIDStateMacro(Calibration.DRIVE_MOVE_STILL_TARGET,
                 Calibration.DRIVE_ROTATE_RIGHT_TARGET);
-        forwardStateMacro = new ArcadePIDStateMacro(Calibration.DRIVE_MOVE_FORWARD_TARGET,
-                Calibration.DRIVE_ROTATE_STILL_TARGET);
         forwardSwitchMacro = new ArcadePIDStateMacro(Calibration.DRIVE_MOVE_FORWARD_SWITCH_INCHES, 0);
-        backwardStateMacro = new ArcadePIDStateMacro(Calibration.DRIVE_MOVE_BACKWARD_TARGET,
-                Calibration.DRIVE_ROTATE_STILL_TARGET);
+        
+        pathfinderMacro = new Coordinator() {
+            
+            class PathFollowTask extends TimerTask{
+
+                @Override
+                public void run() {
+                    tankDrive.activate();
+                    int leftEncoderPos = robot.drive.leftClicks.get();
+                    int rightEncoderPos = robot.drive.rightClicks.get();
+                    tankDrive.leftPower.set(leftFollower.calculate(leftEncoderPos));
+                    tankDrive.rightPower.set(rightFollower.calculate(rightEncoderPos));
+                }
+                
+            }
+            private final Trajectory.Config config = new Trajectory.Config(
+                    Trajectory.FitMethod.HERMITE_QUINTIC,
+                    Trajectory.Config.SAMPLES_HIGH,
+                    0.025, 2.6, 4.5, 20);
+            
+            private Waypoint[] points = new Waypoint[] {
+                    new Waypoint(0,0,0),
+                    new Waypoint(1,0,0)
+            };
+            
+            private Trajectory trajectory = Pathfinder.generate(points, config);
+            
+            private TankModifier modifier = new TankModifier(trajectory).modify(0.6858);
+            
+            private EncoderFollower leftFollower  = new EncoderFollower(modifier.getLeftTrajectory());
+            private EncoderFollower rightFollower = new EncoderFollower(modifier.getRightTrajectory());
+            private java.util.Timer followTimer;
+            private SmartTimer timeElapsed = new SmartTimer();
+            
+            private Drive.TankDrive tankDrive = robot.drive.new TankDrive(false);
+            private Pulse PIDTargetPulse=new Pulse();
+            
+            @Override
+            protected void begin() {
+                System.out.println("ERROR: Begin");
+                robot.drive.resetSensors();
+                System.out.println("ERROR: left is "+robot.drive.leftClicks.get());
+                followTimer = new java.util.Timer();
+                double kv=1.0/2.6;
+                double ka=0.05;
+                leftFollower.configurePIDVA(0, 0, 0, kv, 0);
+                rightFollower.configurePIDVA(0, 0, 0, kv, 0);
+                leftFollower.configureEncoder(0, 490, 0.12732);
+                rightFollower.configureEncoder(0, 490, 0.12732);
+                followTimer.schedule(new PathFollowTask(), 0, (long)(1000*0.025));
+                tankDrive.activate();
+                timeElapsed.start();
+            }
+
+            @Override
+            protected boolean run() {
+                tankDrive.activate();
+                return timeElapsed.runUntil(Calibration.DRIVE_PID_AFTER_TIMING, new Runnable() {
+                    @Override
+                    public void run() {
+                        boolean targetReached = (leftFollower.isFinished() && rightFollower.isFinished());
+                        if (!targetReached) {
+                            timeElapsed.reset();
+                            PIDTargetPulse.update(true);
+                        } else {
+                            PIDTargetPulse.update(false);
+                        }
+                    }
+                });
+            }
+
+            @Override
+            protected void end() {
+                System.out.println("ERROR: end");
+                followTimer.cancel();
+                leftFollower.reset();
+                rightFollower.reset();
+                timeElapsed.stopAndReset();
+            }
+        };
     }
 
     @Override
@@ -149,6 +230,9 @@ public class AutonomousMode extends Coordinator {
                 break;
             case DEMO_NEW_AUTON:
                 selectedModeMacro = new DemoStateMacro();
+                break;
+            case PATHFIND:
+                selectedModeMacro = pathfinderMacro;
                 break;
             case FORWARD_SWITCH:
                 selectedModeMacro = forwardSwitchMacro;
