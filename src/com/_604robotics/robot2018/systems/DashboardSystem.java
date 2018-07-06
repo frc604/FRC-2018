@@ -17,6 +17,9 @@ public class DashboardSystem extends Coordinator {
         robot.dashboard.rightDriveClicks.set(robot.drive.rightClicks.get());
         robot.dashboard.leftDriveRate.set(robot.drive.leftClickRate.get());
         robot.dashboard.rightDriveRate.set(robot.drive.rightClickRate.get());
+        robot.dashboard.xAccel.set(robot.drive.xAccel.get()*32.174);
+        robot.dashboard.yAccel.set(robot.drive.yAccel.get()*32.174);
+        robot.dashboard.zAccel.set(robot.drive.zAccel.get()*32.174);
 
         //robot.dashboard.totalCurrent.set(robot.powermonitor.totalPortCurrent.get());
         
