@@ -10,6 +10,10 @@ public class Dashboard extends DashboardModule {
 
     public final Input<Double> leftDriveRate = addDashboardInput("leftDriveRate", 0.0);
     public final Input<Double> rightDriveRate = addDashboardInput("rightDriveRate", 0.0);
+    
+    public final Input<Double> xAccel = addDashboardInput("X Acceleration (ft/s)", 0.0);
+    public final Input<Double> yAccel = addDashboardInput("Y Acceleration (ft/s)", 0.0);
+    public final Input<Double> zAccel = addDashboardInput("Z Acceleration (ft/s)", 0.0);
 
     //public final Input<Double> totalCurrent = addDashboardInput("Current Drawn",0.0);
 
@@ -30,8 +34,6 @@ public class Dashboard extends DashboardModule {
     public final Input<Double> armClicks = addDashboardInput("Arm Clicks", 0.0);
     
     public final Input<String> isClamped = addDashboardInput("Is Clamped", "CLAMPED");
-    public final Input<Boolean> clampLightA = addDashboardInput("Clamp Light A", false);
-    public final Input<Boolean> clampLightB = addDashboardInput("Clamp Light B", false);
     
     public final Input<Boolean> armEncoderStatus = addDashboardInput("Arm Encoder Status", false);
     public final Input<Boolean> limitPressed = addDashboardInput("LimitPressed", false);
