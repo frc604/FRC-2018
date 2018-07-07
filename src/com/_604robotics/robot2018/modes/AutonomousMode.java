@@ -73,7 +73,7 @@ public class AutonomousMode extends Coordinator {
             private final Trajectory.Config config = new Trajectory.Config(
                     Trajectory.FitMethod.HERMITE_QUINTIC,
                     Trajectory.Config.SAMPLES_HIGH,
-                    0.025, 2.6, 4.5, 20);
+                    0.025, 2.6, 5, 10);
             
             private Waypoint[] points = new Waypoint[] {
                     new Waypoint(0,0,0),
