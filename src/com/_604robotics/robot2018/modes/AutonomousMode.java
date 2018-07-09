@@ -98,10 +98,11 @@ public class AutonomousMode extends Coordinator {
                 robot.drive.resetSensors();
                 System.out.println("ERROR: left is "+robot.drive.leftClicks.get());
                 followTimer = new java.util.Timer();
+                double kp=0.05;
                 double kv=1.0/2.6;
                 double ka=0.05;
-                leftFollower.configurePIDVA(0, 0, 0, kv, 0);
-                rightFollower.configurePIDVA(0, 0, 0, kv, 0);
+                leftFollower.configurePIDVA(kp, 0, 0, kv, 0);
+                rightFollower.configurePIDVA(kp, 0, 0, kv, 0);
                 leftFollower.configureEncoder(0, 490, 0.12732);
                 rightFollower.configureEncoder(0, 490, 0.12732);
                 followTimer.schedule(new PathFollowTask(), 0, (long)(1000*0.025));
