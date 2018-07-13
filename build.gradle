@@ -1,0 +1,26 @@
+// Enable required plugins
+plugins {
+    id "jaci.openrio.gradle.GradleRIO" version "2018.03.06"
+}
+
+apply plugin: 'eclipse'
+apply plugin: 'java'
+
+// Add common repositories
+repositories {
+    maven {
+        url "https://plugins.gradle.org/m2/"
+    }
+    mavenLocal()
+}
+
+dependencies {
+    
+}
+
+// Creates a gradlew and gradlew.bat file
+// Makes sure everyone uses the same gradle version
+// Also means that not everyone needs gradle installed
+task wrapper(type: Wrapper) {
+    gradleVersion = '4.8'
+}
