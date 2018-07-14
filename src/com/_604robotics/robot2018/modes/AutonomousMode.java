@@ -65,19 +65,22 @@ public class AutonomousMode extends Coordinator {
                     tankDrive.activate();
                     int leftEncoderPos = robot.drive.leftClicks.get();
                     int rightEncoderPos = robot.drive.rightClicks.get();
-                    tankDrive.leftPower.set(leftFollower.calculate(leftEncoderPos));
-                    tankDrive.rightPower.set(rightFollower.calculate(rightEncoderPos));
+                    double leftPow = leftFollower.calculate(leftEncoderPos);
+                    double rightPow = rightFollower.calculate(rightEncoderPos);
+                    tankDrive.leftPower.set(leftPow);
+                    tankDrive.rightPower.set(rightPow);
+                    System.out.println("Left: "+leftPow+" Right: "+rightPow);
                 }
                 
             }
             private final Trajectory.Config config = new Trajectory.Config(
                     Trajectory.FitMethod.HERMITE_QUINTIC,
                     Trajectory.Config.SAMPLES_HIGH,
-                    0.025, 2.6, 5, 10);
+                    0.025, 2.6, 2.1, 10);
             
             private Waypoint[] points = new Waypoint[] {
                     new Waypoint(0,0,0),
-                    new Waypoint(1,0,0)
+                    new Waypoint(2,0,0)
             };
             
             private Trajectory trajectory = Pathfinder.generate(points, config);
@@ -98,11 +101,11 @@ public class AutonomousMode extends Coordinator {
                 robot.drive.resetSensors();
                 System.out.println("ERROR: left is "+robot.drive.leftClicks.get());
                 followTimer = new java.util.Timer();
-                double kp=0.05;
+                double kp=0.8;//0.8;
                 double kv=1.0/2.6;
-                double ka=0.05;
-                leftFollower.configurePIDVA(kp, 0, 0, kv, 0);
-                rightFollower.configurePIDVA(kp, 0, 0, kv, 0);
+                double ka=0.1;//5
+                leftFollower.configurePIDVA(kp, 0, 0, kv, ka);
+                rightFollower.configurePIDVA(kp, 0, 0, kv, ka);
                 leftFollower.configureEncoder(0, 490, 0.12732);
                 rightFollower.configureEncoder(0, 490, 0.12732);
                 followTimer.schedule(new PathFollowTask(), 0, (long)(1000*0.025));
@@ -113,7 +116,7 @@ public class AutonomousMode extends Coordinator {
             @Override
             protected boolean run() {
                 tankDrive.activate();
-                return timeElapsed.runUntil(Calibration.DRIVE_PID_AFTER_TIMING, new Runnable() {
+                return timeElapsed.runUntil(3, new Runnable() {
                     @Override
                     public void run() {
                         boolean targetReached = (leftFollower.isFinished() && rightFollower.isFinished());
@@ -123,6 +126,7 @@ public class AutonomousMode extends Coordinator {
                         } else {
                             PIDTargetPulse.update(false);
                         }
+                        System.out.println(targetReached);
                     }
                 });
             }
