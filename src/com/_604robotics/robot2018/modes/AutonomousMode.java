@@ -76,11 +76,11 @@ public class AutonomousMode extends Coordinator {
             private final Trajectory.Config config = new Trajectory.Config(
                     Trajectory.FitMethod.HERMITE_QUINTIC,
                     Trajectory.Config.SAMPLES_HIGH,
-                    0.025, 2.2, 2.0, 6);
+                    0.025, 2.3, 1.8, 4);
             
             private Waypoint[] points = new Waypoint[] {
                     new Waypoint(0,0,0),
-                    new Waypoint(2,0,0)
+                    new Waypoint(1.5,0,0)
             };
             
             private Trajectory trajectory = Pathfinder.generate(points, config);
@@ -101,13 +101,13 @@ public class AutonomousMode extends Coordinator {
                 robot.drive.resetSensors();
                 System.out.println("ERROR: left is "+robot.drive.leftClicks.get());
                 followTimer = new java.util.Timer();
-                double kp=0.8;//0.8;
-                double kv=1.0/2.6;
-                double ka=0.1;//5
+                double kp=2;
+                double kv=1.0/2.3;
+                double ka=0.03;
                 leftFollower.configurePIDVA(kp, 0, 0, kv, ka);
                 rightFollower.configurePIDVA(kp, 0, 0, kv, ka);
-                leftFollower.configureEncoder(0, 490, 0.12732);
-                rightFollower.configureEncoder(0, 490, 0.12732);
+                leftFollower.configureEncoder(0, 250, 0.12732);
+                rightFollower.configureEncoder(0, 250, 0.12732);
                 followTimer.schedule(new PathFollowTask(), 0, (long)(1000*0.025));
                 tankDrive.activate();
                 timeElapsed.start();
