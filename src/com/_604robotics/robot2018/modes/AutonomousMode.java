@@ -69,7 +69,6 @@ public class AutonomousMode extends Coordinator {
                     double rightPow = rightFollower.calculate(rightEncoderPos);
                     tankDrive.leftPower.set(leftPow);
                     tankDrive.rightPower.set(rightPow);
-                    System.out.println("Left: "+leftPow+" Right: "+rightPow);
                 }
                 
             }
@@ -80,7 +79,8 @@ public class AutonomousMode extends Coordinator {
             
             private Waypoint[] points = new Waypoint[] {
                     new Waypoint(0,0,0),
-                    new Waypoint(1.5,0,0)
+                    new Waypoint(2.25,-1,0)
+                    //new Waypoint(2.25,-1,Pathfinder.d2r(-45))
             };
             
             private Trajectory trajectory = Pathfinder.generate(points, config);
@@ -116,7 +116,7 @@ public class AutonomousMode extends Coordinator {
             @Override
             protected boolean run() {
                 tankDrive.activate();
-                return timeElapsed.runUntil(3, new Runnable() {
+                return timeElapsed.runUntil(0.5, new Runnable() {
                     @Override
                     public void run() {
                         boolean targetReached = (leftFollower.isFinished() && rightFollower.isFinished());
@@ -126,7 +126,9 @@ public class AutonomousMode extends Coordinator {
                         } else {
                             PIDTargetPulse.update(false);
                         }
-                        System.out.println(targetReached);
+                        if (PIDTargetPulse.isFallingEdge()) {
+                            System.out.println("========Finished========");
+                        }
                     }
                 });
             }
