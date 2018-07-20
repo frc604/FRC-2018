@@ -46,7 +46,7 @@ public class AutonomousMode extends Coordinator {
 
     public String primaryFileName;
     public String secondaryFileName;
-    
+
     public AutonomousMode (Robot2018 robot) {
         this.robot = robot;
 
@@ -55,11 +55,31 @@ public class AutonomousMode extends Coordinator {
         rotateRightStateMacro = new ArcadePIDStateMacro(Calibration.DRIVE_MOVE_STILL_TARGET,
                 Calibration.DRIVE_ROTATE_RIGHT_TARGET);
         forwardSwitchMacro = new ArcadePIDStateMacro(Calibration.DRIVE_MOVE_FORWARD_SWITCH_INCHES, 0);
-        
+
         pathfinderMacro = new Coordinator() {
-            
+
             class PathFollowTask extends TimerTask{
 
+                private double getCurvature(Trajectory.Segment prev_seg, Trajectory.Segment seg) {
+                    double prev_vx=prev_seg.velocity*Math.cos(prev_seg.heading);
+                    double prev_vy=prev_seg.velocity*Math.sin(prev_seg.heading);
+                    double curr_vx=seg.velocity*Math.cos(seg.heading);
+                    double curr_vy=seg.velocity*Math.sin(seg.heading);
+
+                    double tang_prime_x=(curr_vx-prev_vx)/prev_seg.dt;
+                    double tang_prime_y=(curr_vy-prev_vy)/prev_seg.dt;
+
+                    double normal_x=-prev_vy;
+                    double normal_y=prev_vx;
+
+                    double normal_mag=Math.hypot(normal_x,normal_y);
+                    normal_x/=normal_mag;
+                    normal_y/=normal_mag;
+
+                    // Dot product of t' dot t_norm
+                    double curvature=-1*(normal_x*tang_prime_x+normal_y*tang_prime_y); 
+                    return curvature;
+                }
                 @Override
                 public void run() {
                     tankDrive.activate();
@@ -67,34 +87,49 @@ public class AutonomousMode extends Coordinator {
                     int rightEncoderPos = robot.drive.rightClicks.get();
                     double leftPow = leftFollower.calculate(leftEncoderPos);
                     double rightPow = rightFollower.calculate(rightEncoderPos);
-                    tankDrive.leftPower.set(leftPow);
-                    tankDrive.rightPower.set(rightPow);
+                    Trajectory.Segment lprev_seg = leftFollower.prevSegment();
+                    Trajectory.Segment lseg = leftFollower.getSegment();
+
+                    Trajectory.Segment rprev_seg = rightFollower.prevSegment();
+                    Trajectory.Segment rseg = rightFollower.getSegment();
+
+                    double lcurv=getCurvature(lprev_seg,lseg);
+                    double rcurv=getCurvature(rprev_seg,rseg);
+                    double curvature = (lcurv+rcurv)/2;
+                    System.out.print("Left: "+lcurv);
+                    System.out.print("|Right: "+rcurv);
+                    System.out.println("|Ave: "+curvature);
+
+                    double k_kappa=0.1;
+                    double k_ptheta=0;
+                    tankDrive.leftPower.set(leftPow+k_kappa*curvature);
+                    tankDrive.rightPower.set(rightPow-k_kappa*curvature);
                 }
-                
+
             }
             private final Trajectory.Config config = new Trajectory.Config(
                     Trajectory.FitMethod.HERMITE_QUINTIC,
                     Trajectory.Config.SAMPLES_HIGH,
                     0.025, 2.3, 1.8, 4);
-            
+
             private Waypoint[] points = new Waypoint[] {
                     new Waypoint(0,0,0),
                     new Waypoint(2.25,-1,0)
                     //new Waypoint(2.25,-1,Pathfinder.d2r(-45))
             };
-            
+
             private Trajectory trajectory = Pathfinder.generate(points, config);
-            
+
             private TankModifier modifier = new TankModifier(trajectory).modify(0.6858);
-            
+
             private EncoderFollower leftFollower  = new EncoderFollower(modifier.getLeftTrajectory());
             private EncoderFollower rightFollower = new EncoderFollower(modifier.getRightTrajectory());
             private java.util.Timer followTimer;
             private SmartTimer timeElapsed = new SmartTimer();
-            
+
             private Drive.TankDrive tankDrive = robot.drive.new TankDrive(false);
             private Pulse PIDTargetPulse=new Pulse();
-            
+
             @Override
             protected void begin() {
                 System.out.println("ERROR: Begin");
