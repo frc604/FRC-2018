@@ -105,6 +105,8 @@ public class AutonomousMode extends Coordinator {
                     System.out.println("|Ave: "+curvature);
                     
                     double degrees = AutonMovement.clicksToDegrees(Calibration.DRIVE_PROPERTIES, leftEncoderPos-rightEncoderPos);
+                    System.out.print("Current heading is "+degrees);
+                    System.out.println("|Desired heading is "+leftFollower.getHeading()); // Both headings are the same
 
                     double k_kappa=0.1;
                     double k_ptheta=0;
