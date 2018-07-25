@@ -100,18 +100,35 @@ public class AutonomousMode extends Coordinator {
                     double lcurv=getCurvature(lprev_seg,lseg);
                     double rcurv=getCurvature(rprev_seg,rseg);
                     double curvature = (lcurv+rcurv)/2;
-                    System.out.print("Left: "+lcurv);
+                    /*System.out.print("Left: "+lcurv);
                     System.out.print("|Right: "+rcurv);
-                    System.out.println("|Ave: "+curvature);
+                    System.out.println("|Ave: "+curvature);*/
                     
-                    double degrees = AutonMovement.clicksToDegrees(Calibration.DRIVE_PROPERTIES, leftEncoderPos-rightEncoderPos);
-                    System.out.print("Current heading is "+degrees);
-                    System.out.println("|Desired heading is "+leftFollower.getHeading()); // Both headings are the same
+                    double degreeHeading = AutonMovement.clicksToDegrees(Calibration.DRIVE_PROPERTIES, leftEncoderPos-rightEncoderPos);
+                    //System.out.print("Current heading is "+degreeHeading);
+                    
+                    // Both headings are the same
+                    double desiredHeading = leftFollower.getHeading();
+                    desiredHeading=Pathfinder.r2d(desiredHeading);
+                    desiredHeading=Pathfinder.boundHalfDegrees(desiredHeading);
+                    desiredHeading*=-1;
+                    // Pathfinder heading is counterclockwise math convention
+                    // We are using positive=right clockwise convention
+                    //System.out.print("|Desired heading is "+desiredHeading);
+                    
+                    double angleError = desiredHeading-degreeHeading;
+                    System.out.println("|Angle error is "+angleError);
+                    
+                    // Convert back into radians for consistency
+                    angleError = Pathfinder.d2r(angleError);
+                    
+                    //double deshed=-Pathfinder.boundHalfRadians(leftFollower.getHeading());
+                    //System.out.println("Equal "+(deshed-Pathfinder.d2r(desiredHeading)));
 
-                    double k_kappa=0.1;
-                    double k_ptheta=0;
-                    tankDrive.leftPower.set(leftPow+k_kappa*curvature);
-                    tankDrive.rightPower.set(rightPow-k_kappa*curvature);
+                    double k_kappa=0.09;
+                    double k_ptheta=0.9;
+                    tankDrive.leftPower.set(leftPow+k_kappa*curvature+k_ptheta*angleError);
+                    tankDrive.rightPower.set(rightPow-k_kappa*curvature-k_ptheta*angleError);
                 }
 
             }
@@ -128,7 +145,7 @@ public class AutonomousMode extends Coordinator {
 
             private Trajectory trajectory = Pathfinder.generate(points, config);
 
-            private TankModifier modifier = new TankModifier(trajectory).modify(0.6858);
+            private TankModifier modifier = new TankModifier(trajectory).modify(0.676656);
 
             private EncoderFollower leftFollower  = new EncoderFollower(modifier.getLeftTrajectory());
             private EncoderFollower rightFollower = new EncoderFollower(modifier.getRightTrajectory());
