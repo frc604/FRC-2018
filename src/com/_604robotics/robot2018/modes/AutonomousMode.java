@@ -135,17 +135,19 @@ public class AutonomousMode extends Coordinator {
             private final Trajectory.Config config = new Trajectory.Config(
                     Trajectory.FitMethod.HERMITE_QUINTIC,
                     Trajectory.Config.SAMPLES_HIGH,
-                    0.025, 2.3, 1.8, 4);
+                    0.025, 2.3, 1.5, 3.5); // 2.3, 1.8, 4
 
             private Waypoint[] points = new Waypoint[] {
                     new Waypoint(0,0,0),
-                    new Waypoint(2.25,-1,0)
-                    //new Waypoint(2.25,-1,Pathfinder.d2r(-45))
+                    //new Waypoint(2.25,-1,0)
+                    new Waypoint(2.25,-1,Pathfinder.d2r(-45))
             };
 
             private Trajectory trajectory = Pathfinder.generate(points, config);
 
-            private TankModifier modifier = new TankModifier(trajectory).modify(0.676656);
+            private TankModifier modifier = new TankModifier(trajectory).modify(0.66);
+            //old tune 0.676656 (but using faulty 490/250/500 encoder things)
+            //direct chassis width 0.6858
 
             private EncoderFollower leftFollower  = new EncoderFollower(modifier.getLeftTrajectory());
             private EncoderFollower rightFollower = new EncoderFollower(modifier.getRightTrajectory());
