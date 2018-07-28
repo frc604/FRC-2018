@@ -62,7 +62,7 @@ public class AutonomousMode extends Coordinator {
             private double ka=0.03;
             private double k_kappa=0.09;
             private double k_ptheta=2.5;//0.9, 1
-            private double k_dtheta=0;
+            private double k_dtheta=0.055;
             class PathFollowTask extends TimerTask {
                 private double prevAngleError=0;
 
@@ -73,7 +73,7 @@ public class AutonomousMode extends Coordinator {
                     double curr_vx=seg.velocity*Math.cos(seg.heading);
                     double curr_vy=seg.velocity*Math.sin(seg.heading);
 
-                    // Deriative of the tangent vector with respect to time
+                    // Derivative of the tangent vector with respect to time
                     double tang_prime_x=(curr_vx-prev_vx)/prev_seg.dt;
                     double tang_prime_y=(curr_vy-prev_vy)/prev_seg.dt;
 
@@ -128,6 +128,7 @@ public class AutonomousMode extends Coordinator {
                     // Convert back into radians for consistency
                     angleError = Pathfinder.d2r(angleError);
                     double dAngleError=angleError-prevAngleError;
+                    dAngleError/=0.025; // dt constant
                     
                     //double deshed=-Pathfinder.boundHalfRadians(leftFollower.getHeading());
                     //System.out.println("Equal "+(deshed-Pathfinder.d2r(desiredHeading)));
@@ -176,7 +177,7 @@ public class AutonomousMode extends Coordinator {
                 followTimer = new java.util.Timer();
                 leftFollower.configurePIDVA(kp, 0, 0, kv, ka);
                 rightFollower.configurePIDVA(kp, 0, 0, kv, ka);
-                leftFollower.configureEncoder(0, 250, 0.12732);
+                leftFollower.configureEncoder(0, 250, 0.12732); // 5 in diameter
                 rightFollower.configureEncoder(0, 250, 0.12732);
                 followTimer.schedule(new PathFollowTask(), 0, (long)(1000*0.025));
                 tankDrive.activate();
@@ -186,7 +187,7 @@ public class AutonomousMode extends Coordinator {
             @Override
             protected boolean run() {
                 tankDrive.activate();
-                return timeElapsed.runUntil(0.5, new Runnable() {
+                return timeElapsed.runUntil(0.6, new Runnable() {
                     @Override
                     public void run() {
                         boolean targetReached = (leftFollower.isFinished() && rightFollower.isFinished());
