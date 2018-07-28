@@ -142,7 +142,7 @@ public class Calibration {
     public static final double INTAKE_OUTAKE_SWITCH_MANIPULATOR_MODIFIER = 0.4;
     public static final double INTAKE_OUTAKE_DRIVER_OVERDRIVE_MODIFIER = 0.8; //0.4
     public static final double INTAKE_OUTAKE_MANIPULATOR_OVERDRIVE_MODIFIER = 0.4;
-    public static final double INTAKE_PASSIVE_POWER = 0.1;
+    public static final double INTAKE_PASSIVE_POWER = 0.2;
     
     /* Marionette */
     public static final boolean AUTO_APPEND_TIMESTAMP = true;
