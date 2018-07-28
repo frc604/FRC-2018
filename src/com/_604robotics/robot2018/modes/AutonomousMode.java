@@ -57,8 +57,14 @@ public class AutonomousMode extends Coordinator {
         forwardSwitchMacro = new ArcadePIDStateMacro(Calibration.DRIVE_MOVE_FORWARD_SWITCH_INCHES, 0);
 
         pathfinderMacro = new Coordinator() {
-
-            class PathFollowTask extends TimerTask{
+            private double kp=2;
+            private double kv=1.0/2.3;
+            private double ka=0.03;
+            private double k_kappa=0.09;
+            private double k_ptheta=2.5;//0.9, 1
+            private double k_dtheta=0;
+            class PathFollowTask extends TimerTask {
+                private double prevAngleError=0;
 
                 private double getCurvature(Trajectory.Segment prev_seg, Trajectory.Segment seg) {
                     // Get component form of the velocity vectors
@@ -121,26 +127,31 @@ public class AutonomousMode extends Coordinator {
                     
                     // Convert back into radians for consistency
                     angleError = Pathfinder.d2r(angleError);
+                    double dAngleError=angleError-prevAngleError;
                     
                     //double deshed=-Pathfinder.boundHalfRadians(leftFollower.getHeading());
                     //System.out.println("Equal "+(deshed-Pathfinder.d2r(desiredHeading)));
 
-                    double k_kappa=0.09;
-                    double k_ptheta=0.9;
-                    tankDrive.leftPower.set(leftPow+k_kappa*curvature+k_ptheta*angleError);
-                    tankDrive.rightPower.set(rightPow-k_kappa*curvature-k_ptheta*angleError);
+                    tankDrive.leftPower.set(leftPow+k_kappa*curvature
+                            +k_ptheta*angleError+k_dtheta*dAngleError);
+                    tankDrive.rightPower.set(rightPow-k_kappa*curvature
+                            -k_ptheta*angleError-k_dtheta*dAngleError);
+                    prevAngleError=angleError;
                 }
 
             }
             private final Trajectory.Config config = new Trajectory.Config(
                     Trajectory.FitMethod.HERMITE_QUINTIC,
                     Trajectory.Config.SAMPLES_HIGH,
-                    0.025, 2.3, 1.5, 3.5); // 2.3, 1.8, 4
+                    0.025, 1.1, 0.8, 3.5);
+            // 2.3, 1.8, 4
+            // 2.3, 1.5, 3.5
+            // 1.1, 0.8, 3.5
 
             private Waypoint[] points = new Waypoint[] {
                     new Waypoint(0,0,0),
-                    //new Waypoint(2.25,-1,0)
-                    new Waypoint(2.25,-1,Pathfinder.d2r(-45))
+                    new Waypoint(2.25,-1,0)
+                    //new Waypoint(2.25,-1,Pathfinder.d2r(-45))
             };
 
             private Trajectory trajectory = Pathfinder.generate(points, config);
@@ -163,9 +174,6 @@ public class AutonomousMode extends Coordinator {
                 robot.drive.resetSensors();
                 System.out.println("ERROR: left is "+robot.drive.leftClicks.get());
                 followTimer = new java.util.Timer();
-                double kp=2;
-                double kv=1.0/2.3;
-                double ka=0.03;
                 leftFollower.configurePIDVA(kp, 0, 0, kv, ka);
                 rightFollower.configurePIDVA(kp, 0, 0, kv, ka);
                 leftFollower.configureEncoder(0, 250, 0.12732);
