@@ -21,6 +21,7 @@ import com._604robotics.robotnik.prefabs.coordinators.SwitchCoordinator;
 import com._604robotics.robotnik.prefabs.flow.Pulse;
 import com._604robotics.robotnik.prefabs.flow.SmartTimer;
 import com._604robotics.robotnik.utils.AutonMovement;
+import com._604robotics.robotnik.utils.PathFinderUtil;
 import com._604robotics.robotnik.utils.annotations.Unreal;
 
 import edu.wpi.first.wpilibj.PIDController;
@@ -63,33 +64,9 @@ public class AutonomousMode extends Coordinator {
             private double k_kappa=0.09;
             private double k_ptheta=2.5;//0.9, 1
             private double k_dtheta=0.055;
+
             class PathFollowTask extends TimerTask {
                 private double prevAngleError=0;
-
-                private double getCurvature(Trajectory.Segment prev_seg, Trajectory.Segment seg) {
-                    // Get component form of the velocity vectors
-                    double prev_vx=prev_seg.velocity*Math.cos(prev_seg.heading);
-                    double prev_vy=prev_seg.velocity*Math.sin(prev_seg.heading);
-                    double curr_vx=seg.velocity*Math.cos(seg.heading);
-                    double curr_vy=seg.velocity*Math.sin(seg.heading);
-
-                    // Derivative of the tangent vector with respect to time
-                    double tang_prime_x=(curr_vx-prev_vx)/prev_seg.dt;
-                    double tang_prime_y=(curr_vy-prev_vy)/prev_seg.dt;
-
-                    // Normalized normal vector
-                    double normal_x=-prev_vy;
-                    double normal_y=prev_vx;
-
-                    double normal_mag=Math.hypot(normal_x,normal_y);
-                    normal_x/=normal_mag;
-                    normal_y/=normal_mag;
-
-                    // Dot product of t' dot t_norm
-                    // Minus sign so that positive points right
-                    double curvature=-1*(normal_x*tang_prime_x+normal_y*tang_prime_y); 
-                    return curvature;
-                }
                 @Override
                 public void run() {
                     tankDrive.activate();
@@ -103,8 +80,8 @@ public class AutonomousMode extends Coordinator {
                     Trajectory.Segment rprev_seg = rightFollower.prevSegment();
                     Trajectory.Segment rseg = rightFollower.getSegment();
 
-                    double lcurv=getCurvature(lprev_seg,lseg);
-                    double rcurv=getCurvature(rprev_seg,rseg);
+                    double lcurv=PathFinderUtil.getCurvature(lprev_seg,lseg);
+                    double rcurv=PathFinderUtil.getCurvature(rprev_seg,rseg);
                     double curvature = (lcurv+rcurv)/2;
                     /*System.out.print("Left: "+lcurv);
                     System.out.print("|Right: "+rcurv);
@@ -139,8 +116,8 @@ public class AutonomousMode extends Coordinator {
                             -k_ptheta*angleError-k_dtheta*dAngleError);
                     prevAngleError=angleError;
                 }
-
             }
+
             private final Trajectory.Config config = new Trajectory.Config(
                     Trajectory.FitMethod.HERMITE_QUINTIC,
                     Trajectory.Config.SAMPLES_HIGH,
