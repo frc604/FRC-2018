@@ -6,7 +6,26 @@ public class PathFinderUtil {
 
     private PathFinderUtil() {}
     
-    public static double getCurvature(Trajectory.Segment prev_seg, Trajectory.Segment seg) {
+    /**
+     * Function to get the normalized curvature of two adjacent segments
+     * @param prev_seg the previous segment
+     * @param seg the current segment
+     * @return the curvature
+     */
+    public static double getNormalizedCurvature(Trajectory.Segment prev_seg, Trajectory.Segment seg) {
+        return getScaledCurvature(prev_seg,seg,1);
+    }
+    
+    
+    /**
+     * Function to get curvature scaled by velocity of two adjacent segments
+     * @param prev_seg the previous segment
+     * @param seg the current segment
+     * @param scaleVel the velocity to which the curvature should be scaled.
+     * Use 1 for the conventional definition of curvature with normalized velocity.
+     * @return the scaled curvature
+     */
+    public static double getScaledCurvature(Trajectory.Segment prev_seg, Trajectory.Segment seg, double scaleVel) {
         // Get component form of the velocity vectors
         double prev_vx=prev_seg.velocity*Math.cos(prev_seg.heading);
         double prev_vy=prev_seg.velocity*Math.sin(prev_seg.heading);
@@ -27,7 +46,14 @@ public class PathFinderUtil {
 
         // Dot product of t' dot t_norm
         // Minus sign so that positive points right
-        double curvature=-1*(normal_x*tang_prime_x+normal_y*tang_prime_y); 
+        double curvature=-1*(normal_x*tang_prime_x+normal_y*tang_prime_y);
+        if (scaleVel!=0) {
+            if (seg.velocity!=0) { // rescale velocities
+                curvature*=(scaleVel/seg.velocity);
+            } else {
+                return 0;
+            }
+        }
         return curvature;
     }
 }

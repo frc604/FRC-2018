@@ -48,6 +48,11 @@ public class AutonomousMode extends Coordinator {
     public String primaryFileName;
     public String secondaryFileName;
 
+    private static enum PathFollowSide {
+        LEFT,
+        RIGHT
+    }
+
     public AutonomousMode (Robot2018 robot) {
         this.robot = robot;
 
@@ -67,27 +72,41 @@ public class AutonomousMode extends Coordinator {
 
             class PathFollowTask extends TimerTask {
                 private double prevAngleError=0;
+                private PathFollowSide side;
+
+                PathFollowTask (PathFollowSide side) {
+                    this.side=side;
+                }
+
                 @Override
                 public void run() {
                     tankDrive.activate();
-                    int leftEncoderPos = robot.drive.leftClicks.get();
-                    int rightEncoderPos = robot.drive.rightClicks.get();
-                    double leftPow = leftFollower.calculate(leftEncoderPos);
-                    double rightPow = rightFollower.calculate(rightEncoderPos);
-                    Trajectory.Segment lprev_seg = leftFollower.prevSegment();
-                    Trajectory.Segment lseg = leftFollower.getSegment();
+                    int encoderPos;
+                    double rawPow;
+                    Trajectory.Segment prev_seg;
+                    Trajectory.Segment seg;
+                    if (side==PathFollowSide.LEFT) {
+                        encoderPos = robot.drive.leftClicks.get();
+                        rawPow = leftFollower.calculate(encoderPos);
+                        prev_seg = leftFollower.prevSegment();
+                        seg = leftFollower.getSegment();
+                    } else {//if side==PathFollowSide.RIGHT
+                        encoderPos=robot.drive.rightClicks.get();
+                        rawPow = rightFollower.calculate(encoderPos);
+                        prev_seg = rightFollower.prevSegment();
+                        seg = rightFollower.getSegment();
+                    }
 
-                    Trajectory.Segment rprev_seg = rightFollower.prevSegment();
-                    Trajectory.Segment rseg = rightFollower.getSegment();
-
-                    double lcurv=PathFinderUtil.getCurvature(lprev_seg,lseg);
-                    double rcurv=PathFinderUtil.getCurvature(rprev_seg,rseg);
-                    double curvature = (lcurv+rcurv)/2;
-                    /*System.out.print("Left: "+lcurv);
-                    System.out.print("|Right: "+rcurv);
-                    System.out.println("|Ave: "+curvature);*/
+                    // Calculated curvature scales with velocity
+                    // Keeping old implied scaling here that used an average
+                    // since faster movement implies more curvature correction
+                    double scaleVel=leftFollower.getSegment().velocity+rightFollower.getSegment().velocity;
+                    scaleVel/=2;
+                    double curvature = PathFinderUtil.getScaledCurvature(prev_seg,seg,scaleVel);
                     
-                    double degreeHeading = AutonMovement.clicksToDegrees(Calibration.DRIVE_PROPERTIES, leftEncoderPos-rightEncoderPos);
+                    // Raw heading stuff here due to side selections
+                    double degreeHeading = AutonMovement.clicksToDegrees(Calibration.DRIVE_PROPERTIES,
+                            robot.drive.leftClicks.get()-robot.drive.rightClicks.get());
                     //System.out.print("Current heading is "+degreeHeading);
                     
                     // Both headings are the same
@@ -97,23 +116,25 @@ public class AutonomousMode extends Coordinator {
                     desiredHeading*=-1;
                     // Pathfinder heading is counterclockwise math convention
                     // We are using positive=right clockwise convention
-                    //System.out.print("|Desired heading is "+desiredHeading);
                     
                     double angleError = desiredHeading-degreeHeading;
-                    System.out.println("|Angle error is "+angleError);
+                    System.out.println("Angle error is "+angleError);
                     
                     // Convert back into radians for consistency
                     angleError = Pathfinder.d2r(angleError);
                     double dAngleError=angleError-prevAngleError;
-                    dAngleError/=0.025; // dt constant
+                    dAngleError/=seg.dt;
                     
                     //double deshed=-Pathfinder.boundHalfRadians(leftFollower.getHeading());
                     //System.out.println("Equal "+(deshed-Pathfinder.d2r(desiredHeading)));
 
-                    tankDrive.leftPower.set(leftPow+k_kappa*curvature
-                            +k_ptheta*angleError+k_dtheta*dAngleError);
-                    tankDrive.rightPower.set(rightPow-k_kappa*curvature
-                            -k_ptheta*angleError-k_dtheta*dAngleError);
+                    if (side==PathFollowSide.LEFT) {
+                        tankDrive.leftPower.set(rawPow+k_kappa*curvature
+                                +k_ptheta*angleError+k_dtheta*dAngleError);
+                    } else { // if side==PathFollowSide.RIGHT
+                        tankDrive.rightPower.set(rawPow-k_kappa*curvature
+                                -k_ptheta*angleError-k_dtheta*dAngleError);
+                    }
                     prevAngleError=angleError;
                 }
             }
@@ -156,7 +177,8 @@ public class AutonomousMode extends Coordinator {
                 rightFollower.configurePIDVA(kp, 0, 0, kv, ka);
                 leftFollower.configureEncoder(0, 250, 0.12732); // 5 in diameter
                 rightFollower.configureEncoder(0, 250, 0.12732);
-                followTimer.schedule(new PathFollowTask(), 0, (long)(1000*0.025));
+                followTimer.schedule(new PathFollowTask(PathFollowSide.LEFT), 0, (long)(1000*0.025));
+                followTimer.schedule(new PathFollowTask(PathFollowSide.RIGHT), 0, (long)(1000*0.025));
                 tankDrive.activate();
                 timeElapsed.start();
             }
