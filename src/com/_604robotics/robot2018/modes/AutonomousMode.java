@@ -80,7 +80,7 @@ public class AutonomousMode extends Coordinator {
 			 */
 
 			private double base_dt = 0.025;
-			private double width = 0.88;
+			private double width = 0.66;
 			//old tune 0.676656 (but using faulty 490/250/500 encoder things)
 			//direct chassis width 0.6858
 
