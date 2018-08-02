@@ -105,14 +105,14 @@ public class AutonomousMode extends Coordinator {
 						rawPow = leftFollower.calculate(encoderPos);
 						prev_seg = leftFollower.prevSegment();
 						seg = leftFollower.getSegment();
-						next_dt = leftFollower.nextSegment().dt;
 					} else {//if side==PathFollowSide.RIGHT
 						encoderPos=robot.drive.rightClicks.get();
 						rawPow = rightFollower.calculate(encoderPos);
 						prev_seg = rightFollower.prevSegment();
 						seg = rightFollower.getSegment();
-						next_dt = rightFollower.nextSegment().dt;
 					}
+
+					next_dt = seg.dt;
 
 					// Calculated curvature scales with velocity
 					// Keeping old implied scaling here that used an average
@@ -154,7 +154,7 @@ public class AutonomousMode extends Coordinator {
 					}
 					prevAngleError=angleError;
 				}
-				
+
 				double getNextdt() {
 					return next_dt;
 				}
@@ -238,16 +238,16 @@ public class AutonomousMode extends Coordinator {
 			 */
 			private double pathFollowLoop( PathFollowTask side, double initalDuration ) {
 				double start = System.currentTimeMillis();
-				
+
 				side.run();
-				
+
 				while( ( System.currentTimeMillis() - start ) < initalDuration ) {}
 				return side.getNextdt();
 			}
-			
+
 			private void asyncPathThread( PathFollowTask path ) {
 				double dt = 0;
-				
+
 				if( path.side.equals( PathFollowSide.LEFT ) ) {
 					dt = modifier.getLeftTrajectory().get(0).dt; // Measured in seconds
 				} else {
@@ -1170,7 +1170,7 @@ public class AutonomousMode extends Coordinator {
 	private class RightScaleChooserSameOnlyMacro extends SwitchCoordinator {
 		public RightScaleChooserSameOnlyMacro() {
 			super(RightScaleChooserSameOnlyMacro.class);
-			addCase(new String[]{"LLL", "LLR", "RLL", "RLR"}, new SleepCoordinator(1)); // Do nothing 
+			addCase(new String[]{"LLL", "LLR", "RLL", "RLR"}, new SleepCoordinator(1)); // Do nothing
 			addCase(new String[]{"LRL", "LRR", "RRL", "RRR"}, new NewScaleBackwardMacroRight());
 		}
 	}
@@ -1306,7 +1306,7 @@ public class AutonomousMode extends Coordinator {
 		}
 	}
 
-	/* Utilities */   
+	/* Utilities */
 	private class IntakeMacro extends StatefulCoordinator {
 		public IntakeMacro() {
 			super(IntakeMacro.class);
