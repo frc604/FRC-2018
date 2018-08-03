@@ -64,12 +64,12 @@ public class AutonomousMode extends Coordinator {
 
 		pathfinderMacro = new Coordinator() {
 			private double kp=2;
-			private double kd=0.1;
+			private double kd=0.0;
 			private double kv=1.0/2.3;
 			private double ka=0.03;
 			private double k_kappa=0.09;
-			private double k_ptheta=2.5;//0.9, 1
-			private double k_dtheta=0.008;//0.055;
+			private double k_ptheta=2;//0.9, 1
+			private double k_dtheta=0.005;//0.055;0.02
 
 			private double max_v = 1.1;
 			private double max_a = 0.8;
@@ -187,7 +187,7 @@ public class AutonomousMode extends Coordinator {
 
 			private EncoderFollower leftFollower  = new EncoderFollower(modifier.getLeftTrajectory());
 			private EncoderFollower rightFollower = new EncoderFollower(modifier.getRightTrajectory());
-			private java.util.Timer timer = new java.util.Timer();
+			private java.util.Timer timer;
 			private SmartTimer timeElapsed = new SmartTimer();
 
 			private Drive.TankDrive tankDrive = robot.drive.new TankDrive(false);
@@ -196,10 +196,11 @@ public class AutonomousMode extends Coordinator {
 			@Override
 			protected void begin() {
 				System.out.println("ERROR: Begin");
+				timer = new java.util.Timer();
 				robot.drive.resetSensors();
 				System.out.println("ERROR: left is "+robot.drive.leftClicks.get());
-				leftFollower.configurePIDVA(kp, 0, 0, kv, ka);
-				rightFollower.configurePIDVA(kp, 0, 0, kv, ka);
+				leftFollower.configurePIDVA(kp, 0, kd, kv, ka);
+				rightFollower.configurePIDVA(kp, 0, kd, kv, ka);
 				leftFollower.configureEncoder(0, 250, 0.12732); // 5 in diameter
 				rightFollower.configureEncoder(0, 250, 0.12732);
 				timer.schedule(new PathFollowTask(PathFollowSide.LEFT), 0);
