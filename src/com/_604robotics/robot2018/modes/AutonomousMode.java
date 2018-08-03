@@ -135,7 +135,7 @@ public class AutonomousMode extends Coordinator {
 					// We are using positive=right clockwise convention
 
 					double angleError = desiredHeading-degreeHeading;
-					System.out.println("Angle error is "+angleError+" for segment position "+seg.position);
+					//System.out.println("Angle error is "+angleError+" for segment position "+seg.position);
 
 					// Convert back into radians for consistency
 					angleError = Pathfinder.d2r(angleError);
@@ -187,9 +187,9 @@ public class AutonomousMode extends Coordinator {
 
 			@Override
 			protected void begin() {
-				System.out.println("ERROR: Begin");
+				//System.out.println("ERROR: Begin");
 				robot.drive.resetSensors();
-				System.out.println("ERROR: left is "+robot.drive.leftClicks.get());
+				//System.out.println("ERROR: left is "+robot.drive.leftClicks.get());
 				leftFollower.configurePIDVA(kp, 0, 0, kv, ka);
 				rightFollower.configurePIDVA(kp, 0, 0, kv, ka);
 				leftFollower.configureEncoder(0, 250, 0.12732); // 5 in diameter
@@ -262,7 +262,7 @@ public class AutonomousMode extends Coordinator {
 					try {
 						Thread.sleep(1);
 					} catch (InterruptedException e) {
-					    System.out.println("Warning: Interrupted pathFollowLoop");
+					    //System.out.println("Warning: Interrupted pathFollowLoop");
 						break;
 					}
 				}
@@ -280,7 +280,7 @@ public class AutonomousMode extends Coordinator {
 				}
 
 				while( !Thread.interrupted() ) {
-					System.out.println("Running pathFollowLoop on "+path.side.toString()+" side");
+					//System.out.println("Running pathFollowLoop on "+path.side.toString()+" side");
 					dt = pathFollowLoop( path, (dt*1000) );
 				}
 
