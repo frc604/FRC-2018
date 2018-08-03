@@ -154,9 +154,9 @@ public class AutonomousMode extends Coordinator {
 					}
 					prevAngleError=angleError;
 					
-					if( side==PathFollowSide.LEFT && !leftFollower.isFinished() ) {
+					if( side==PathFollowSide.LEFT ) {
 						timer.schedule( new PathFollowTask( PathFollowSide.LEFT), 0, (long) ( 1000*getNextdt() ) ); 
-					} else if( side == PathFollowSide.RIGHT && !rightFollower.isFinished() ) {
+					} else if( side == PathFollowSide.RIGHT ) {
 						timer.schedule( new PathFollowTask( PathFollowSide.RIGHT), 0, (long) (1000*getNextdt()) ); 
 					}
 					
