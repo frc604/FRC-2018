@@ -167,7 +167,8 @@ public class AutonomousMode extends Coordinator {
 
 			private Waypoint[] points = new Waypoint[] {
 					new Waypoint(0,0,0),
-					new Waypoint(2.25,-1,0)
+					new Waypoint(1,0,0)
+					//new Waypoint(2.25,-1,0)
 					//new Waypoint(2.25,-1,Pathfinder.d2r(-45))
 			};
 
@@ -222,9 +223,16 @@ public class AutonomousMode extends Coordinator {
 
 			@Override
 			protected void end() {
-				System.out.println("ERROR: end");
+			    System.out.println("ERROR: endclean");
 				leftThread.interrupt();
 				rightThread.interrupt();
+				try {
+                    leftThread.join();
+                    rightThread.join();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+				System.out.println("ERROR: end");
 				leftFollower.reset();
 				rightFollower.reset();
 				timeElapsed.stopAndReset();
