@@ -245,7 +245,7 @@ public class AutonomousMode extends Coordinator {
 					try {
 						Thread.sleep(1);
 					} catch (InterruptedException e) {
-						e.printStackTrace();
+						break;
 					}
 				}
 				
