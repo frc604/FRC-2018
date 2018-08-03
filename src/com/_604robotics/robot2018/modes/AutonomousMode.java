@@ -135,7 +135,7 @@ public class AutonomousMode extends Coordinator {
 					// We are using positive=right clockwise convention
 
 					double angleError = desiredHeading-degreeHeading;
-					System.out.println("Angle error is "+angleError);
+					System.out.println("Angle error is "+angleError+" for segment position "+seg.position);
 
 					// Convert back into radians for consistency
 					angleError = Pathfinder.d2r(angleError);
@@ -255,13 +255,14 @@ public class AutonomousMode extends Coordinator {
 
 				while( ( System.currentTimeMillis() - start ) < initalDuration ) {
 					if( Thread.interrupted() ) {
+					    System.out.println("Warning: prevInterrupt after run");
 						break;
 					}
 					
 					try {
 						Thread.sleep(1);
 					} catch (InterruptedException e) {
-					    System.out.println("Interrupted pathFollowLoop");
+					    System.out.println("Warning: Interrupted pathFollowLoop");
 						break;
 					}
 				}
