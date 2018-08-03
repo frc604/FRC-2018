@@ -250,6 +250,10 @@ public class AutonomousMode extends Coordinator {
 				side.run();
 
 				while( ( System.currentTimeMillis() - start ) < initalDuration ) {
+					if( Thread.interrupted() ) {
+						return side.getNextdt();
+					}
+					
 					try {
 						Thread.sleep(1);
 					} catch (InterruptedException e) {
