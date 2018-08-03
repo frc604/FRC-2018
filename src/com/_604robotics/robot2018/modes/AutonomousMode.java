@@ -251,13 +251,14 @@ public class AutonomousMode extends Coordinator {
 
 				while( ( System.currentTimeMillis() - start ) < initalDuration ) {
 					if( Thread.interrupted() ) {
+					    System.out.println("Warning: prevInterrupt after run");
 						return side.getNextdt();
 					}
 					
 					try {
 						Thread.sleep(1);
 					} catch (InterruptedException e) {
-					    System.out.println("Interrupted pathFollowLoop");
+					    System.out.println("Warning: Interrupted pathFollowLoop");
 						break;
 					}
 				}
