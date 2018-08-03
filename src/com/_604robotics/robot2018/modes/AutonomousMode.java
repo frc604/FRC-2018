@@ -241,7 +241,14 @@ public class AutonomousMode extends Coordinator {
 
 				side.run();
 
-				while( ( System.currentTimeMillis() - start ) < initalDuration ) {}
+				while( ( System.currentTimeMillis() - start ) < initalDuration ) {
+					try {
+						Thread.sleep(1);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+				
 				return side.getNextdt();
 			}
 
@@ -257,6 +264,8 @@ public class AutonomousMode extends Coordinator {
 				while( !Thread.interrupted() ) {
 					dt = pathFollowLoop( path, (dt*1000) );
 				}
+
+				System.out.println("ERROR: Stopped runnning Async path following on "+path.side.toString());
 			}
 
 		};
