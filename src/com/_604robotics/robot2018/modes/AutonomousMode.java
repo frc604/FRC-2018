@@ -280,8 +280,8 @@ public class AutonomousMode extends Coordinator {
 				}
 
 				while( !Thread.interrupted() ) {
+					System.out.println("Running pathFollowLoop on "+path.side.toString()+" side");
 					dt = pathFollowLoop( path, (dt*1000) );
-					System.out.println("Ran pathFollowLoop");
 				}
 
 				System.out.println("ERROR: Stopped runnning Async path following on "+path.side.toString());
