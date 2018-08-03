@@ -153,6 +153,13 @@ public class AutonomousMode extends Coordinator {
 								-k_ptheta*angleError-k_dtheta*dAngleError);
 					}
 					prevAngleError=angleError;
+					
+					if( side==PathFollowSide.LEFT && !leftFollower.isFinished() ) {
+						timer.schedule( new PathFollowTask( PathFollowSide.LEFT), 0, (long) ( 1000*getNextdt() ) ); 
+					} else if( side == PathFollowSide.RIGHT && !rightFollower.isFinished() ) {
+						timer.schedule( new PathFollowTask( PathFollowSide.RIGHT), 0, (long) (1000*getNextdt()) ); 
+					}
+					
 				}
 
 				double getNextdt() {
@@ -178,8 +185,7 @@ public class AutonomousMode extends Coordinator {
 
 			private EncoderFollower leftFollower  = new EncoderFollower(modifier.getLeftTrajectory());
 			private EncoderFollower rightFollower = new EncoderFollower(modifier.getRightTrajectory());
-			private Thread leftThread = new Thread(() -> asyncPathThread( new PathFollowTask( PathFollowSide.LEFT ) ) );
-			private Thread rightThread = new Thread(() -> asyncPathThread( new PathFollowTask( PathFollowSide.RIGHT ) ) );
+			private java.util.Timer timer = new java.util.Timer();
 			private SmartTimer timeElapsed = new SmartTimer();
 
 			private Drive.TankDrive tankDrive = robot.drive.new TankDrive(false);
@@ -194,9 +200,8 @@ public class AutonomousMode extends Coordinator {
 				rightFollower.configurePIDVA(kp, 0, 0, kv, ka);
 				leftFollower.configureEncoder(0, 250, 0.12732); // 5 in diameter
 				rightFollower.configureEncoder(0, 250, 0.12732);
-
-				leftThread.start();
-				rightThread.start();
+				timer.schedule( new PathFollowTask( PathFollowSide.LEFT), 0, (long) (1000*modifier.getLeftTrajectory().get(0).dt) );
+				timer.schedule( new PathFollowTask( PathFollowSide.RIGHT), 0, (long) (1000*modifier.getRightTrajectory().get(0).dt) );
 				tankDrive.activate();
 				timeElapsed.start();
 			}
@@ -224,68 +229,14 @@ public class AutonomousMode extends Coordinator {
 			@Override
 			protected void end() {
 			    System.out.println("ERROR: endclean");
-				leftThread.interrupt();
-				rightThread.interrupt();
-				System.out.println("ERROR: Threads have been interrupted");
-				
-				try {
-                    leftThread.join();
-                    rightThread.join();
-                    System.out.println("ERROR: Threads have been joined");
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-				
+				timer.cancel();
 				System.out.println("ERROR: end");
 				leftFollower.reset();
 				rightFollower.reset();
 				timeElapsed.stopAndReset();
 			}
 
-			/**
-			 * Allows for the dt value to be variable in the execution
-			 * @param side Which side of the robot this controls
-			 * @param initalDuration How long is the first dt value in milliseconds
-			 * @return The value of the next dt in the Trajectory
-			 */
-			private double pathFollowLoop( PathFollowTask side, double initalDuration ) {
-				double start = System.currentTimeMillis();
-
-				side.run();
-
-				while( ( System.currentTimeMillis() - start ) < initalDuration ) {
-					if( Thread.interrupted() ) {
-					    System.out.println("Warning: prevInterrupt after run");
-						break;
-					}
-					
-					try {
-						Thread.sleep(1);
-					} catch (InterruptedException e) {
-					    System.out.println("Warning: Interrupted pathFollowLoop");
-						break;
-					}
-				}
-				
-				return side.getNextdt();
-			}
-
-			private void asyncPathThread( PathFollowTask path ) {
-				double dt = 0;
-
-				if( path.side.equals( PathFollowSide.LEFT ) ) {
-					dt = modifier.getLeftTrajectory().get(0).dt; // Measured in seconds
-				} else {
-					dt = modifier.getRightTrajectory().get(0).dt; // Measured in seconds
-				}
-
-				while( !Thread.interrupted() ) {
-					System.out.println("Running pathFollowLoop on "+path.side.toString()+" side");
-					dt = pathFollowLoop( path, (dt*1000) );
-				}
-
-				System.out.println("ERROR: Stopped runnning Async path following on "+path.side.toString());
-			}
+			
 
 		};
 	}
