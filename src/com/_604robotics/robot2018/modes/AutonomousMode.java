@@ -226,12 +226,16 @@ public class AutonomousMode extends Coordinator {
 			    System.out.println("ERROR: endclean");
 				leftThread.interrupt();
 				rightThread.interrupt();
+				System.out.println("ERROR: Threads have been interrupted");
+				
 				try {
                     leftThread.join();
                     rightThread.join();
+                    System.out.println("ERROR: Threads have been joined");
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
+				
 				System.out.println("ERROR: end");
 				leftFollower.reset();
 				rightFollower.reset();
@@ -251,7 +255,7 @@ public class AutonomousMode extends Coordinator {
 
 				while( ( System.currentTimeMillis() - start ) < initalDuration ) {
 					if( Thread.interrupted() ) {
-						return side.getNextdt();
+						break;
 					}
 					
 					try {
@@ -276,6 +280,7 @@ public class AutonomousMode extends Coordinator {
 
 				while( !Thread.interrupted() ) {
 					dt = pathFollowLoop( path, (dt*1000) );
+					System.out.println("Ran pathFollowLoop");
 				}
 
 				System.out.println("ERROR: Stopped runnning Async path following on "+path.side.toString());
