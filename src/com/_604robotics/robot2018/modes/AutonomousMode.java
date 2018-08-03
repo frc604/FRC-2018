@@ -253,6 +253,7 @@ public class AutonomousMode extends Coordinator {
 					try {
 						Thread.sleep(1);
 					} catch (InterruptedException e) {
+					    System.out.println("Interrupted pathFollowLoop");
 						break;
 					}
 				}
