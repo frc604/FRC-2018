@@ -68,7 +68,7 @@ public class AutonomousMode extends Coordinator {
 			private double ka=0.03;
 			private double k_kappa=0.09;
 			private double k_ptheta=2.5;//0.9, 1
-			private double k_dtheta=0.055;
+			private double k_dtheta=0.01;//0.055;
 
 			private double max_v = 1.1;
 			private double max_a = 0.8;
@@ -135,7 +135,7 @@ public class AutonomousMode extends Coordinator {
 					// We are using positive=right clockwise convention
 
 					double angleError = desiredHeading-degreeHeading;
-					System.out.println("Angle error is "+angleError+" for segment position "+seg.position);
+					System.out.println("Angle error is "+angleError+" for segment "+seg.position);
 
 					// Convert back into radians for consistency
 					angleError = Pathfinder.d2r(angleError);
@@ -155,11 +155,10 @@ public class AutonomousMode extends Coordinator {
 					prevAngleError=angleError;
 					
 					if( side==PathFollowSide.LEFT ) {
-						timer.schedule( new PathFollowTask( PathFollowSide.LEFT), 0, (long) ( 1000*getNextdt() ) ); 
+						timer.schedule( new PathFollowTask( PathFollowSide.LEFT), (long) ( 1000*getNextdt() ) ); 
 					} else if( side == PathFollowSide.RIGHT ) {
-						timer.schedule( new PathFollowTask( PathFollowSide.RIGHT), 0, (long) (1000*getNextdt()) ); 
+						timer.schedule( new PathFollowTask( PathFollowSide.RIGHT), (long) (1000*getNextdt()) ); 
 					}
-					
 				}
 
 				double getNextdt() {
@@ -174,7 +173,9 @@ public class AutonomousMode extends Coordinator {
 
 			private Waypoint[] points = new Waypoint[] {
 					new Waypoint(0,0,0),
-					new Waypoint(1,0,0)
+					new Waypoint(1,0,0),
+					new Waypoint(2,-1,Pathfinder.d2r(-90)),
+					new Waypoint(2,-2,Pathfinder.d2r(-90))
 					//new Waypoint(2.25,-1,0)
 					//new Waypoint(2.25,-1,Pathfinder.d2r(-45))
 			};
@@ -200,8 +201,8 @@ public class AutonomousMode extends Coordinator {
 				rightFollower.configurePIDVA(kp, 0, 0, kv, ka);
 				leftFollower.configureEncoder(0, 250, 0.12732); // 5 in diameter
 				rightFollower.configureEncoder(0, 250, 0.12732);
-				timer.schedule( new PathFollowTask( PathFollowSide.LEFT), 0, (long) (1000*modifier.getLeftTrajectory().get(0).dt) );
-				timer.schedule( new PathFollowTask( PathFollowSide.RIGHT), 0, (long) (1000*modifier.getRightTrajectory().get(0).dt) );
+				timer.schedule( new PathFollowTask( PathFollowSide.LEFT), 0);//, (long) (1000*modifier.getLeftTrajectory().get(0).dt) );
+				timer.schedule( new PathFollowTask( PathFollowSide.RIGHT), 0);//, (long) (1000*modifier.getRightTrajectory().get(0).dt) );
 				tankDrive.activate();
 				timeElapsed.start();
 			}
