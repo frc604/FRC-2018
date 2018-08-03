@@ -64,11 +64,12 @@ public class AutonomousMode extends Coordinator {
 
 		pathfinderMacro = new Coordinator() {
 			private double kp=2;
+			private double kd=0.1;
 			private double kv=1.0/2.3;
 			private double ka=0.03;
 			private double k_kappa=0.09;
 			private double k_ptheta=2.5;//0.9, 1
-			private double k_dtheta=0.01;//0.055;
+			private double k_dtheta=0.008;//0.055;
 
 			private double max_v = 1.1;
 			private double max_a = 0.8;
@@ -201,8 +202,8 @@ public class AutonomousMode extends Coordinator {
 				rightFollower.configurePIDVA(kp, 0, 0, kv, ka);
 				leftFollower.configureEncoder(0, 250, 0.12732); // 5 in diameter
 				rightFollower.configureEncoder(0, 250, 0.12732);
-				timer.schedule( new PathFollowTask( PathFollowSide.LEFT), 0);//, (long) (1000*modifier.getLeftTrajectory().get(0).dt) );
-				timer.schedule( new PathFollowTask( PathFollowSide.RIGHT), 0);//, (long) (1000*modifier.getRightTrajectory().get(0).dt) );
+				timer.schedule(new PathFollowTask(PathFollowSide.LEFT), 0);
+				timer.schedule(new PathFollowTask(PathFollowSide.RIGHT), 0);
 				tankDrive.activate();
 				timeElapsed.start();
 			}
@@ -229,7 +230,6 @@ public class AutonomousMode extends Coordinator {
 
 			@Override
 			protected void end() {
-			    System.out.println("ERROR: endclean");
 				timer.cancel();
 				System.out.println("ERROR: end");
 				leftFollower.reset();
