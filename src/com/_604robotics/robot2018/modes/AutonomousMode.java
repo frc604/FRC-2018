@@ -116,10 +116,12 @@ public class AutonomousMode extends Coordinator {
 					next_dt = seg.dt;
 
 					// Calculated curvature scales with velocity
-					// Keeping old implied scaling here that used an average
-					// since faster movement implies more curvature correction
-					double scaleVel=(1.0/leftFollower.getSegment().velocity)+(1.0/rightFollower.getSegment().velocity);
-					scaleVel=2/scaleVel;
+					// Keeping old implied scaling since faster movement implies more curvature correction
+					// Use harmonic mean because curvature is 1/radius
+					double scaleVel=2*leftFollower.getSegment().velocity*rightFollower.getSegment().velocity;
+					if (scaleVel!=0) {
+					    scaleVel/=(leftFollower.getSegment().velocity+rightFollower.getSegment().velocity);
+					}
 					double curvature = PathFinderUtil.getScaledCurvature(prev_seg,seg,scaleVel);
 
 					// Raw heading stuff here due to side selections
