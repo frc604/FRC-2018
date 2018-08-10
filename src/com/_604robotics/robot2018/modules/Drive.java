@@ -96,6 +96,9 @@ public class Drive extends Module {
 
         @Override
         public void run () {
+            if (leftPower.get()>1 || leftPower.get()<-1 || rightPower.get()>1 || rightPower.get()<-1) {
+                System.out.println("L"+leftPower.get()+"R"+rightPower.get());
+            }
             robotDrive.tankDrive(leftPower.get(), rightPower.get(), squared);
         }
     }
