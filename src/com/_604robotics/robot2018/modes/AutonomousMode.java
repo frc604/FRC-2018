@@ -68,11 +68,15 @@ public class AutonomousMode extends Coordinator {
 			private double kv=1.0/2.3;
 			private double ka=0.03;
 			private double k_kappa=0.09;
-			private double k_ptheta=2.5;//0.9, 1, 2
-			private double k_dtheta=0.003;//0.005;//0.055;0.02
-			
-			// k_ptheta 1.2 for tight (1mrad) turns
-			// k_ptheta greater for less tight turns
+			// k_ptheta=k_ptheta_0/(k_ptheta_decay*(kappa^2)+1)
+			private double k_ptheta_0=2.8;
+			private double k_ptheta_decay=0.7;
+			private double k_dtheta_0=0.02;
+			private double k_dtheta_decay=0.3;
+			// k_ptheta 1.3 for tight (normcurv~1.5) turns
+			// k_ptheta greater (2.5) for less tight turns (normcurv~0.6))
+			// k_dtheta 0.015 (for tight (normcurv~1.5) turns)?
+			// k_dtheta 0.025 for less tight turns?
 
 			private double max_v = 1.6;
 			private double max_a = 1.1;
@@ -130,6 +134,9 @@ public class AutonomousMode extends Coordinator {
 					    scaleVel/=(leftFollower.getSegment().velocity+rightFollower.getSegment().velocity);
 					}
 					double curvature = PathFinderUtil.getScaledCurvature(prev_seg,seg,scaleVel);
+					
+					double normcurv=PathFinderUtil.getNormalizedCurvature(prev_seg, seg);
+					//System.out.println("Normcurv is "+normcurv+" for "+side.toString());
 
 					// Raw heading stuff here due to side selections
 					double degreeHeading = AutonMovement.clicksToDegrees(Calibration.DRIVE_PROPERTIES,
@@ -152,8 +159,11 @@ public class AutonomousMode extends Coordinator {
 					double dAngleError=angleError-prevAngleError;
 					dAngleError/=seg.dt;
 					
-					double pTheta_val=k_ptheta*angleError;
-					double dTheta_val=k_dtheta*dAngleError;
+					double kappa_val=k_kappa*curvature;
+					double pTheta_val=k_ptheta_0/(k_ptheta_decay*normcurv*normcurv+1);
+					pTheta_val*=angleError;
+					double dTheta_val=k_dtheta_0/(k_dtheta_decay*normcurv*normcurv+1);
+					dTheta_val*=dAngleError;
 					
 					dTheta_val=clamp(dTheta_val,-pTheta_val,pTheta_val);
 
@@ -161,10 +171,10 @@ public class AutonomousMode extends Coordinator {
 					//System.out.println("Equal "+(deshed-Pathfinder.d2r(desiredHeading)));
 
 					if (side==PathFollowSide.LEFT) {
-						tankDrive.leftPower.set(rawPow+k_kappa*curvature
+						tankDrive.leftPower.set(rawPow+kappa_val
 								+pTheta_val+dTheta_val);
 					} else { // if side==PathFollowSide.RIGHT
-						tankDrive.rightPower.set(rawPow-k_kappa*curvature
+						tankDrive.rightPower.set(rawPow-kappa_val
 								-pTheta_val-dTheta_val);
 					}
 					prevAngleError=angleError;
@@ -195,8 +205,8 @@ public class AutonomousMode extends Coordinator {
 			
 			private Waypoint[] points = new Waypoint[] {
 			        new Waypoint(0,0,0),
-			        new Waypoint(2.25,-1,Pathfinder.d2r(-45))
-			        // new Waypoint(2.25,-1,0)
+			        //new Waypoint(2.25,-1,Pathfinder.d2r(-45))
+			        new Waypoint(2.25,-1,0)
 			};
 
 			private Trajectory trajectory = Pathfinder.generate(points, config);
