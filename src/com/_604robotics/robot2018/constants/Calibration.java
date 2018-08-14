@@ -115,7 +115,7 @@ public class Calibration {
     public static final double ARM_ENCODER_FULL_ROT=2*4096*54/30;
     
     // Lower speed going down due to weight
-    public static final double ARM_MIN_SPEED = -0.15;
+    public static final double ARM_MIN_SPEED = -0.2;
     public static final double ARM_MAX_SPEED = 0.8;
     // Bound I term motor output
     public static final double ARM_MIN_SUM = -0.06/ARM_I;
@@ -142,7 +142,7 @@ public class Calibration {
     public static final double INTAKE_OUTAKE_SWITCH_MANIPULATOR_MODIFIER = 0.4;
     public static final double INTAKE_OUTAKE_DRIVER_OVERDRIVE_MODIFIER = 0.8; //0.4
     public static final double INTAKE_OUTAKE_MANIPULATOR_OVERDRIVE_MODIFIER = 0.4;
-    public static final double INTAKE_PASSIVE_POWER = 0.1;
+    public static final double INTAKE_PASSIVE_POWER = 0.15;
     
     /* Marionette */
     public static final boolean AUTO_APPEND_TIMESTAMP = true;
