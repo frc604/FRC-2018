@@ -8,6 +8,7 @@ import com._604robotics.robotnik.Module;
 import com._604robotics.robotnik.Output;
 import com._604robotics.robotnik.prefabs.devices.wrappers.RampMotor;
 
+import edu.wpi.first.wpilibj.BuiltInAccelerometer;
 import edu.wpi.first.wpilibj.CounterBase;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.PWMVictorSPX;
@@ -36,6 +37,10 @@ public class Drive extends Module {
             true,
             CounterBase.EncodingType.k4X);
     
+    private final BuiltInAccelerometer accel = new BuiltInAccelerometer();
+    public final Output<Double> xAccel = addOutput("X accel",accel::getX);
+    public final Output<Double> yAccel = addOutput("Y accel",accel::getY);
+    public final Output<Double> zAccel = addOutput("Z accel",accel::getZ);
     //private final AnalogGyro horizGyro=new AnalogGyro(Ports.HORIZGYRO);
     
     public synchronized void resetSensors() {
@@ -91,6 +96,9 @@ public class Drive extends Module {
 
         @Override
         public void run () {
+            if (leftPower.get()>1 || leftPower.get()<-1 || rightPower.get()>1 || rightPower.get()<-1) {
+                System.out.println("L"+leftPower.get()+"R"+rightPower.get());
+            }
             robotDrive.tankDrive(leftPower.get(), rightPower.get(), squared);
         }
     }
