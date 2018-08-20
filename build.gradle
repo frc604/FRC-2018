@@ -13,6 +13,7 @@ def ROBOT_CLASS = "com._604robotics.robot2018"
 repositories {
     maven {
         url "https://plugins.gradle.org/m2/"
+        url "https://dl.bintray.com/frc604/RobotCode" 
     }
     mavenLocal()
 }
@@ -20,6 +21,7 @@ repositories {
 dependencies {
     compile wpilib()
     compile ctre()
+    compile "com.604robotics:pathfinder:1.6-604"
 }
 
 // Creates a gradlew and gradlew.bat file
