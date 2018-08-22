@@ -20,6 +20,7 @@ repositories {
 dependencies {
     compile wpilib()
     compile ctre()
+    compile fileTree(dir: 'lib', include: ['*.jar'])
 }
 
 // Creates a gradlew and gradlew.bat file
