@@ -12,8 +12,7 @@ def ROBOT_CLASS = "com._604robotics.robot2018"
 // Add common repositories
 repositories {
     maven {
-        url "https://plugins.gradle.org/m2/"
-        url "https://dl.bintray.com/frc604/RobotCode" 
+        url "https://plugins.gradle.org/m2/" 
     }
     mavenLocal()
 }
@@ -21,7 +20,7 @@ repositories {
 dependencies {
     compile wpilib()
     compile ctre()
-    compile "com.604robotics:pathfinder:1.6-604"
+    compile fileTree(dir: 'lib', include: ['*.jar'])
 }
 
 // Creates a gradlew and gradlew.bat file
