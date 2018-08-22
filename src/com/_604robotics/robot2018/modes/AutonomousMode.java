@@ -48,7 +48,7 @@ public class AutonomousMode extends Coordinator {
 	public String primaryFileName;
 	public String secondaryFileName;
 
-	private static enum PathFollowSide {
+	public static enum PathFollowSide {
 		LEFT,
 		RIGHT
 	}
@@ -62,215 +62,10 @@ public class AutonomousMode extends Coordinator {
 				Calibration.DRIVE_ROTATE_RIGHT_TARGET);
 		forwardSwitchMacro = new ArcadePIDStateMacro(Calibration.DRIVE_MOVE_FORWARD_SWITCH_INCHES, 0);
 
-		pathfinderMacro = new Coordinator() {
-			private double kp=2;
-			private double kd=0.0;
-			private double kv=1.0/2.3;
-			private double ka=0.03;
-			private double k_kappa=0.09;
-			// k_ptheta=k_ptheta_0/(k_ptheta_decay*(kappa^2)+1)
-			private double k_ptheta_0=2.8;
-			private double k_ptheta_decay=0.7;
-			private double k_dtheta_0=0.02;
-			private double k_dtheta_decay=0.3;
-			// k_ptheta 1.3 for tight (normcurv~1.5) turns
-			// k_ptheta greater (2.5) for less tight turns (normcurv~0.6))
-			// k_dtheta 0.015 (for tight (normcurv~1.5) turns)?
-			// k_dtheta 0.025 for less tight turns?
-
-			private double max_v = 1.6;
-			private double max_a = 1.1;
-			private double max_j = 3.5;
-			/* max_v, max_a, max_j:
-              2.3, 1.8, 4
-              2.3, 1.5, 3.5
-              1.1, 0.9, 3.5 (half for testing purposes)
-			 */
-
-			private double base_dt = 0.025;
-			private double width = 0.66;
-			//old tune 0.676656 (but using faulty 490/250/500 encoder things)
-			//direct chassis width 0.6858
-
-			class PathFollowTask extends TimerTask {
-				private double prevAngleError=0;
-				private PathFollowSide side;
-				private double next_dt = 0;
-				
-			    private double clamp(double value, double low, double high) {
-			        return Math.max(low, Math.min(value, high));
-			    }
-
-				PathFollowTask (PathFollowSide side) {
-					this.side=side;
-				}
-
-				@Override
-				public void run() {
-					tankDrive.activate();
-					int encoderPos;
-					double rawPow;
-					Trajectory.Segment prev_seg;
-					Trajectory.Segment seg;
-					if (side==PathFollowSide.LEFT) {
-						encoderPos = robot.drive.leftClicks.get();
-						rawPow = leftFollower.calculate(encoderPos);
-						prev_seg = leftFollower.prevSegment();
-						seg = leftFollower.getSegment();
-					} else {//if side==PathFollowSide.RIGHT
-						encoderPos=robot.drive.rightClicks.get();
-						rawPow = rightFollower.calculate(encoderPos);
-						prev_seg = rightFollower.prevSegment();
-						seg = rightFollower.getSegment();
-					}
-
-					next_dt = seg.dt;
-
-					// Calculated curvature scales with velocity
-					// Keeping old implied scaling since faster movement implies more curvature correction
-					// Use harmonic mean because curvature is 1/radius
-					double scaleVel=2*leftFollower.getSegment().velocity*rightFollower.getSegment().velocity;
-					if (scaleVel!=0) {
-					    scaleVel/=(leftFollower.getSegment().velocity+rightFollower.getSegment().velocity);
-					}
-					double curvature = PathFinderUtil.getScaledCurvature(prev_seg,seg,scaleVel);
-					
-					double normcurv=PathFinderUtil.getNormalizedCurvature(prev_seg, seg);
-					//System.out.println("Normcurv is "+normcurv+" for "+side.toString());
-
-					// Raw heading stuff here due to side selections
-					double degreeHeading = AutonMovement.clicksToDegrees(Calibration.DRIVE_PROPERTIES,
-							robot.drive.leftClicks.get()-robot.drive.rightClicks.get());
-					//System.out.print("Current heading is "+degreeHeading);
-
-					// Both headings are the same
-					double desiredHeading = leftFollower.getHeading();
-					desiredHeading=Pathfinder.r2d(desiredHeading);
-					desiredHeading=Pathfinder.boundHalfDegrees(desiredHeading);
-					desiredHeading*=-1;
-					// Pathfinder heading is counterclockwise math convention
-					// We are using positive=right clockwise convention
-
-					double angleError = desiredHeading-degreeHeading;
-					System.out.println("Angle error is "+angleError);
-
-					// Convert back into radians for consistency
-					angleError = Pathfinder.d2r(angleError);
-					double dAngleError=angleError-prevAngleError;
-					dAngleError/=seg.dt;
-					
-					double kappa_val=k_kappa*curvature;
-					double pTheta_val=k_ptheta_0/(k_ptheta_decay*normcurv*normcurv+1);
-					pTheta_val*=angleError;
-					double dTheta_val=k_dtheta_0/(k_dtheta_decay*normcurv*normcurv+1);
-					dTheta_val*=dAngleError;
-					
-					dTheta_val=clamp(dTheta_val,-pTheta_val,pTheta_val);
-
-					//double deshed=-Pathfinder.boundHalfRadians(leftFollower.getHeading());
-					//System.out.println("Equal "+(deshed-Pathfinder.d2r(desiredHeading)));
-
-					if (side==PathFollowSide.LEFT) {
-						tankDrive.leftPower.set(rawPow+kappa_val
-								+pTheta_val+dTheta_val);
-					} else { // if side==PathFollowSide.RIGHT
-						tankDrive.rightPower.set(rawPow-kappa_val
-								-pTheta_val-dTheta_val);
-					}
-					prevAngleError=angleError;
-					
-					if( side==PathFollowSide.LEFT ) {
-						timer.schedule( new PathFollowTask( PathFollowSide.LEFT), (long) ( 1000*getNextdt() ) ); 
-					} else if( side == PathFollowSide.RIGHT ) {
-						timer.schedule( new PathFollowTask( PathFollowSide.RIGHT), (long) (1000*getNextdt()) ); 
-					}
-				}
-
-				double getNextdt() {
-					return next_dt;
-				}
-			}
-
-			private final Trajectory.Config config = new Trajectory.Config(
-					Trajectory.FitMethod.HERMITE_QUINTIC,
-					Trajectory.Config.SAMPLES_HIGH,
-					base_dt, max_v, max_a, max_j);
-
-			/*private Waypoint[] points = new Waypoint[] {
-					new Waypoint(0,0,0),
-					new Waypoint(1,0,0),
-					new Waypoint(2,-1,Pathfinder.d2r(-90)),
-					new Waypoint(2,-2,Pathfinder.d2r(-90))
-			};*/
-			
-			private Waypoint[] points = new Waypoint[] {
-			        new Waypoint(0,0,0),
-			        //new Waypoint(2.25,-1,Pathfinder.d2r(-45))
-			        new Waypoint(2.25,-1,0)
-			};
-
-			private Trajectory trajectory = Pathfinder.generate(points, config);
-
-			private TankModifier modifier = new TankModifier(trajectory).modify( width, config );
-
-			private EncoderFollower leftFollower  = new EncoderFollower(modifier.getLeftTrajectory());
-			private EncoderFollower rightFollower = new EncoderFollower(modifier.getRightTrajectory());
-			private java.util.Timer timer;
-			private SmartTimer timeElapsed = new SmartTimer();
-
-			private Drive.TankDrive tankDrive = robot.drive.new TankDrive(false);
-			private Pulse PIDTargetPulse=new Pulse();
-
-			@Override
-			protected void begin() {
-				System.out.println("ERROR: Begin");
-				timer = new java.util.Timer();
-				robot.drive.resetSensors();
-				System.out.println("ERROR: left is "+robot.drive.leftClicks.get());
-				leftFollower.configurePIDVA(kp, 0, kd, kv, ka);
-				rightFollower.configurePIDVA(kp, 0, kd, kv, ka);
-				leftFollower.configureEncoder(0, 250, 0.12732); // 5 in diameter
-				rightFollower.configureEncoder(0, 250, 0.12732);
-				leftFollower.reset();
-				rightFollower.reset();
-				timer.schedule(new PathFollowTask(PathFollowSide.LEFT), 0);
-				timer.schedule(new PathFollowTask(PathFollowSide.RIGHT), 0);
-				tankDrive.activate();
-				timeElapsed.start();
-			}
-
-			@Override
-			protected boolean run() {
-				tankDrive.activate();
-				return timeElapsed.runUntil(0.6, new Runnable() {
-					@Override
-					public void run() {
-						boolean targetReached = (leftFollower.isFinished() && rightFollower.isFinished());
-						if (!targetReached) {
-							timeElapsed.reset();
-							PIDTargetPulse.update(true);
-						} else {
-							PIDTargetPulse.update(false);
-						}
-						if (PIDTargetPulse.isFallingEdge()) {
-							System.out.println("========Finished========");
-						}
-					}
-				});
-			}
-
-			@Override
-			protected void end() {
-				timer.cancel();
-				System.out.println("ERROR: end");
-				leftFollower.reset();
-				rightFollower.reset();
-				timeElapsed.stopAndReset();
-			}
-
-			
-
-		};
+		pathfinderMacro = new PathfinderFollower( new Waypoint[] {
+				new Waypoint(0,0,0),
+				new Waypoint(2.25,-1,0),
+		} );
 	}
 
 	@Override
@@ -539,6 +334,188 @@ public class AutonomousMode extends Coordinator {
 			logger.info("Stopping Marionette playback");
 			robot.teleopMode.stop();
 			robot.teleopMode.stopPlayback();
+		}
+	}
+
+	private class PathfinderFollower extends Coordinator {
+		private Trajectory path;
+		private EncoderFollower leftFollower;
+		private EncoderFollower rightFollower;
+		private java.util.Timer timer;
+		private SmartTimer timeElapsed;
+		private Drive.TankDrive tankDrive;
+		private Pulse PIDTargetPulse=new Pulse();
+
+		public PathfinderFollower( Waypoint[] waypoints ) {
+			this.path = Pathfinder.generate( waypoints, Calibration.PATHFINDER_CONFIG );
+			timeElapsed = new SmartTimer();
+			tankDrive = robot.drive.new TankDrive(false);
+			generateTankPath();
+		}
+
+		public PathfinderFollower( Trajectory path ) {
+			this.path = path;
+			timeElapsed = new SmartTimer();
+			tankDrive = robot.drive.new TankDrive(false);
+			generateTankPath();
+		}
+
+		private void generateTankPath() {
+			TankModifier modifier = new TankModifier(path).modify( Calibration.Pathfinder.ROBOT_WIDTH, Calibration.PATHFINDER_CONFIG );
+
+			leftFollower  = new EncoderFollower(modifier.getLeftTrajectory());
+			rightFollower = new EncoderFollower(modifier.getRightTrajectory());
+		}
+
+		class PathFollowTask extends TimerTask {
+			private double prevAngleError=0;
+			private PathFollowSide side;
+			private double next_dt = 0;
+
+			private double clamp(double value, double low, double high) {
+				return Math.max(low, Math.min(value, high));
+			}
+
+			PathFollowTask (PathFollowSide side) {
+				this.side=side;
+			}
+
+			@Override
+			public void run() {
+				tankDrive.activate();
+				int encoderPos;
+				double rawPow;
+				Trajectory.Segment prev_seg;
+				Trajectory.Segment seg;
+				if (side==PathFollowSide.LEFT) {
+					encoderPos = robot.drive.leftClicks.get();
+					rawPow = leftFollower.calculate(encoderPos);
+					prev_seg = leftFollower.prevSegment();
+					seg = leftFollower.getSegment();
+				} else {//if side==PathFollowSide.RIGHT
+					encoderPos=robot.drive.rightClicks.get();
+					rawPow = rightFollower.calculate(encoderPos);
+					prev_seg = rightFollower.prevSegment();
+					seg = rightFollower.getSegment();
+				}
+
+				next_dt = seg.dt;
+
+				// Calculated curvature scales with velocity
+				// Keeping old implied scaling since faster movement implies more curvature correction
+				// Use harmonic mean because curvature is 1/radius
+				double scaleVel=2*leftFollower.getSegment().velocity*rightFollower.getSegment().velocity;
+				if (scaleVel!=0) {
+					scaleVel/=(leftFollower.getSegment().velocity+rightFollower.getSegment().velocity);
+				}
+				double curvature = PathFinderUtil.getScaledCurvature(prev_seg,seg,scaleVel);
+
+				double normcurv=PathFinderUtil.getNormalizedCurvature(prev_seg, seg);
+				//System.out.println("Normcurv is "+normcurv+" for "+side.toString());
+
+				// Raw heading stuff here due to side selections
+				double degreeHeading = AutonMovement.clicksToDegrees(Calibration.DRIVE_PROPERTIES,
+						robot.drive.leftClicks.get()-robot.drive.rightClicks.get());
+				//System.out.print("Current heading is "+degreeHeading);
+
+				// Both headings are the same
+				double desiredHeading = leftFollower.getHeading();
+				desiredHeading=Pathfinder.r2d(desiredHeading);
+				desiredHeading=Pathfinder.boundHalfDegrees(desiredHeading);
+				desiredHeading*=-1;
+				// Pathfinder heading is counterclockwise math convention
+				// We are using positive=right clockwise convention
+
+				double angleError = desiredHeading-degreeHeading;
+				System.out.println("Angle error is "+angleError);
+
+				// Convert back into radians for consistency
+				angleError = Pathfinder.d2r(angleError);
+				double dAngleError=angleError-prevAngleError;
+				dAngleError/=seg.dt;
+
+				double kappa_val=Calibration.Pathfinder.K_KAPPA*curvature;
+				double pTheta_val=Calibration.Pathfinder.K_PTHETA_0/(Calibration.Pathfinder.K_PTHETA_DECAY*normcurv*normcurv+1);
+				pTheta_val*=angleError;
+				double dTheta_val=Calibration.Pathfinder.K_DTHETA_0/(Calibration.Pathfinder.K_DTHETA_DECAY*normcurv*normcurv+1);
+				dTheta_val*=dAngleError;
+
+				dTheta_val=clamp(dTheta_val,-pTheta_val,pTheta_val);
+
+				/*
+				double deshed=-Pathfinder.boundHalfRadians(leftFollower.getHeading());
+				System.out.println("Equal "+(deshed-Pathfinder.d2r(desiredHeading)));
+				*/
+
+				if (side==PathFollowSide.LEFT) {
+					tankDrive.leftPower.set(rawPow+kappa_val
+							+pTheta_val+dTheta_val);
+				} else { // RIGHT side
+					tankDrive.rightPower.set(rawPow-kappa_val
+							-pTheta_val-dTheta_val);
+				}
+				prevAngleError=angleError;
+
+				if( side==PathFollowSide.LEFT ) {
+					timer.schedule( new PathFollowTask( PathFollowSide.LEFT), (long) ( 1000*getNextdt() ) );
+				} else if( side == PathFollowSide.RIGHT ) {
+					timer.schedule( new PathFollowTask( PathFollowSide.RIGHT), (long) (1000*getNextdt()) );
+				}
+			}
+
+			double getNextdt() {
+				return next_dt;
+			}
+		}
+
+
+		@Override
+		public void begin() {
+			System.out.println("ERROR: Begin");
+			timer = new java.util.Timer();
+			robot.drive.resetSensors();
+			System.out.println("ERROR: left is "+robot.drive.leftClicks.get());
+			leftFollower.configurePIDVA(Calibration.Pathfinder.KP, Calibration.Pathfinder.KI, Calibration.Pathfinder.KD,
+					Calibration.Pathfinder.KV, Calibration.Pathfinder.KA);
+			rightFollower.configurePIDVA(Calibration.Pathfinder.KP, Calibration.Pathfinder.KI, Calibration.Pathfinder.KD,
+					Calibration.Pathfinder.KV, Calibration.Pathfinder.KA);
+			leftFollower.configureEncoder(0, 250, 0.12732); // 5 in diameter
+			rightFollower.configureEncoder(0, 250, 0.12732);
+			leftFollower.reset();
+			rightFollower.reset();
+			timer.schedule(new PathFollowTask(PathFollowSide.LEFT), 0);
+			timer.schedule(new PathFollowTask(PathFollowSide.RIGHT), 0);
+			tankDrive.activate();
+			timeElapsed.start();
+		}
+
+		@Override
+		public boolean run() {
+			tankDrive.activate();
+			return timeElapsed.runUntil(0.6, new Runnable() {
+				@Override
+				public void run() {
+					boolean targetReached = (leftFollower.isFinished() && rightFollower.isFinished());
+					if (!targetReached) {
+						timeElapsed.reset();
+						PIDTargetPulse.update(true);
+					} else {
+						PIDTargetPulse.update(false);
+					}
+					if (PIDTargetPulse.isFallingEdge()) {
+						System.out.println("========Finished========");
+					}
+				}
+			});
+		}
+
+		@Override
+		public void end() {
+			timer.cancel();
+			System.out.println("ERROR: end");
+			leftFollower.reset();
+			rightFollower.reset();
+			timeElapsed.stopAndReset();
 		}
 	}
 
