@@ -50,7 +50,7 @@ public class AutonomousMode extends Coordinator {
 
 	private static enum PathFollowSide {
 		LEFT,
-		RIGHT
+		RIGHTT
 	}
 
 	public AutonomousMode (Robot2018 robot) {
