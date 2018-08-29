@@ -1,13 +1,13 @@
 package com._604robotics.robotnik.prefabs.devices.wrappers;
 
 import edu.wpi.first.wpilibj.PIDOutput;
-import edu.wpi.first.wpilibj.RobotDrive;
+import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 
 /**
  * PID output for arcade drive.
  */
 public class ArcadeDrivePIDOutput {
-    private final RobotDrive drive;
+    private final DifferentialDrive drive;
 
     private double movePower = 0D;
     private double rotatePower = 0D;
@@ -38,8 +38,8 @@ public class ArcadeDrivePIDOutput {
      * Creates an arcade drive PID output.
      * @param drive Robot drive to use.
      */
-    public ArcadeDrivePIDOutput (RobotDrive drive) {
-        this.drive = drive;
+    public ArcadeDrivePIDOutput( DifferentialDrive drive ) {
+    	this.drive = drive;
     }
 
     private synchronized void update () {
