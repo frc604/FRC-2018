@@ -34,7 +34,9 @@ public class Elevator extends Module {
     private final ClampedIntegralPIDController pid;
     
     public final Output<Double> pidError;
-
+    
+    public boolean getHoldElevatorClicks = false;
+    
     public boolean getHolding() {
         return holding;
     }
@@ -69,6 +71,10 @@ public class Elevator extends Module {
             holding = false;
             power = liftPower.get();
             motorA.set(liftPower.get());
+            if( encoder.getPosition() < -Calibration.ELEVATOR_RESET_TOLERANCE ) {
+            	encoder.zero();
+            }
+            getHoldElevatorClicks = true;
         }
     }
 
@@ -92,7 +98,10 @@ public class Elevator extends Module {
         }
         @Override
         public void run () {
+        	//System.out.println("WARN: setpoint enabled at " + target_clicks.get());
             pid.setSetpoint(target_clicks.get());
+            pid.enable();
+            getHoldElevatorClicks = true;
         }
         @Override
         public void end () {
@@ -128,6 +137,7 @@ public class Elevator extends Module {
     	@Override
     	public void run() {
     		pid.setSetpoint(persistent);
+    		getHoldElevatorClicks = true;
     	}
     	
     	@Override
@@ -139,7 +149,8 @@ public class Elevator extends Module {
     public Elevator() {
         super(Elevator.class);
         encoder.setInverted(false);
-        encoder.setOffset(Calibration.ELEVATOR_ENCODER_ZERO);
+        //encoder.setOffset(Calibration.ELEVATOR_ENCODER_ZERO);
+        encoder.zero();
         motorA.setInverted(true);
         motorB.setInverted(true);
         motorB.set(ControlMode.Follower,Ports.ELEVATOR_MOTOR_A);

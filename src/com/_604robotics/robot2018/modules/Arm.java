@@ -12,6 +12,8 @@ import com._604robotics.robotnik.prefabs.devices.TalonPWMEncoder;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
+import edu.wpi.first.wpilibj.DigitalInput;
+
 public class Arm extends Module {
 
     private WPI_TalonSRX motorA = new WPI_TalonSRX(Ports.ARM_MOTOR_A);
@@ -22,6 +24,8 @@ public class Arm extends Module {
     
     public final Setpoint setpoint = new Setpoint(Calibration.ARM_LOW_TARGET);
     public final PersistentSetpoint persistentSetpoint = new PersistentSetpoint();
+    
+    public final DigitalInput bottomLimit = new DigitalInput(Ports.ARM_BOTTOM_SWITCH);
 
     public final Output<Double> encoderRate = addOutput("Arm Rate", encoder::getVelocity);
     public final Output<Double> encoderClicks = addOutput("Arm Clicks", encoder::getPosition);
@@ -32,6 +36,10 @@ public class Arm extends Module {
     
     public void resetIntegral(double sum) {
         pid.setErrorSum(sum);
+    }
+    
+    public boolean getBottomLimit() {
+        return bottomLimit.get();
     }
 
     public class Move extends Action {
@@ -127,9 +135,10 @@ public class Arm extends Module {
     public Arm() {
         super(Arm.class);
         encoder.setInverted(true);
-        encoder.setOffset(Calibration.ARM_ENCODER_ZERO);
-        motorA.setInverted(false);
-        motorB.setInverted(true);
+        encoder.zero(Calibration.ARM_BOTTOM_LOCATION);
+        //encoder.setOffset(Calibration.ARM_ENCODER_ZERO);
+        motorA.setInverted(true);
+        motorB.setInverted(false);
         motorB.set(ControlMode.Follower,Ports.ARM_MOTOR_A);
         pid = new RotatingArmPIDController(Calibration.ARM_P,
                 Calibration.ARM_I,

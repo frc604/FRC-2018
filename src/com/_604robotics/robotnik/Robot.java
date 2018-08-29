@@ -54,24 +54,29 @@ public abstract class Robot extends SampleRobot {
     	table.getEntry("moduleList").setString( modules.stream().map( Module::getName ).collect( Collectors.joining(",") ) );
     }
 
-    protected void addSystem (String name, Coordinator system) {
+    protected <T extends Coordinator> T addSystem (String name, T system) {
         systems.add(new Pair<>(name, system));
+        return system;
     }
 
-    protected void addSystem (Class<?> klass, Coordinator system) {
+    protected <T extends Coordinator> T addSystem (Class<T> klass, T system) {
         addSystem(klass.getSimpleName(), system);
+        return system;
     }
 
-    protected void setAutonomousMode (Coordinator autonomousMode) {
+    protected <T extends Coordinator> T setAutonomousMode (T autonomousMode) {
         this.autonomousMode = autonomousMode;
+        return autonomousMode;
     }
 
-    protected void setTeleopMode (Coordinator teleopMode) {
+    protected <T extends Coordinator> T setTeleopMode (T teleopMode) {
         this.teleopMode = teleopMode;
+        return teleopMode;
     }
 
-    protected void setTestMode (Coordinator testMode) {
+    protected <T extends Coordinator> T setTestMode (T testMode) {
         this.testMode = testMode;
+        return testMode;
     }
 
     @Override
