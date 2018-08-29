@@ -23,6 +23,15 @@ dependencies {
     compile fileTree(dir: 'lib', include: ['*.jar'])
 }
 
+
+sourceSets {
+    main {
+        java {
+            srcDirs = ["src"]
+        }
+    }
+}
+
 // Creates a gradlew and gradlew.bat file
 task wrapper(type: Wrapper) {
     gradleVersion = '4.8'
