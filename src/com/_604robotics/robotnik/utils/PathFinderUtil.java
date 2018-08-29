@@ -56,4 +56,12 @@ public class PathFinderUtil {
         }
         return curvature;
     }
+
+    public static double feetToMeters( double feet ) {
+        return feet * 0.3048;
+    }
+
+    public static double inchesToMeters( double inches ) {
+        return inches * 0.3048 / 12;
+    }
 }
