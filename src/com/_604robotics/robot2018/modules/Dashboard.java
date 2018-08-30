@@ -36,24 +36,32 @@ public class Dashboard extends DashboardModule {
     public final Input<Boolean> armEncoderStatus = addDashboardInput("Arm Encoder Status", false);
     public final Input<Boolean> limitPressed = addDashboardInput("LimitPressed", false);
     
+    // Pixycam values
     public final Input<Double> objectX = addDashboardInput("Object X", 0D);
     public final Input<Double> objectY = addDashboardInput("Object Y", 0D);
     public final Input<Double> objectHeight = addDashboardInput("Object Height", 0D);
     public final Input<Double> objectWidth = addDashboardInput("Object Width", 0D);
-    
     public final Input<Boolean> onTarget = addDashboardInput("On Target", false);
+
+    public final Input<Boolean> clear = addDashboardInput("Clear", false);
+    public final Input<Boolean> elevatorRaised = addDashboardInput("Elevator Raised", false);
+    public final Input<Boolean> raiseMore = addDashboardInput("Raise More", false);
     
     public enum AutonMode {
         OFF,
         // Following are actual strategy selections
+        LEFT_DELAYED_BASELINE_CROSS,
+        RIGHT_DELAYED_BASELINE_CROSS,
         CENTER_SWITCH,
         BACKWARD_CENTER_SWITCH,
         LEFT_SWITCH,
         RIGHT_SWITCH,
-        LEFT_SCALE,
-        LEFT_SCALE_SAME_ONLY,
-        RIGHT_SCALE,
-        RIGHT_SCALE_SAME_ONLY,
+        LEFT_SCALE_WITH_CROSS,
+        LEFT_SCALE_WITHOUT_CROSS,
+        LEFT_SCALE_HALF_CROSS,
+        RIGHT_SCALE_WITH_CROSS,
+        RIGHT_SCALE_WITHOUT_CROSS,
+        RIGHT_SCALE_HALF_CROSS,
         // Calibration autons to verify angles and distances
         ROTATE_LEFT_TEST,
         ROTATE_RIGHT_TEST,
@@ -65,11 +73,8 @@ public class Dashboard extends DashboardModule {
         FORWARD_SWITCH,
         // CENTER_SWITCH_LEFT,
         // CENTER_SWITCH_RIGHT,
-//        SWITCH_FORWARD,
-        SCALE_BACKWARD,
-        SCALE_BACKWARD_2,
+        // SWITCH_FORWARD,
         NEW_SCALE_BACKWARD,
-        SCALE_OPPOSITE,
 //        SWERVE_SCALE_OPPOSITE_LEFT,
 //        BALANCED_LEFT_TURN_TEST,
 //        SWEPT_LEFT_TURN_TEST,
@@ -77,6 +82,7 @@ public class Dashboard extends DashboardModule {
 //        BALANCED_RIGHT_TURN_TEST,
 //        SWEPT_RIGHT_TURN_TEST,
 //        BALANCED_SWEPT_RIGHT_TURN_TEST,
+        MARIONETTE
     }
     
     public enum DriveMode {
@@ -85,11 +91,43 @@ public class Dashboard extends DashboardModule {
         TANK,
         DYNAMIC
     }
+    
+    public enum MarionetteRecorder {
+    	MANUAL,
+    	SWITCH_LEFT,
+    	SWITCH_RIGHT,
+    	SCALE_LEFT,
+    	SCALE_RIGHT
+    }
+    
+    public enum MarionetteOutput {
+    	MANUAL,
+    	SWITCH,
+    	SCALE_LEFT,
+    	SCALE_RIGHT,
+    	CUSTOM_SWITCH,
+    	MANUAL_SWITCH
+    }
 
     public final Output<AutonMode> autonMode = addDashboardOutput("autonMode", AutonMode.OFF, AutonMode.class);
     
     public final Output<DriveMode> driveMode = addDashboardOutput("driveMode", DriveMode.DYNAMIC, DriveMode.class);
 
+    public final Output<MarionetteRecorder> marionetteRecorder = addDashboardOutput("marionetteRecorder", MarionetteRecorder.MANUAL, MarionetteRecorder.class);
+    
+    public final Output<MarionetteOutput> marionetteOutput = addDashboardOutput("marionetteOutput", MarionetteOutput.MANUAL, MarionetteOutput.class);
+    
+    public final Output<Boolean> recordAuton = addDashboardOutput("recordAuton", false);
+    public final Output<String> marionetteFile = addDashboardOutput("marionetteFile", "autonomous.marionette");
+    public final Output<String> filePrefix = addDashboardOutput("filePrefix", "");
+    
+    public final Input<String> primaryReadFile = addDashboardInput("Primary Read File: ", "");
+    public final Input<String> secondaryReadFile = addDashboardInput("Secondary Read File: ", "");
+    public final Input<String> writeFile = addDashboardInput("Write File: ", "");
+    
+    public final Input<String> manualPrimaryReadFile = addDashboardInput("Manual Primary Read File: ", "");
+    public final Input<String> manualSecondaryReadFile = addDashboardInput("Manual Secondary Read File: ", "");
+    
     public Dashboard () {
         super(Dashboard.class);
     }

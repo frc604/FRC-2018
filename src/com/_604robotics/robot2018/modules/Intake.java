@@ -13,8 +13,8 @@ import edu.wpi.first.wpilibj.VictorSP;
 // TODO: Use current mode?
 public class Intake extends Module {
 	
-    private WPI_TalonSRX motorA = new WPI_TalonSRX(Ports.INTAKE_INNER_MOTOR_A);
-    private WPI_TalonSRX motorB = new WPI_TalonSRX(Ports.INTAKE_INNER_MOTOR_B);
+    private WPI_TalonSRX innerMotorA = new WPI_TalonSRX(Ports.INTAKE_INNER_MOTOR_A); // right
+    private WPI_TalonSRX innerMotorB = new WPI_TalonSRX(Ports.INTAKE_INNER_MOTOR_B);
     private VictorSP outerMotorA = new VictorSP(Ports.INTAKE_OUTER_MOTOR_A);
     private VictorSP outerMotorB = new VictorSP(Ports.INTAKE_OUTER_MOTOR_B);
 	
@@ -35,12 +35,27 @@ public class Intake extends Module {
     	
     	@Override
     	public void run() {
-    		motorA.set(runPower.get());
+    		innerMotorA.set(runPower.get());
+            innerMotorB.set(runPower.get());
     		outerMotorA.set(runPower.get());
     		outerMotorB.set(runPower.get());
     	}
     }
-    	
+    
+    public class Passive extends Action {
+        public Passive() {
+            super(Intake.this, Passive.class);
+        }
+        
+        @Override
+        public void run() {
+            innerMotorA.set(Calibration.INTAKE_PASSIVE_POWER);
+            innerMotorB.set(Calibration.INTAKE_PASSIVE_POWER);
+            outerMotorA.set(0);
+            outerMotorB.set(0);
+        }
+    }
+    
 	public class Idle extends Action {
 		public Idle() {
 			super(Intake.this, Idle.class);
@@ -48,16 +63,19 @@ public class Intake extends Module {
 		
 		@Override
 		public void run() {
-			motorA.set(Calibration.INTAKE_PASSIVE_POWER);
-			outerMotorA.set(Calibration.INTAKE_PASSIVE_POWER);
-			outerMotorB.set(Calibration.INTAKE_PASSIVE_POWER);
+			innerMotorA.set(0);
+	        innerMotorB.set(0);
+			outerMotorA.set(0);
+			outerMotorB.set(0);
 		}
 	}
 	
 	public Intake () {
         super(Intake.class);
-        motorB.setInverted(true);
-        motorB.set(ControlMode.Follower, Ports.INTAKE_INNER_MOTOR_A);
+        innerMotorA.setNeutralMode(com.ctre.phoenix.motorcontrol.NeutralMode.Coast);
+        innerMotorB.setNeutralMode(com.ctre.phoenix.motorcontrol.NeutralMode.Coast);
+        innerMotorA.setInverted(true);
+        innerMotorB.setInverted(true);
         outerMotorB.setInverted(true);
         setDefaultAction(idle);
     }

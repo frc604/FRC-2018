@@ -1,4 +1,4 @@
-package com._604robotics.robot2018.modules;
+    package com._604robotics.robot2018.modules;
 
 import com._604robotics.robot2018.constants.Ports;
 import com._604robotics.robotnik.Action;
@@ -11,12 +11,12 @@ import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 public class Clamp extends Module {
 	private final DoubleSolenoid solenoid = new DoubleSolenoid(Ports.CLAMP_A, Ports.CLAMP_B);
 	
-	private boolean clamping = true;
+	private boolean clamping = false;
 	
 	public Output<Boolean> isClamped = addOutput("Clamping", this::isClamped);
 	
 	public boolean isClamped() {
-		return !clamping;
+		return clamping;
 	}
 	
 	public Action retract = new Retract();
@@ -30,7 +30,7 @@ public class Clamp extends Module {
 		@Override
 		public void run() {
 			solenoid.set(Value.kReverse);
-			clamping = false;
+			clamping = true;
 		}
 	}
 	
@@ -42,7 +42,7 @@ public class Clamp extends Module {
 		@Override
 		public void run() {
 			solenoid.set(Value.kForward);
-			clamping = true;
+			clamping = false;
 		}
 	}
 	
