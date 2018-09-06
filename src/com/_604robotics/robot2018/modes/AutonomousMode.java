@@ -15,6 +15,7 @@ import com._604robotics.robot2018.modules.Elevator;
 import com._604robotics.robot2018.modules.Intake;
 import com._604robotics.robotnik.Coordinator;
 import com._604robotics.robotnik.Logger;
+import com._604robotics.robotnik.prefabs.coordinators.SimultaneousCoordinator;
 import com._604robotics.robotnik.prefabs.coordinators.SleepCoordinator;
 import com._604robotics.robotnik.prefabs.coordinators.StatefulCoordinator;
 import com._604robotics.robotnik.prefabs.coordinators.SwitchCoordinator;
@@ -1311,9 +1312,14 @@ public class AutonomousMode extends Coordinator {
 	private class DemoStateMacro extends StatefulCoordinator {
 		public DemoStateMacro() {
 			super(DemoStateMacro.class);
-			addState("Forward 18 ft", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, 12*18+1), 0));
+			/*addState("Forward 18 ft", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, 12*18+1), 0));
 			addState("Rotate 90 right", new ArcadePIDCoordinator(0, AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, 90)));
-			addState("Forward 6 ft", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, 12*6), 0));
+			addState("Forward 6 ft", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, 12*6), 0));*/
+			addState("Testing sumultaneous", new SimultaneousCoordinator( new Coordinator[] { // Test simul
+				new ElevatorSetPersistent( Calibration.ELEVATOR_RAISE_TARGET ),
+				new ArcadePIDCoordinator( 0, AutonMovement.degreesToClicks( Calibration.DRIVE_PROPERTIES, 360*10 ) )
+			} ) );
+
 		}
 	}
 
