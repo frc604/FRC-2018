@@ -133,5 +133,6 @@ build.xml
 # IntelliJ IDEA
 .idea/
 *.iml
-*.ipr
-*.iws
+
+# Library files
+!lib/*
