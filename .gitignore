@@ -135,3 +135,6 @@ build.xml
 *.iml
 *.ipr
 *.iws
+
+# Library files
+!lib/*.jar
