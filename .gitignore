@@ -135,4 +135,4 @@ build.xml
 *.iml
 
 # Library files
-!lib/*
+!lib/*.jar
