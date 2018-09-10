@@ -3,7 +3,9 @@ plugins {
     id "java"
     id "eclipse"
     id "idea"
-    id "jaci.openrio.gradle.GradleRIO" version "2018.03.06"
+    //id "jaci.openrio.gradle.GradleRIO" version "2018.03.06"
+    //id "jaci.gradle.EmbeddedTools" version "2018.08.26"
+    id "edu.wpi.first.GradleRIO" version "2018.06.21"
 }
 
 def TEAM = 604
@@ -15,6 +17,22 @@ repositories {
         url "https://plugins.gradle.org/m2/"
     }
     mavenLocal()
+}
+
+deploy {
+    targets {
+        target("roborio", edu.wpi.first.gradlerio.frc.RoboRIO) {
+            // Team can be overridden by command line, for use with VSCode
+            team = getTeamOrDefault(5333)
+        }
+    }
+    artifacts {
+        artifact('frcJava', edu.wpi.first.gradlerio.frc.FRCJavaArtifact) {
+            targets << "roborio"
+            // Debug can be overridden by command line, for use with VSCode
+            debug = getDebugOrDefault(false)
+        }
+    }
 }
 
 dependencies {
@@ -30,6 +48,12 @@ sourceSets {
             srcDirs = ["src"]
         }
     }
+}
+
+jar {
+    // Make a fat jar
+    from configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+    manifest edu.wpi.first.gradlerio.GradleRIOPlugin.javaManifest(ROBOT_CLASS)
 }
 
 // Creates a gradlew and gradlew.bat file
