@@ -10,7 +10,6 @@ import com._604robotics.robot2018.macros.ArcadeTimedDriveMacro;
 import com._604robotics.robot2018.modules.Arm;
 import com._604robotics.robot2018.modules.Clamp;
 import com._604robotics.robot2018.modules.Drive;
-import com._604robotics.robot2018.modules.Drive.ArcadeDrive;
 import com._604robotics.robot2018.modules.Elevator;
 import com._604robotics.robot2018.modules.Intake;
 import com._604robotics.robotnik.Coordinator;
@@ -24,11 +23,11 @@ import com._604robotics.robotnik.utils.AutonMovement;
 import com._604robotics.robotnik.utils.PathFinderUtil;
 import com._604robotics.robotnik.utils.annotations.Unreal;
 
+import com.sun.javafx.scene.shape.PathUtils;
 import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.PIDOutput;
 import edu.wpi.first.wpilibj.PIDSource;
 import edu.wpi.first.wpilibj.PIDSourceType;
-import edu.wpi.first.wpilibj.Timer;
 import jaci.pathfinder.*;
 import jaci.pathfinder.followers.EncoderFollower;
 import jaci.pathfinder.modifiers.TankModifier;
@@ -48,7 +47,7 @@ public class AutonomousMode extends Coordinator {
 	public String primaryFileName;
 	public String secondaryFileName;
 
-	private static enum PathFollowSide {
+	public static enum PathFollowSide {
 		LEFT,
 		RIGHT
 	}
@@ -62,215 +61,10 @@ public class AutonomousMode extends Coordinator {
 				Calibration.DRIVE_ROTATE_RIGHT_TARGET);
 		forwardSwitchMacro = new ArcadePIDStateMacro(Calibration.DRIVE_MOVE_FORWARD_SWITCH_INCHES, 0);
 
-		pathfinderMacro = new Coordinator() {
-			private double kp=2;
-			private double kd=0.0;
-			private double kv=1.0/2.3;
-			private double ka=0.03;
-			private double k_kappa=0.09;
-			// k_ptheta=k_ptheta_0/(k_ptheta_decay*(kappa^2)+1)
-			private double k_ptheta_0=2.8;
-			private double k_ptheta_decay=0.7;
-			private double k_dtheta_0=0.02;
-			private double k_dtheta_decay=0.3;
-			// k_ptheta 1.3 for tight (normcurv~1.5) turns
-			// k_ptheta greater (2.5) for less tight turns (normcurv~0.6))
-			// k_dtheta 0.015 (for tight (normcurv~1.5) turns)?
-			// k_dtheta 0.025 for less tight turns?
-
-			private double max_v = 1.6;
-			private double max_a = 1.1;
-			private double max_j = 3.5;
-			/* max_v, max_a, max_j:
-              2.3, 1.8, 4
-              2.3, 1.5, 3.5
-              1.1, 0.9, 3.5 (half for testing purposes)
-			 */
-
-			private double base_dt = 0.025;
-			private double width = 0.66;
-			//old tune 0.676656 (but using faulty 490/250/500 encoder things)
-			//direct chassis width 0.6858
-
-			class PathFollowTask extends TimerTask {
-				private double prevAngleError=0;
-				private PathFollowSide side;
-				private double next_dt = 0;
-				
-			    private double clamp(double value, double low, double high) {
-			        return Math.max(low, Math.min(value, high));
-			    }
-
-				PathFollowTask (PathFollowSide side) {
-					this.side=side;
-				}
-
-				@Override
-				public void run() {
-					tankDrive.activate();
-					int encoderPos;
-					double rawPow;
-					Trajectory.Segment prev_seg;
-					Trajectory.Segment seg;
-					if (side==PathFollowSide.LEFT) {
-						encoderPos = robot.drive.leftClicks.get();
-						rawPow = leftFollower.calculate(encoderPos);
-						prev_seg = leftFollower.prevSegment();
-						seg = leftFollower.getSegment();
-					} else {//if side==PathFollowSide.RIGHT
-						encoderPos=robot.drive.rightClicks.get();
-						rawPow = rightFollower.calculate(encoderPos);
-						prev_seg = rightFollower.prevSegment();
-						seg = rightFollower.getSegment();
-					}
-
-					next_dt = seg.dt;
-
-					// Calculated curvature scales with velocity
-					// Keeping old implied scaling since faster movement implies more curvature correction
-					// Use harmonic mean because curvature is 1/radius
-					double scaleVel=2*leftFollower.getSegment().velocity*rightFollower.getSegment().velocity;
-					if (scaleVel!=0) {
-					    scaleVel/=(leftFollower.getSegment().velocity+rightFollower.getSegment().velocity);
-					}
-					double curvature = PathFinderUtil.getScaledCurvature(prev_seg,seg,scaleVel);
-					
-					double normcurv=PathFinderUtil.getNormalizedCurvature(prev_seg, seg);
-					//System.out.println("Normcurv is "+normcurv+" for "+side.toString());
-
-					// Raw heading stuff here due to side selections
-					double degreeHeading = AutonMovement.clicksToDegrees(Calibration.DRIVE_PROPERTIES,
-							robot.drive.leftClicks.get()-robot.drive.rightClicks.get());
-					//System.out.print("Current heading is "+degreeHeading);
-
-					// Both headings are the same
-					double desiredHeading = leftFollower.getHeading();
-					desiredHeading=Pathfinder.r2d(desiredHeading);
-					desiredHeading=Pathfinder.boundHalfDegrees(desiredHeading);
-					desiredHeading*=-1;
-					// Pathfinder heading is counterclockwise math convention
-					// We are using positive=right clockwise convention
-
-					double angleError = desiredHeading-degreeHeading;
-					System.out.println("Angle error is "+angleError);
-
-					// Convert back into radians for consistency
-					angleError = Pathfinder.d2r(angleError);
-					double dAngleError=angleError-prevAngleError;
-					dAngleError/=seg.dt;
-					
-					double kappa_val=k_kappa*curvature;
-					double pTheta_val=k_ptheta_0/(k_ptheta_decay*normcurv*normcurv+1);
-					pTheta_val*=angleError;
-					double dTheta_val=k_dtheta_0/(k_dtheta_decay*normcurv*normcurv+1);
-					dTheta_val*=dAngleError;
-					
-					dTheta_val=clamp(dTheta_val,-pTheta_val,pTheta_val);
-
-					//double deshed=-Pathfinder.boundHalfRadians(leftFollower.getHeading());
-					//System.out.println("Equal "+(deshed-Pathfinder.d2r(desiredHeading)));
-
-					if (side==PathFollowSide.LEFT) {
-						tankDrive.leftPower.set(rawPow+kappa_val
-								+pTheta_val+dTheta_val);
-					} else { // if side==PathFollowSide.RIGHT
-						tankDrive.rightPower.set(rawPow-kappa_val
-								-pTheta_val-dTheta_val);
-					}
-					prevAngleError=angleError;
-					
-					if( side==PathFollowSide.LEFT ) {
-						timer.schedule( new PathFollowTask( PathFollowSide.LEFT), (long) ( 1000*getNextdt() ) ); 
-					} else if( side == PathFollowSide.RIGHT ) {
-						timer.schedule( new PathFollowTask( PathFollowSide.RIGHT), (long) (1000*getNextdt()) ); 
-					}
-				}
-
-				double getNextdt() {
-					return next_dt;
-				}
-			}
-
-			private final Trajectory.Config config = new Trajectory.Config(
-					Trajectory.FitMethod.HERMITE_QUINTIC,
-					Trajectory.Config.SAMPLES_HIGH,
-					base_dt, max_v, max_a, max_j);
-
-			/*private Waypoint[] points = new Waypoint[] {
-					new Waypoint(0,0,0),
-					new Waypoint(1,0,0),
-					new Waypoint(2,-1,Pathfinder.d2r(-90)),
-					new Waypoint(2,-2,Pathfinder.d2r(-90))
-			};*/
-			
-			private Waypoint[] points = new Waypoint[] {
-			        new Waypoint(0,0,0),
-			        //new Waypoint(2.25,-1,Pathfinder.d2r(-45))
-			        new Waypoint(2.25,-1,0)
-			};
-
-			private Trajectory trajectory = Pathfinder.generate(points, config);
-
-			private TankModifier modifier = new TankModifier(trajectory).modify( width, config );
-
-			private EncoderFollower leftFollower  = new EncoderFollower(modifier.getLeftTrajectory());
-			private EncoderFollower rightFollower = new EncoderFollower(modifier.getRightTrajectory());
-			private java.util.Timer timer;
-			private SmartTimer timeElapsed = new SmartTimer();
-
-			private Drive.TankDrive tankDrive = robot.drive.new TankDrive(false);
-			private Pulse PIDTargetPulse=new Pulse();
-
-			@Override
-			protected void begin() {
-				System.out.println("ERROR: Begin");
-				timer = new java.util.Timer();
-				robot.drive.resetSensors();
-				System.out.println("ERROR: left is "+robot.drive.leftClicks.get());
-				leftFollower.configurePIDVA(kp, 0, kd, kv, ka);
-				rightFollower.configurePIDVA(kp, 0, kd, kv, ka);
-				leftFollower.configureEncoder(0, 250, 0.12732); // 5 in diameter
-				rightFollower.configureEncoder(0, 250, 0.12732);
-				leftFollower.reset();
-				rightFollower.reset();
-				timer.schedule(new PathFollowTask(PathFollowSide.LEFT), 0);
-				timer.schedule(new PathFollowTask(PathFollowSide.RIGHT), 0);
-				tankDrive.activate();
-				timeElapsed.start();
-			}
-
-			@Override
-			protected boolean run() {
-				tankDrive.activate();
-				return timeElapsed.runUntil(0.6, new Runnable() {
-					@Override
-					public void run() {
-						boolean targetReached = (leftFollower.isFinished() && rightFollower.isFinished());
-						if (!targetReached) {
-							timeElapsed.reset();
-							PIDTargetPulse.update(true);
-						} else {
-							PIDTargetPulse.update(false);
-						}
-						if (PIDTargetPulse.isFallingEdge()) {
-							System.out.println("========Finished========");
-						}
-					}
-				});
-			}
-
-			@Override
-			protected void end() {
-				timer.cancel();
-				System.out.println("ERROR: end");
-				leftFollower.reset();
-				rightFollower.reset();
-				timeElapsed.stopAndReset();
-			}
-
-			
-
-		};
+		pathfinderMacro = new PathFollower( new Waypoint[] {
+				new Waypoint(0,0,0),
+				new Waypoint(2.25,-1,0),
+		} );
 	}
 
 	@Override
@@ -791,7 +585,7 @@ public class AutonomousMode extends Coordinator {
 		public FallBackMacro() {
 			super(FallBackMacro.class);
 			addStates(new IntakeMacro());
-			addState("Backward 144 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(144+1)), 0));
+			addState("Pathfind back 144in", new PathStraight( PathFinderUtil.inchesToMeters( 144 ), true ));
 		}
 	}
 
@@ -799,7 +593,7 @@ public class AutonomousMode extends Coordinator {
 		public FallForwardMacro() {
 			super(FallForwardMacro.class);
 			addStates(new IntakeMacro());
-			addState("Forward 144 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, (144+1)), 0));
+			addState("Pathfind forward 144in", new PathStraight( PathFinderUtil.inchesToMeters( 144 ) ));
 		}
 	}
 
@@ -810,9 +604,12 @@ public class AutonomousMode extends Coordinator {
 			addState("Raise elevator", new ElevatorSetPersistent(Calibration.ELEVATOR_RAISE_TARGET));
 			addState("Wait for elevator", new SleepCoordinator(0.3));
 			addState("Raise arm", new ArmSetPersistent(Calibration.ARM_MID_TARGET));
-			addState("Forward 144 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, (144+1)), 0));
-			addState("Rotate 90 right", new ArcadePIDCoordinator(0, AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, 90)));
-			addState("Forward 24 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, (24)), 0));
+			addState("Pathfind forward 144in, 90 right, forward 24in", new PathFollower( new Waypoint[] {
+					new Waypoint( 0, 0, 0 ),
+					new Waypoint( PathFinderUtil.feetToMeters( 9 ), 0, 0 ),
+					new Waypoint( PathFinderUtil.feetToMeters( 12 ), PathFinderUtil.feetToMeters( 2 ), Pathfinder.d2r(90) ),
+
+			} ));
 			addState("Switch decision", new LeftSideSwitchDecisionMacro());
 		}
 	}
@@ -824,9 +621,12 @@ public class AutonomousMode extends Coordinator {
 			addState("Raise elevator", new ElevatorSetPersistent(Calibration.ELEVATOR_RAISE_TARGET));
 			addState("Wait for elevator", new SleepCoordinator(0.3));
 			addState("Raise arm", new ArmSetPersistent(Calibration.ARM_MID_TARGET));
-			addState("Forward 144 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, (144+1)), 0));
-			addState("Rotate 90 left", new ArcadePIDCoordinator(0, AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, -90)));
-			addState("Forward 24 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, (24)), 0));
+			addState("Pathfind forward 144in, 90 left, forward 24in", new PathFollower( new Waypoint[] {
+					new Waypoint( 0, 0, 0 ),
+					new Waypoint( PathFinderUtil.feetToMeters( 9 ), 0, 0 ),
+					new Waypoint( PathFinderUtil.feetToMeters( 12 ), PathFinderUtil.feetToMeters( -2 ), Pathfinder.d2r(-90) ),
+
+			} ));
 			addState("Switch decision", new RightSideSwitchDecisionMacro());
 		}
 	}
@@ -997,7 +797,7 @@ public class AutonomousMode extends Coordinator {
 			addState("Raise arm", new ArmSetPersistent(Calibration.ARM_MID_TARGET));
 			// Choose based on FMS Game Data
 			addState("Switch choosing", new CenterSwitchChooserMacro());
-			addState("Forward 23 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, 23),0));
+			addState("Pathfind forward 23in", new PathStraight( PathFinderUtil.inchesToMeters( 23 ) ) );
 			addStates(new SwitchEjectMacro());
 		}
 	}
@@ -1075,7 +875,7 @@ public class AutonomousMode extends Coordinator {
 			super(LeftScaleMacro.class);
 			addStates(new IntakeMacro());
 			addState("Set Elevator Persistent", new ElevatorSetPersistent(Calibration.ELEVATOR_MID_TARGET));
-			addState("Backward 219 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(219+1)), 0));
+			addState("Pathfind back 219in", new PathStraight( PathFinderUtil.inchesToMeters(219), true ) );
 			//addState("Set Arm Persistent", new ArmSetPersistent(Calibration.ARM_BALANCE_TARGET));
 			//addState("Sleep 0.2 seconds", new SleepCoordinator(0.2));
 			addState("Scale chooser", new LeftScaleChooserMacro());
@@ -1087,7 +887,7 @@ public class AutonomousMode extends Coordinator {
 			super(LeftScaleSameOnlyMacro.class);
 			addStates(new IntakeMacro());
 			addState("Set Elevator Persistent", new ElevatorSetPersistent(Calibration.ELEVATOR_MID_TARGET));
-			addState("Backward 219 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(219+1)), 0));
+			addState("Pathfind back 219in", new PathStraight( PathFinderUtil.inchesToMeters(219), true ) );
 			//addState("Set Arm Persistent", new ArmSetPersistent(Calibration.ARM_BALANCE_TARGET));
 			//addState("Sleep 0.2 seconds", new SleepCoordinator(0.2));
 			addState("Scale chooser", new LeftScaleChooserSameOnlyMacro());
@@ -1099,7 +899,7 @@ public class AutonomousMode extends Coordinator {
 			super(LeftScaleHalfCrossMacro.class);
 			addStates(new IntakeMacro());
 			addState("Set Elevator Persistent", new ElevatorSetPersistent(Calibration.ELEVATOR_MID_TARGET));
-			addState("Backward 219 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(219+1)), 0));
+			addState("Pathfind back 219in", new PathStraight( PathFinderUtil.inchesToMeters(219), true ) );
 			addState("Scale chooser", new LeftScaleChooserHalfCrossMacro());
 		}
 	}
@@ -1109,7 +909,7 @@ public class AutonomousMode extends Coordinator {
 			super(RightScaleMacro.class);
 			addStates(new IntakeMacro());
 			addState("Set Elevator Persistent", new ElevatorSetPersistent(Calibration.ELEVATOR_MID_TARGET));
-			addState("Backward 219 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(219+1)), 0));
+			addState("Pathfind back 219in", new PathStraight( PathFinderUtil.inchesToMeters(219), true ) );
 			//addState("Set Arm Persistent", new ArmSetPersistent(Calibration.ARM_BALANCE_TARGET));
 			//addState("Sleep 0.2 seconds", new SleepCoordinator(0.2));
 			addState("Scale chooser", new RightScaleChooserMacro());
@@ -1121,7 +921,7 @@ public class AutonomousMode extends Coordinator {
 			super(RightScaleHalfCrossMacro.class);
 			addStates(new IntakeMacro());
 			addState("Set Elevator Persistent", new ElevatorSetPersistent(Calibration.ELEVATOR_MID_TARGET));
-			addState("Backward 219 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(219+1)), 0));
+			addState("Pathfind back 219in", new PathStraight( PathFinderUtil.inchesToMeters(219), true ) );
 			addState("Scale chooser", new RightScaleChooserHalfCrossMacro());
 		}
 	}
@@ -1131,7 +931,7 @@ public class AutonomousMode extends Coordinator {
 			super(RightScaleSameOnlyMacro.class);
 			addStates(new IntakeMacro());
 			addState("Set Elevator Persistent", new ElevatorSetPersistent(Calibration.ELEVATOR_MID_TARGET));
-			addState("Backward 219 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(219+1)), 0));
+			addState("Pathfind back 219in", new PathStraight( PathFinderUtil.inchesToMeters(219), true ) );
 			//addState("Set Arm Persistent", new ArmSetPersistent(Calibration.ARM_BALANCE_TARGET));
 			//addState("Sleep 0.2 seconds", new SleepCoordinator(0.2));
 			addState("Scale chooser", new RightScaleChooserSameOnlyMacro());
@@ -1191,21 +991,20 @@ public class AutonomousMode extends Coordinator {
 	private class CenterMacroLeft extends StatefulCoordinator {
 		public CenterMacroLeft() {
 			super(CenterMacroLeft.class);
-			addState("Forward 9 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, 9),0));
-			addState("Rotate 45 left", new ArcadePIDCoordinator(0, AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, -45)));
-			addState("Forward 76+20 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, 76+20+1),0));
-			addState("Rotate 45 right", new ArcadePIDCoordinator(0, AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, 45)));
-			//addState("Forward 19 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, 19+1),0));
+			addState("Pathfind forward 82.74in, up 73.74in", new PathFollower( new Waypoint[] {
+					new Waypoint( 0, 0, 0 ),
+					new Waypoint( PathFinderUtil.inchesToMeters(82.7401153), PathFinderUtil.inchesToMeters(-73.7401153), 0 )
+			} ));
 		}
 	}
 
 	private class CenterMacroRight extends StatefulCoordinator {
 		public CenterMacroRight() {
 			super(CenterMacroRight.class);
-			addState("Forward 23 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, 23),0));
-			addState("Rotate 45 right", new ArcadePIDCoordinator(0, AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, 45)));
-			addState("Forward 76 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, 76+1),0));
-			addState("Rotate 45 left", new ArcadePIDCoordinator(0, AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, -45)));
+			addState("Pathfind forward 76.74in, up 53.74in", new PathFollower( new Waypoint[] {
+					new Waypoint( 0, 0, 0 ),
+					new Waypoint( PathFinderUtil.inchesToMeters(76.7401153), PathFinderUtil.inchesToMeters(53.7401153), 0 ),
+			} ));
 		}
 	}
 
@@ -1213,12 +1012,11 @@ public class AutonomousMode extends Coordinator {
 		public NewScaleBackwardMacroLeft() {
 			super(NewScaleBackwardMacroLeft.class);
 			addStates(new IntakeMacro());
-			//addState("Set Elevator Persistent", new ElevatorSetPersistent(Calibration.ELEVATOR_MID_TARGET));
-			addState("Backward 39 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(39+1)), 10));
-			//addState("Set Arm Persistent", new ArmSetPersistent(Calibration.ARM_BALANCE_TARGET));
-			//addState("Sleep 0.5 seconds", new SleepCoordinator(0.5));
-			addState("Rotate 35 right", new ArcadePIDCoordinator(0, AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, 35)));
-			addState("Backward 6 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(6)), 10));
+			addState("Pathfind back 43.91491226573395in, down 6in, angle -35deg", new PathFollower( new Waypoint[] {
+				new Waypoint( 0, 0, 0 ),
+				new Waypoint( PathFinderUtil.inchesToMeters(16), 0, 0 ),
+				new Waypoint( PathFinderUtil.inchesToMeters(43.91491226573395), PathFinderUtil.inchesToMeters(-6), Pathfinder.d2r(-35) )
+			}, true ));
 			addState("Set Arm High Persistent", new ArmSetPersistent(Calibration.ARM_HIGH_TARGET));
 			addState("Sleep 1.3 seconds", new SleepCoordinator(1.3));
 			addState("Eject cube", new IntakeMove(-0.4,0.5));
@@ -1232,12 +1030,11 @@ public class AutonomousMode extends Coordinator {
 		public NewScaleBackwardMacroRight() {
 			super(NewScaleBackwardMacroRight.class);
 			addStates(new IntakeMacro());
-			//addState("Set Elevator Persistent", new ElevatorSetPersistent(Calibration.ELEVATOR_MID_TARGET));
-			addState("Backward 39 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(39+1)), 14));
-			//addState("Set Arm Persistent", new ArmSetPersistent(Calibration.ARM_BALANCE_TARGET));
-			//addState("Sleep 0.5 seconds", new SleepCoordinator(0.5));
-			addState("Rotate 35 left", new ArcadePIDCoordinator(0, AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, -35)));
-			addState("Backward 6 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(6)), 14));
+			addState("Pathfind back 43.91491226573395in, up 6in, angle 35deg", new PathFollower( new Waypoint[] {
+				new Waypoint( 0, 0, 0 ),
+				new Waypoint( PathFinderUtil.inchesToMeters(16), 0, 0 ),
+				new Waypoint( PathFinderUtil.inchesToMeters(43.91491226573395), PathFinderUtil.inchesToMeters(6), Pathfinder.d2r(35) )
+			}, true ));
 			addState("Set Arm High Persistent", new ArmSetPersistent(Calibration.ARM_HIGH_TARGET));
 			addState("Sleep 1.3 seconds", new SleepCoordinator(1.3));
 			addState("Eject cube", new IntakeMove(-0.4,0.5));
@@ -1250,18 +1047,12 @@ public class AutonomousMode extends Coordinator {
 	private class NewScaleOppositeMacroLeft extends StatefulCoordinator {
 		public NewScaleOppositeMacroLeft() {
 			super(NewScaleOppositeMacroLeft.class);
-			//addStates(new IntakeMacro());
-			//addState("Set Elevator Persistent", new ElevatorSetPersistent(Calibration.ELEVATOR_MID_TARGET));
-			//addState("Backward 185 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(185+1)), 0));
-			//addState("Set Arm Persistent", new ArmSetPersistent(Calibration.ARM_BALANCE_TARGET));
-			//addState("Sleep 0.5 seconds", new SleepCoordinator(0.5));
-			//addState("Backward 50 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(50+1)), 0));
 			addState("Rotate 86 right", new ArcadePIDCoordinator(0, AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, 86)));
 			//238.5
-			addState("Backward 193 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(193+1)), 14));
-			addState("Rotate 90 left", new ArcadePIDCoordinator(0, AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, -90)));
-			addState("Backward 27 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(27+1)), 14));
-			addState("Set Arm High Persistent", new ArmSetPersistent(Calibration.ARM_HIGH_TARGET));
+            addState("Pathfind back 193in", new PathStraight( PathFinderUtil.inchesToMeters(193), true ));
+            addState("Rotate 90 left", new ArcadePIDCoordinator(0, AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, -90)));
+            addState("Pathfind back 27in", new PathStraight( PathFinderUtil.inchesToMeters(27), true ));
+            addState("Set Arm High Persistent", new ArmSetPersistent(Calibration.ARM_HIGH_TARGET));
 			addState("Sleep 1.3 seconds", new SleepCoordinator(1.3));
 			addState("Eject cube", new IntakeMove(-0.4,0.5));
 			addState("Retract arm", new ArmSetPersistent(Calibration.ARM_LOW_TARGET));
@@ -1273,16 +1064,12 @@ public class AutonomousMode extends Coordinator {
 	private class NewScaleOppositeMacroRight extends StatefulCoordinator {
 		public NewScaleOppositeMacroRight() {
 			super(NewScaleOppositeMacroRight.class);
-			//addStates(new IntakeMacro());
-			//addState("Set Elevator Persistent", new ElevatorSetPersistent(Calibration.ELEVATOR_MID_TARGET));
-			//addState("Backward 185 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(185+1)), 0));
-			//addState("Set Arm Persistent", new ArmSetPersistent(Calibration.ARM_BALANCE_TARGET));
-			//addState("Sleep 0.5 seconds", new SleepCoordinator(0.5));
-			//addState("Backward 50 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(50+1)), 0));
+			// Angles have been left separate due to concerns about hitting the
+			// ramp at an angle instead of dead-on.
 			addState("Rotate 90 left", new ArcadePIDCoordinator(0, AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, -90)));
-			addState("Backward 193 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(193+1)), 14));
+			addState("Pathfind back 193in", new PathStraight( PathFinderUtil.inchesToMeters(193), true ) );
 			addState("Rotate 90 right", new ArcadePIDCoordinator(0, AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, 90)));
-			addState("Backward 27 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(27+1)), 14));
+			addState("Pathfind back 27in", new PathStraight( PathFinderUtil.inchesToMeters(27), true ));
 			addState("Set Arm High Persistent", new ArmSetPersistent(Calibration.ARM_HIGH_TARGET));
 			addState("Sleep 1.3 seconds", new SleepCoordinator(1.3));
 			addState("Eject cube", new IntakeMove(-0.4,0.5));
@@ -1296,7 +1083,7 @@ public class AutonomousMode extends Coordinator {
 		public NewScaleHalfCrossMacroLeft() {
 			super(NewScaleHalfCrossMacroLeft.class);
 			addState("Rotate 90 right", new ArcadePIDCoordinator(0, AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, 90)));
-			addState("Backward 100 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(100+1)), 10));
+			addState("Pathfind back 100in", new PathStraight( PathFinderUtil.inchesToMeters(100), true ) );
 		}
 	}
 
@@ -1304,16 +1091,18 @@ public class AutonomousMode extends Coordinator {
 		public NewScaleHalfCrossMacroRight() {
 			super(NewScaleHalfCrossMacroRight.class);
 			addState("Rotate 90 left", new ArcadePIDCoordinator(0, AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, -90)));
-			addState("Backward 100 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -(100+1)), 10));
+			addState("Pathfind back 100in", new PathStraight( PathFinderUtil.inchesToMeters(100), true ) );
 		}
 	}
 
 	private class DemoStateMacro extends StatefulCoordinator {
 		public DemoStateMacro() {
 			super(DemoStateMacro.class);
-			addState("Forward 18 ft", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, 12*18+1), 0));
-			addState("Rotate 90 right", new ArcadePIDCoordinator(0, AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, 90)));
-			addState("Forward 6 ft", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, 12*6), 0));
+			addState("", new PathFollower( new Waypoint[] {
+				new Waypoint( 0, 0, 0 ),
+				new Waypoint( PathFinderUtil.feetToMeters(14), 0, 0 ),
+				new Waypoint( PathFinderUtil.feetToMeters(18), PathFinderUtil.feetToMeters(-6), Pathfinder.d2r(-90) )
+			} ));
 		}
 	}
 
@@ -1322,7 +1111,6 @@ public class AutonomousMode extends Coordinator {
 		public IntakeMacro() {
 			super(IntakeMacro.class);
 			addState("Intake cube", new IntakeMove(0.5,0.25));
-			//addState("Sleep 0.25 seconds", new SleepCoordinator(0.25));
 			addState("Clamp cube", new ClampRetract());
 		}
 	}
@@ -1331,8 +1119,8 @@ public class AutonomousMode extends Coordinator {
 		public SwitchEjectMacro() {
 			super(SwitchEjectMacro.class);
 			addState("Eject cube", new IntakeMove(-0.3,1.5));
-			// Move back to avoid arm hitting switch fence
-			addState("Move back", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -12), 0));
+			// Move back to avoid arm hitting switch
+			addState("Pathfind back 1ft", new PathStraight( PathFinderUtil.feetToMeters(1), true ));
 			addState("Move arm", new ArmSetPersistent(Calibration.ARM_LOW_TARGET));
 			addState("Wait", new SleepCoordinator(0.2));
 			addState("Move elevator", new ElevatorSetPersistent(Calibration.ELEVATOR_LOW_TARGET));
@@ -1343,7 +1131,7 @@ public class AutonomousMode extends Coordinator {
 	private class LowerMacro extends StatefulCoordinator {
 		public LowerMacro() {
 			super(LowerMacro.class);
-			addState("Back away 24 inches", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, -24), 0));
+			addState("Pathfind back 24in", new PathStraight( PathFinderUtil.inchesToMeters( 24 ), true ));
 			addState("Retract arm", new ArmSetPersistent(Calibration.ARM_LOW_TARGET));
 			addState("Retract elevator", new ElevatorSetPersistent(Calibration.ELEVATOR_LOW_TARGET));
 			addState("Unclamp", new ClampExtend());
@@ -1364,12 +1152,13 @@ public class AutonomousMode extends Coordinator {
 			addState("ArcadePID",controller);
 		}
 	}
+
 	// Backup in case switch game data FMS malfunctions
 	private class SwitchForwardBackupMacro extends StatefulCoordinator {
 		public SwitchForwardBackupMacro() {
 			super(SwitchForwardBackupMacro.class);
 			addStates(new IntakeMacro());
-			addState("Forward 120 in", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, 80+1), 0));
+			addState("Pathfind forward 120in", new PathStraight( PathFinderUtil.inchesToMeters( 120 ) ));
 			addState("Sleep 0.5 seconds", new SleepCoordinator(0.5));
 			addStates(new SwitchEjectMacro());
 			//addState("Rotate 180 left", new ArcadePIDCoordinator(0,AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, -180)));
@@ -1377,5 +1166,211 @@ public class AutonomousMode extends Coordinator {
 			//addState("Forward 12 feet", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, 12*12+1), 0));
 		}
 	}
+
+	private class PathFollower extends Coordinator {
+		private Trajectory path;
+		private EncoderFollower leftFollower;
+		private EncoderFollower rightFollower;
+		private java.util.Timer timer;
+		private SmartTimer timeElapsed;
+		private Drive.TankDrive tankDrive;
+		private Pulse PIDTargetPulse=new Pulse();
+
+		public PathFollower( Waypoint[] waypoints ) {
+			this( Pathfinder.generate( waypoints, Calibration.PATHFINDER_CONFIG ), false );
+		}
+
+		public PathFollower( Waypoint[] waypoints, boolean reversePath ) {
+			this( Pathfinder.generate( waypoints, Calibration.PATHFINDER_CONFIG ), reversePath );
+		}
+
+		public PathFollower( Trajectory path ) {
+			this( path, false );
+		}
+
+		public PathFollower( Trajectory path, boolean reverseDrive ) {
+			this.path = path;
+			timeElapsed = new SmartTimer();
+			tankDrive = robot.drive.new TankDrive( false );
+			generateTankPath( reverseDrive );
+		}
+
+		private void generateTankPath( boolean reverseDrive ) {
+			TankModifier modifier = new TankModifier(path).modify( Calibration.Pathfinder.ROBOT_WIDTH, Calibration.PATHFINDER_CONFIG );
+
+			if( reverseDrive ) {
+				leftFollower = new EncoderFollower( Pathfinder.reverseTrajectory( modifier.getLeftTrajectory( ) ) );
+				rightFollower = new EncoderFollower( Pathfinder.reverseTrajectory( modifier.getRightTrajectory() ) );
+			} else {
+				leftFollower = new EncoderFollower( modifier.getLeftTrajectory() );
+				rightFollower = new EncoderFollower( modifier.getRightTrajectory() );
+			}
+		}
+
+		class PathFollowTask extends TimerTask {
+			private double prevAngleError=0;
+			private PathFollowSide side;
+			private double next_dt = 0;
+
+			private double clamp(double value, double low, double high) {
+				return Math.max(low, Math.min(value, high));
+			}
+
+			PathFollowTask (PathFollowSide side) {
+				this.side=side;
+			}
+
+			@Override
+			public void run() {
+				tankDrive.activate();
+				int encoderPos;
+				double rawPow;
+				Trajectory.Segment prev_seg;
+				Trajectory.Segment seg;
+				if (side==PathFollowSide.LEFT) {
+					encoderPos = robot.drive.leftClicks.get();
+					rawPow = leftFollower.calculate(encoderPos);
+					prev_seg = leftFollower.prevSegment();
+					seg = leftFollower.getSegment();
+				} else {//if side==PathFollowSide.RIGHT
+					encoderPos=robot.drive.rightClicks.get();
+					rawPow = rightFollower.calculate(encoderPos);
+					prev_seg = rightFollower.prevSegment();
+					seg = rightFollower.getSegment();
+				}
+
+				next_dt = seg.dt;
+
+				// Calculated curvature scales with velocity
+				// Keeping old implied scaling since faster movement implies more curvature correction
+				// Use harmonic mean because curvature is 1/radius
+				double scaleVel=2*leftFollower.getSegment().velocity*rightFollower.getSegment().velocity;
+				if (scaleVel!=0) {
+					scaleVel/=(leftFollower.getSegment().velocity+rightFollower.getSegment().velocity);
+				}
+				double curvature = PathFinderUtil.getScaledCurvature(prev_seg,seg,scaleVel);
+
+				double normcurv=PathFinderUtil.getNormalizedCurvature(prev_seg, seg);
+				//System.out.println("Normcurv is "+normcurv+" for "+side.toString());
+
+				// Raw heading stuff here due to side selections
+				double degreeHeading = AutonMovement.clicksToDegrees(Calibration.DRIVE_PROPERTIES,
+						robot.drive.leftClicks.get()-robot.drive.rightClicks.get());
+				//System.out.print("Current heading is "+degreeHeading);
+
+				// Both headings are the same
+				double desiredHeading = leftFollower.getHeading();
+				desiredHeading=Pathfinder.r2d(desiredHeading);
+				desiredHeading=Pathfinder.boundHalfDegrees(desiredHeading);
+				desiredHeading*=-1;
+				// Pathfinder heading is counterclockwise math convention
+				// We are using positive=right clockwise convention
+
+				double angleError = desiredHeading-degreeHeading;
+				System.out.println("Angle error is "+angleError);
+
+				// Convert back into radians for consistency
+				angleError = Pathfinder.d2r(angleError);
+				double dAngleError=angleError-prevAngleError;
+				dAngleError/=seg.dt;
+
+				double kappa_val=Calibration.Pathfinder.K_KAPPA*curvature;
+				double pTheta_val=Calibration.Pathfinder.K_PTHETA_0/(Calibration.Pathfinder.K_PTHETA_DECAY*normcurv*normcurv+1);
+				pTheta_val*=angleError;
+				double dTheta_val=Calibration.Pathfinder.K_DTHETA_0/(Calibration.Pathfinder.K_DTHETA_DECAY*normcurv*normcurv+1);
+				dTheta_val*=dAngleError;
+
+				dTheta_val=clamp(dTheta_val,-pTheta_val,pTheta_val);
+
+				/*
+				double deshed=-Pathfinder.boundHalfRadians(leftFollower.getHeading());
+				System.out.println("Equal "+(deshed-Pathfinder.d2r(desiredHeading)));
+				*/
+
+				if (side==PathFollowSide.LEFT) {
+					tankDrive.leftPower.set(rawPow+kappa_val
+							+pTheta_val+dTheta_val);
+				} else { // RIGHT side
+					tankDrive.rightPower.set(rawPow-kappa_val
+							-pTheta_val-dTheta_val);
+				}
+				prevAngleError=angleError;
+
+				if( side==PathFollowSide.LEFT ) {
+					timer.schedule( new PathFollowTask( PathFollowSide.LEFT), (long) ( 1000*getNextdt() ) );
+				} else if( side == PathFollowSide.RIGHT ) {
+					timer.schedule( new PathFollowTask( PathFollowSide.RIGHT), (long) (1000*getNextdt()) );
+				}
+			}
+
+			double getNextdt() {
+				return next_dt;
+			}
+		}
+
+
+		@Override
+		public void begin() {
+			System.out.println("ERROR: Begin");
+			timer = new java.util.Timer();
+			robot.drive.resetSensors();
+			System.out.println("ERROR: left is "+robot.drive.leftClicks.get());
+			leftFollower.configurePIDVA(Calibration.Pathfinder.KP, Calibration.Pathfinder.KI, Calibration.Pathfinder.KD,
+					Calibration.Pathfinder.KV, Calibration.Pathfinder.KA);
+			rightFollower.configurePIDVA(Calibration.Pathfinder.KP, Calibration.Pathfinder.KI, Calibration.Pathfinder.KD,
+					Calibration.Pathfinder.KV, Calibration.Pathfinder.KA);
+			leftFollower.configureEncoder(0, 250, 0.12732); // 5 in diameter
+			rightFollower.configureEncoder(0, 250, 0.12732);
+			leftFollower.reset();
+			rightFollower.reset();
+			timer.schedule(new PathFollowTask(PathFollowSide.LEFT), 0);
+			timer.schedule(new PathFollowTask(PathFollowSide.RIGHT), 0);
+			tankDrive.activate();
+			timeElapsed.start();
+		}
+
+		@Override
+		public boolean run() {
+			tankDrive.activate();
+			return timeElapsed.runUntil(0.6, new Runnable() {
+				@Override
+				public void run() {
+					boolean targetReached = (leftFollower.isFinished() && rightFollower.isFinished());
+					if (!targetReached) {
+						timeElapsed.reset();
+						PIDTargetPulse.update(true);
+					} else {
+						PIDTargetPulse.update(false);
+					}
+					if (PIDTargetPulse.isFallingEdge()) {
+						System.out.println("========Finished========");
+					}
+				}
+			});
+		}
+
+		@Override
+		public void end() {
+			timer.cancel();
+			System.out.println("ERROR: end");
+			leftFollower.reset();
+			rightFollower.reset();
+			timeElapsed.stopAndReset();
+		}
+	}
+
+	private class PathStraight extends PathFollower {
+		public PathStraight( double meters ) {
+			this( meters, false );
+		}
+
+		public PathStraight( double meters, boolean reverseDrive ) {
+			super( Pathfinder.generate( new Waypoint[]{
+					new Waypoint( 0,0,0 ),
+					new Waypoint( meters, 0, 0 ),
+			}, Calibration.PATHFINDER_CONFIG ), reverseDrive );
+		}
+	}
+
 
 }
