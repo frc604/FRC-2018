@@ -607,7 +607,7 @@ public class AutonomousMode extends Coordinator {
 			addState("Pathfind forward 144in, 90 right, forward 24in", new PathFollower( new Waypoint[] {
 					new Waypoint( 0, 0, 0 ),
 					new Waypoint( PathFinderUtil.feetToMeters( 9 ), 0, 0 ),
-					new Waypoint( PathFinderUtil.feetToMeters( 12 ), PathFinderUtil.feetToMeters( 2 ), Pathfinder.d2r(90) ),
+					new Waypoint( PathFinderUtil.feetToMeters( 12 ), PathFinderUtil.feetToMeters( -2 ), Pathfinder.d2r(-90) ),
 
 			} ));
 			addState("Switch decision", new LeftSideSwitchDecisionMacro());
@@ -624,7 +624,7 @@ public class AutonomousMode extends Coordinator {
 			addState("Pathfind forward 144in, 90 left, forward 24in", new PathFollower( new Waypoint[] {
 					new Waypoint( 0, 0, 0 ),
 					new Waypoint( PathFinderUtil.feetToMeters( 9 ), 0, 0 ),
-					new Waypoint( PathFinderUtil.feetToMeters( 12 ), PathFinderUtil.feetToMeters( -2 ), Pathfinder.d2r(-90) ),
+					new Waypoint( PathFinderUtil.feetToMeters( 12 ), PathFinderUtil.feetToMeters( 2 ), Pathfinder.d2r(90) ),
 
 			} ));
 			addState("Switch decision", new RightSideSwitchDecisionMacro());
