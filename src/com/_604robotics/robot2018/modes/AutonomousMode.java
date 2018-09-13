@@ -1015,7 +1015,7 @@ public class AutonomousMode extends Coordinator {
 			addState("Pathfind back 43.91491226573395in, down 6in, angle -35deg", new PathFollower( new Waypoint[] {
 				new Waypoint( 0, 0, 0 ),
 				new Waypoint( PathFinderUtil.inchesToMeters(16), 0, 0 ),
-				new Waypoint( PathFinderUtil.inchesToMeters(43.91491226573395), PathFinderUtil.inchesToMeters(-6), Pathfinder.d2r(-35) )
+				new Waypoint( PathFinderUtil.inchesToMeters(43.91491226573395), PathFinderUtil.inchesToMeters(6), Pathfinder.d2r(35) )
 			}, true ));
 			addState("Set Arm High Persistent", new ArmSetPersistent(Calibration.ARM_HIGH_TARGET));
 			addState("Sleep 1.3 seconds", new SleepCoordinator(1.3));
@@ -1033,7 +1033,7 @@ public class AutonomousMode extends Coordinator {
 			addState("Pathfind back 43.91491226573395in, up 6in, angle 35deg", new PathFollower( new Waypoint[] {
 				new Waypoint( 0, 0, 0 ),
 				new Waypoint( PathFinderUtil.inchesToMeters(16), 0, 0 ),
-				new Waypoint( PathFinderUtil.inchesToMeters(43.91491226573395), PathFinderUtil.inchesToMeters(6), Pathfinder.d2r(35) )
+				new Waypoint( PathFinderUtil.inchesToMeters(43.91491226573395), PathFinderUtil.inchesToMeters(-6), Pathfinder.d2r(-35) )
 			}, true ));
 			addState("Set Arm High Persistent", new ArmSetPersistent(Calibration.ARM_HIGH_TARGET));
 			addState("Sleep 1.3 seconds", new SleepCoordinator(1.3));
