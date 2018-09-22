@@ -23,7 +23,6 @@ import com._604robotics.robotnik.utils.AutonMovement;
 import com._604robotics.robotnik.utils.PathFinderUtil;
 import com._604robotics.robotnik.utils.annotations.Unreal;
 
-import com.sun.javafx.scene.shape.PathUtils;
 import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.PIDOutput;
 import edu.wpi.first.wpilibj.PIDSource;
@@ -577,7 +576,7 @@ public class AutonomousMode extends Coordinator {
 			super(FallBackMacro.class);
 			addStates(new IntakeMacro());
 			//
-			//addState("Pathfind back 144in", new PathStraight( PathFinderUtil.inchesToMeters( 144 ), true ));
+			addState("Pathfind back 144in", new PathStraight( PathFinderUtil.inchesToMeters( 144 ), true ));
 		}
 	}
 
@@ -585,7 +584,6 @@ public class AutonomousMode extends Coordinator {
 		public FallForwardMacro() {
 			super(FallForwardMacro.class);
 			addStates(new IntakeMacro());
-			//addState("Pathfind forward 144in", new PathStraight( PathFinderUtil.inchesToMeters( 144 ) ));
 		}
 	}
 

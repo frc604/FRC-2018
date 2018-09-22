@@ -104,7 +104,7 @@ public class Dashboard extends DashboardModule {
     	MANUAL_SWITCH
     }
 
-    public final Output<AutonMode> autonMode = addDashboardOutput("autonMode", AutonMode.PATHFIND, AutonMode.class);
+    public final Output<AutonMode> autonMode = addDashboardOutput("autonMode", AutonMode.DEMO_NEW_AUTON, AutonMode.class);
     
     public final Output<DriveMode> driveMode = addDashboardOutput("driveMode", DriveMode.DYNAMIC, DriveMode.class);
 
