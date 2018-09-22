@@ -64,7 +64,6 @@ public class Dashboard extends DashboardModule {
         FAILSAFE_BACKWARD_12,
         // Demo auton into which arbitrary stuff can be stashed for testing
         DEMO_NEW_AUTON,
-        PATHFIND,
         // Remnants of various tests
         FORWARD_SWITCH,
         // CENTER_SWITCH_LEFT,
