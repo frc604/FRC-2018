@@ -23,7 +23,8 @@ deploy {
     targets {
         target("roborio", edu.wpi.first.gradlerio.frc.RoboRIO) {
             // Team can be overridden by command line, for use with VSCode
-            team = getTeamOrDefault(5333)
+            team = getTeamOrDefault(TEAM)
+            addresses << '10.6.4.2' // Custom ip of RIO
         }
     }
     artifacts {
