@@ -20,6 +20,7 @@ public class Calibration {
     public static final double DRIVE_MOVE_PID_D = 0.00;
     public static final double DRIVE_MOVE_PID_MAX = 0.85; //0.7
     public static final double DRIVE_MOVE_TOLERANCE = 100;
+    public static final double SLOW_ROTATION_MODIFIER = 0.66;
 
     // Rotate PID is now calibrated-don't touch
     public static final double DRIVE_ROTATE_PID_P = 0.003; // 0.003 / 0.005 / 0.01
