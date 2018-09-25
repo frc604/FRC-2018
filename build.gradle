@@ -9,7 +9,7 @@ plugins {
 }
 
 def TEAM = 604
-def ROBOT_CLASS = "com._604robotics.robot2018"
+def ROBOT_CLASS = "com._604robotics.robot2018.Robot2018"
 
 // Add common repositories
 repositories {
