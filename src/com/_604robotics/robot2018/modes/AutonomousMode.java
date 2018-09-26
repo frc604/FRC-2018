@@ -23,7 +23,6 @@ import com._604robotics.robotnik.utils.AutonMovement;
 import com._604robotics.robotnik.utils.PathFinderUtil;
 import com._604robotics.robotnik.utils.annotations.Unreal;
 
-import com.sun.javafx.scene.shape.PathUtils;
 import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.PIDOutput;
 import edu.wpi.first.wpilibj.PIDSource;
@@ -1098,11 +1097,10 @@ public class AutonomousMode extends Coordinator {
 	private class DemoStateMacro extends StatefulCoordinator {
 		public DemoStateMacro() {
 			super(DemoStateMacro.class);
-			addState("", new PathFollower( new Waypoint[] {
+			addState("TESTING REVERSE DRIVE", new PathFollower( new Waypoint[] {
 				new Waypoint( 0, 0, 0 ),
-				new Waypoint( PathFinderUtil.feetToMeters(14), 0, 0 ),
-				new Waypoint( PathFinderUtil.feetToMeters(18), PathFinderUtil.feetToMeters(-6), Pathfinder.d2r(-90) )
-			} ));
+				new Waypoint( PathFinderUtil.feetToMeters(6), PathFinderUtil.feetToMeters(6), Pathfinder.d2r(-90) )
+			}, true ));
 		}
 	}
 
