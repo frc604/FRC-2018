@@ -1262,12 +1262,10 @@ public class AutonomousMode extends Coordinator {
 				// Raw heading stuff here due to side selections
 				double degreeHeading = AutonMovement.clicksToDegrees(Calibration.DRIVE_PROPERTIES,
 						robot.drive.leftClicks.get()-robot.drive.rightClicks.get());
-				//System.out.print("Current heading is "+degreeHeading);
 
 				// Both headings are the same
 				double desiredHeading = leftFollower.getHeading();
 				desiredHeading=Pathfinder.r2d(desiredHeading);
-				System.out.println(desiredHeading);
 				desiredHeading=Pathfinder.boundHalfDegrees(desiredHeading);
 				desiredHeading*=-1;
 				// Pathfinder heading is counterclockwise math convention
@@ -1276,8 +1274,8 @@ public class AutonomousMode extends Coordinator {
 				double angleError = desiredHeading-degreeHeading;
 
 				// Convert back into radians for consistency
-				angleError = Pathfinder.d2r(angleError);// NOTE FIXME WARN ERROR XXX A THING: I put a negative here to test. ASDF
-				double dAngleError=angleError-prevAngleError;// METOO
+				angleError = Pathfinder.d2r(angleError); // NOTE ASDF
+				double dAngleError=angleError-prevAngleError;
 				dAngleError/=seg.dt;
 
 				double kappa_val=Calibration.Pathfinder.K_KAPPA*curvature;
@@ -1285,23 +1283,17 @@ public class AutonomousMode extends Coordinator {
 				pTheta_val*=angleError;
 				double dTheta_val=Calibration.Pathfinder.K_DTHETA_0/(Calibration.Pathfinder.K_DTHETA_DECAY*normcurv*normcurv+1);
 				dTheta_val*=dAngleError;
-//				System.out.print("The angle error is " + dAngleError + " ");
-				//System.out.println(desiredHeading);//current angle
-				
+				System.out.print("The angle error is " + dAngleError);
+				System.out.println(" dHeading: " + desiredHeading + " kappa_val: " + kappa_val);
 
 				dTheta_val=clamp(dTheta_val,-pTheta_val,pTheta_val);
 
-				/*
-				double deshed=-Pathfinder.boundHalfRadians(leftFollower.getHeading());
-				System.out.println("Equal "+(deshed-Pathfinder.d2r(desiredHeading)));
-				*/
-
 				if (side==PathFollowSide.LEFT) {
-					tankDrive.leftPower.set(rawPow+kappa_val
-							+/*pTheta_val+*/dTheta_val);
+					tankDrive.leftPower.set(rawPow+/*kappa_val*/
+							+pTheta_val+dTheta_val);
 				} else { // RIGHT side
-					tankDrive.rightPower.set(rawPow-kappa_val
-							-/*pTheta_val-*/dTheta_val);
+					tankDrive.rightPower.set(rawPow-/*kappa_val*/
+							-pTheta_val-dTheta_val);
 				}
 				prevAngleError=angleError;
 
