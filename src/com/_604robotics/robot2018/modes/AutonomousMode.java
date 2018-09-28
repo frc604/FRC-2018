@@ -1284,7 +1284,7 @@ public class AutonomousMode extends Coordinator {
 				double dTheta_val=Calibration.Pathfinder.K_DTHETA_0/(Calibration.Pathfinder.K_DTHETA_DECAY*normcurv*normcurv+1);
 				dTheta_val*=dAngleError;
 				System.out.print("The angle error is " + dAngleError);
-				System.out.println(" dHeading: " + desiredHeading + " kappa_val: " + kappa_val);
+				System.out.println(" dHeading: " + desiredHeading + " kappa_val: " + kappa_val + " curve: " + curvature);
 
 				dTheta_val=clamp(dTheta_val,-pTheta_val,pTheta_val);
 
