@@ -330,7 +330,11 @@ public class TeleopMode extends Coordinator {
                     break;
                 case ARCADE:
                     arcade.movePower.set(leftY);
-                    arcade.rotatePower.set(rightX);
+                    if( driverLeftJoystickButton ) {
+                        arcade.rotatePower.set(rightX * Calibration.SLOW_ROTATION_MODIFIER);
+                    } else {
+                        arcade.rotatePower.set(rightX);
+                    }
                     arcade.activate();
                     break;
                 case TANK:
