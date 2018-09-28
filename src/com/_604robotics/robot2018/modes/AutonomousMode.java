@@ -28,6 +28,7 @@ import edu.wpi.first.wpilibj.PIDOutput;
 import edu.wpi.first.wpilibj.PIDSource;
 import edu.wpi.first.wpilibj.PIDSourceType;
 import jaci.pathfinder.*;
+import jaci.pathfinder.Trajectory.Segment;
 import jaci.pathfinder.followers.EncoderFollower;
 import jaci.pathfinder.modifiers.TankModifier;
 
@@ -1099,7 +1100,8 @@ public class AutonomousMode extends Coordinator {
 			super(DemoStateMacro.class);
 			addState("TESTING REVERSE DRIVE", new PathFollower( new Waypoint[] {
 				new Waypoint( 0, 0, 0 ),
-				new Waypoint( PathFinderUtil.feetToMeters(6), PathFinderUtil.feetToMeters(6), Pathfinder.d2r(-90) )
+				new Waypoint( PathFinderUtil.feetToMeters(6), PathFinderUtil.feetToMeters(-6), Pathfinder.d2r(0) ),
+				new Waypoint( PathFinderUtil.feetToMeters(12), PathFinderUtil.feetToMeters(0), Pathfinder.d2r(0) )
 			}, true ));
 		}
 	}
@@ -1197,8 +1199,14 @@ public class AutonomousMode extends Coordinator {
 			TankModifier modifier = new TankModifier(path).modify( Calibration.Pathfinder.ROBOT_WIDTH, Calibration.PATHFINDER_CONFIG );
 
 			if( reverseDrive ) {
-				leftFollower = new EncoderFollower( Pathfinder.reverseTrajectory( modifier.getLeftTrajectory( ) ) );
-				rightFollower = new EncoderFollower( Pathfinder.reverseTrajectory( modifier.getRightTrajectory() ) );
+			    Trajectory leftThing = Pathfinder.reverseTrajectory( modifier.getLeftTrajectory( ) );
+			    Trajectory rightThing = Pathfinder.reverseTrajectory( modifier.getLeftTrajectory( ) );
+			    
+			    for( Segment s : leftThing.segments ) {
+			        System.out.println( Pathfinder.boundHalfDegrees( Pathfinder.r2d(s.heading )));
+			    }
+				leftFollower = new EncoderFollower( leftThing );
+				rightFollower = new EncoderFollower( rightThing );
 			} else {
 				leftFollower = new EncoderFollower( modifier.getLeftTrajectory() );
 				rightFollower = new EncoderFollower( modifier.getRightTrajectory() );
@@ -1259,17 +1267,17 @@ public class AutonomousMode extends Coordinator {
 				// Both headings are the same
 				double desiredHeading = leftFollower.getHeading();
 				desiredHeading=Pathfinder.r2d(desiredHeading);
+				System.out.println(desiredHeading);
 				desiredHeading=Pathfinder.boundHalfDegrees(desiredHeading);
 				desiredHeading*=-1;
 				// Pathfinder heading is counterclockwise math convention
 				// We are using positive=right clockwise convention
 
 				double angleError = desiredHeading-degreeHeading;
-				System.out.println("Angle error is "+angleError);
 
 				// Convert back into radians for consistency
-				angleError = Pathfinder.d2r(angleError);
-				double dAngleError=angleError-prevAngleError;
+				angleError = Pathfinder.d2r(angleError);// NOTE FIXME WARN ERROR XXX A THING: I put a negative here to test. ASDF
+				double dAngleError=angleError-prevAngleError;// METOO
 				dAngleError/=seg.dt;
 
 				double kappa_val=Calibration.Pathfinder.K_KAPPA*curvature;
@@ -1277,6 +1285,9 @@ public class AutonomousMode extends Coordinator {
 				pTheta_val*=angleError;
 				double dTheta_val=Calibration.Pathfinder.K_DTHETA_0/(Calibration.Pathfinder.K_DTHETA_DECAY*normcurv*normcurv+1);
 				dTheta_val*=dAngleError;
+//				System.out.print("The angle error is " + dAngleError + " ");
+				//System.out.println(desiredHeading);//current angle
+				
 
 				dTheta_val=clamp(dTheta_val,-pTheta_val,pTheta_val);
 
@@ -1287,10 +1298,10 @@ public class AutonomousMode extends Coordinator {
 
 				if (side==PathFollowSide.LEFT) {
 					tankDrive.leftPower.set(rawPow+kappa_val
-							+pTheta_val+dTheta_val);
+							+/*pTheta_val+*/dTheta_val);
 				} else { // RIGHT side
 					tankDrive.rightPower.set(rawPow-kappa_val
-							-pTheta_val-dTheta_val);
+							-/*pTheta_val-*/dTheta_val);
 				}
 				prevAngleError=angleError;
 
