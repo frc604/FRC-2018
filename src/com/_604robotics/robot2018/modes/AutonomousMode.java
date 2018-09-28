@@ -1012,11 +1012,16 @@ public class AutonomousMode extends Coordinator {
 		public NewScaleBackwardMacroLeft() {
 			super(NewScaleBackwardMacroLeft.class);
 			addStates(new IntakeMacro());
+			// TODO Remove the following code when reverse drive works well in pathfinder
+			addState("Pathfind back 39in", new PathStraight( PathFinderUtil.inchesToMeters(39), true ));
+			addState("Rotate 35 right", new ArcadePIDCoordinator(0, AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, 35)));
+			addState("Pathfind back 6in", new PathStraight( PathFinderUtil.inchesToMeters(6), true ));
+			/* FIXME This needs urgent care. Currently replaced with segment based pathing
 			addState("Pathfind back 43.91491226573395in, down 6in, angle -35deg", new PathFollower( new Waypoint[] {
 				new Waypoint( 0, 0, 0 ),
 				new Waypoint( PathFinderUtil.inchesToMeters(16), 0, 0 ),
 				new Waypoint( PathFinderUtil.inchesToMeters(43.91491226573395), PathFinderUtil.inchesToMeters(-6), Pathfinder.d2r(-35) )
-			}, true ));
+			}, true ));*/
 			addState("Set Arm High Persistent", new ArmSetPersistent(Calibration.ARM_HIGH_TARGET));
 			addState("Sleep 1.3 seconds", new SleepCoordinator(1.3));
 			addState("Eject cube", new IntakeMove(-0.4,0.5));
@@ -1030,11 +1035,16 @@ public class AutonomousMode extends Coordinator {
 		public NewScaleBackwardMacroRight() {
 			super(NewScaleBackwardMacroRight.class);
 			addStates(new IntakeMacro());
+			// TODO Remove the following code when reverse drive works well in pathfinder
+			addState("Pathfind back 39in", new PathStraight( PathFinderUtil.inchesToMeters(39), true ));
+			addState("Rotate 35 left", new ArcadePIDCoordinator(0, AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, -35)));
+			addState("Pathfind back 6in", new PathStraight( PathFinderUtil.inchesToMeters(6), true ));
+			/* FIXME This needs urgent care. Currently replaced with segment based pathing
 			addState("Pathfind back 43.91491226573395in, up 6in, angle 35deg", new PathFollower( new Waypoint[] {
 				new Waypoint( 0, 0, 0 ),
 				new Waypoint( PathFinderUtil.inchesToMeters(16), 0, 0 ),
 				new Waypoint( PathFinderUtil.inchesToMeters(43.91491226573395), PathFinderUtil.inchesToMeters(6), Pathfinder.d2r(35) )
-			}, true ));
+			}, true )); */
 			addState("Set Arm High Persistent", new ArmSetPersistent(Calibration.ARM_HIGH_TARGET));
 			addState("Sleep 1.3 seconds", new SleepCoordinator(1.3));
 			addState("Eject cube", new IntakeMove(-0.4,0.5));
