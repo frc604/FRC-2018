@@ -64,7 +64,6 @@ public class Dashboard extends DashboardModule {
         FAILSAFE_BACKWARD_12,
         // Demo auton into which arbitrary stuff can be stashed for testing
         DEMO_NEW_AUTON,
-        PATHFIND,
         // Remnants of various tests
         FORWARD_SWITCH,
         // CENTER_SWITCH_LEFT,
@@ -105,7 +104,7 @@ public class Dashboard extends DashboardModule {
     	MANUAL_SWITCH
     }
 
-    public final Output<AutonMode> autonMode = addDashboardOutput("autonMode", AutonMode.PATHFIND, AutonMode.class);
+    public final Output<AutonMode> autonMode = addDashboardOutput("autonMode", AutonMode.CENTER_SWITCH, AutonMode.class);
     
     public final Output<DriveMode> driveMode = addDashboardOutput("driveMode", DriveMode.DYNAMIC, DriveMode.class);
 

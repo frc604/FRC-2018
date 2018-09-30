@@ -118,7 +118,7 @@ public class Calibration {
     
     // Lower speed going down due to weight
     public static final double ARM_MIN_SPEED = -0.2;
-    public static final double ARM_MAX_SPEED = 0.8;
+    public static final double ARM_MAX_SPEED = 0.8; //.8
     // Bound I term motor output
     public static final double ARM_MIN_SUM = -0.06/ARM_I;
     public static final double ARM_MAX_SUM = 0.08/ARM_I;
@@ -172,6 +172,6 @@ public class Calibration {
     }
     public static final Trajectory.Config PATHFINDER_CONFIG = new Trajectory.Config(
             Trajectory.FitMethod.HERMITE_QUINTIC,
-            Trajectory.Config.SAMPLES_HIGH,
+            Trajectory.Config.SAMPLES_LOW,
             0.025, 1.6, 1.1, 3.5 );
 }

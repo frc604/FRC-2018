@@ -23,7 +23,6 @@ import com._604robotics.robotnik.utils.AutonMovement;
 import com._604robotics.robotnik.utils.PathFinderUtil;
 import com._604robotics.robotnik.utils.annotations.Unreal;
 
-import com.sun.javafx.scene.shape.PathUtils;
 import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.PIDOutput;
 import edu.wpi.first.wpilibj.PIDSource;
@@ -40,7 +39,6 @@ public class AutonomousMode extends Coordinator {
 	private final Coordinator rotateLeftStateMacro;
 	private final Coordinator rotateRightStateMacro;
 	private final Coordinator forwardSwitchMacro;
-	private final Coordinator pathfinderMacro;
 
 	private Coordinator selectedModeMacro;
 
@@ -60,11 +58,6 @@ public class AutonomousMode extends Coordinator {
 		rotateRightStateMacro = new ArcadePIDStateMacro(Calibration.DRIVE_MOVE_STILL_TARGET,
 				Calibration.DRIVE_ROTATE_RIGHT_TARGET);
 		forwardSwitchMacro = new ArcadePIDStateMacro(Calibration.DRIVE_MOVE_FORWARD_SWITCH_INCHES, 0);
-
-		pathfinderMacro = new PathFollower( new Waypoint[] {
-				new Waypoint(0,0,0),
-				new Waypoint(2.25,-1,0),
-		} );
 	}
 
 	@Override
@@ -160,9 +153,6 @@ public class AutonomousMode extends Coordinator {
 			break;
 		case DEMO_NEW_AUTON:
 			selectedModeMacro = new DemoStateMacro();
-			break;
-		case PATHFIND:
-			selectedModeMacro = pathfinderMacro;
 			break;
 		case FORWARD_SWITCH:
 			selectedModeMacro = forwardSwitchMacro;
@@ -527,11 +517,11 @@ public class AutonomousMode extends Coordinator {
 		}
 
 		@Override
-		public void end() {
+		public void end() {	
 			timeElapsed.stopAndReset();
 		}
 	}
-
+	
 	protected final class IntakeMove extends Coordinator {
 		private SmartTimer timeElapsed;
 		private Intake.Run autonIntake;
@@ -593,6 +583,7 @@ public class AutonomousMode extends Coordinator {
 		public FallForwardMacro() {
 			super(FallForwardMacro.class);
 			addStates(new IntakeMacro());
+//			addState("", new ArcadePIDCoordinator(AutonMovement.inchesToClicks(Calibration.DRIVE_PROPERTIES, 144), 0));
 			addState("Pathfind forward 144in", new PathStraight( PathFinderUtil.inchesToMeters( 144 ) ));
 		}
 	}
@@ -610,6 +601,7 @@ public class AutonomousMode extends Coordinator {
 					new Waypoint( PathFinderUtil.feetToMeters( 12 ), PathFinderUtil.feetToMeters( -2 ), Pathfinder.d2r(-90) ),
 
 			} ));
+			addState("Wait for 0.5 seconds", new SleepCoordinator(0.5));
 			addState("Switch decision", new LeftSideSwitchDecisionMacro());
 		}
 	}
@@ -627,6 +619,7 @@ public class AutonomousMode extends Coordinator {
 					new Waypoint( PathFinderUtil.feetToMeters( 12 ), PathFinderUtil.feetToMeters( 2 ), Pathfinder.d2r(90) ),
 
 			} ));
+	        addState("Wait for 0.5 seconds", new SleepCoordinator(0.5));
 			addState("Switch decision", new RightSideSwitchDecisionMacro());
 		}
 	}
@@ -796,8 +789,10 @@ public class AutonomousMode extends Coordinator {
 			addState("Wait for elevator", new SleepCoordinator(0.3));
 			addState("Raise arm", new ArmSetPersistent(Calibration.ARM_MID_TARGET));
 			// Choose based on FMS Game Data
-			addState("Switch choosing", new CenterSwitchChooserMacro());
+			addState("Switch choosing", new CenterSwitchChooserMacro()); // ASDF
+			
 			addState("Pathfind forward 23in", new PathStraight( PathFinderUtil.inchesToMeters( 23 ) ) );
+	        addState("Wait for 0.5 seconds", new SleepCoordinator(0.5));
 			addStates(new SwitchEjectMacro());
 		}
 	}
@@ -1111,7 +1106,7 @@ public class AutonomousMode extends Coordinator {
 			addState("", new PathFollower( new Waypoint[] {
 				new Waypoint( 0, 0, 0 ),
 				new Waypoint( PathFinderUtil.feetToMeters(14), 0, 0 ),
-				new Waypoint( PathFinderUtil.feetToMeters(18), PathFinderUtil.feetToMeters(-6), Pathfinder.d2r(-90) )
+				//new Waypoint( PathFinderUtil.feetToMeters(18), PathFinderUtil.feetToMeters(-6), Pathfinder.d2r(-90) )
 			} ));
 		}
 	}
@@ -1128,9 +1123,9 @@ public class AutonomousMode extends Coordinator {
 	private class SwitchEjectMacro extends StatefulCoordinator {
 		public SwitchEjectMacro() {
 			super(SwitchEjectMacro.class);
-			addState("Eject cube", new IntakeMove(-0.3,1.5));
-			// Move back to avoid arm hitting switch
-			addState("Pathfind back 1ft", new PathStraight( PathFinderUtil.feetToMeters(1), true ));
+			addState("Eject cube", new IntakeMove(-0.4,1.5));
+			// Move back to avoid arm hitting switch (NOT NEEDED)
+//			addState("Pathfind back 1ft", new PathStraight( PathFinderUtil.feetToMeters(1), true ));
 			addState("Move arm", new ArmSetPersistent(Calibration.ARM_LOW_TARGET));
 			addState("Wait", new SleepCoordinator(0.2));
 			addState("Move elevator", new ElevatorSetPersistent(Calibration.ELEVATOR_LOW_TARGET));
@@ -1141,10 +1136,10 @@ public class AutonomousMode extends Coordinator {
 	private class LowerMacro extends StatefulCoordinator {
 		public LowerMacro() {
 			super(LowerMacro.class);
-			addState("Pathfind back 24in", new PathStraight( PathFinderUtil.inchesToMeters( 24 ), true ));
+			addState("Pathfind back 30in", new PathStraight( PathFinderUtil.inchesToMeters( 30 ), true ));
 			addState("Retract arm", new ArmSetPersistent(Calibration.ARM_LOW_TARGET));
 			addState("Retract elevator", new ElevatorSetPersistent(Calibration.ELEVATOR_LOW_TARGET));
-			addState("Unclamp", new ClampExtend());
+			//addState("Unclamp", new ClampExtend()); // Why is this here.
 		}
 	}
 
@@ -1169,7 +1164,6 @@ public class AutonomousMode extends Coordinator {
 			super(SwitchForwardBackupMacro.class);
 			addStates(new IntakeMacro());
 			addState("Pathfind forward 120in", new PathStraight( PathFinderUtil.inchesToMeters( 120 ) ));
-			addState("Sleep 0.5 seconds", new SleepCoordinator(0.5));
 			addStates(new SwitchEjectMacro());
 			//addState("Rotate 180 left", new ArcadePIDCoordinator(0,AutonMovement.degreesToClicks(Calibration.DRIVE_PROPERTIES, -180)));
 			//addState("Sleep 0.5 seconds", new SleepCoordinator(0.5));
