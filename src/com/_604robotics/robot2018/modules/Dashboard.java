@@ -62,6 +62,7 @@ public class Dashboard extends DashboardModule {
         ROTATE_RIGHT_TEST,
         FAILSAFE_FORWARD_12,
         FAILSAFE_BACKWARD_12,
+        CENTER_FAILSAFE,
         // Demo auton into which arbitrary stuff can be stashed for testing
         DEMO_NEW_AUTON,
         // Remnants of various tests

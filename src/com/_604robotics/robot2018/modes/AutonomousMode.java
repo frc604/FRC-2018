@@ -151,6 +151,9 @@ public class AutonomousMode extends Coordinator {
 		case FAILSAFE_BACKWARD_12:
 			selectedModeMacro = new FallBackMacro();
 			break;
+		case CENTER_FAILSAFE:
+		    selectedModeMacro = new CenterBaselineMacro();
+		    break;
 		case DEMO_NEW_AUTON:
 			selectedModeMacro = new DemoStateMacro();
 			break;
@@ -587,6 +590,16 @@ public class AutonomousMode extends Coordinator {
 			addState("Pathfind forward 144in", new PathStraight( PathFinderUtil.inchesToMeters( 144 ) ));
 		}
 	}
+	
+	private class CenterBaselineMacro extends StatefulCoordinator {
+	    public CenterBaselineMacro() {
+	        super(CenterBaselineMacro.class);
+	        addStates(new IntakeMacro());
+	        addState("Switch Choosing", new CenterSwitchChooserMacro());
+	        addState("Pathfind forward 23in", new PathStraight( PathFinderUtil.inchesToMeters(23) ));
+	        logger.info("NOT deploying cube...");
+	    }
+	}
 
 	private class LeftSwitchMacro extends StatefulCoordinator {
 		public LeftSwitchMacro() {
@@ -988,7 +1001,7 @@ public class AutonomousMode extends Coordinator {
 			super(CenterMacroLeft.class);
 			addState("Pathfind forward 82.74in, up 73.74in", new PathFollower( new Waypoint[] {
 					new Waypoint( 0, 0, 0 ),
-					new Waypoint( PathFinderUtil.inchesToMeters(82.7401153), PathFinderUtil.inchesToMeters(-73.7401153), 0 )
+					new Waypoint( PathFinderUtil.inchesToMeters(82.7401153), PathFinderUtil.inchesToMeters(65), 0 )
 			} ));
 		}
 	}
@@ -998,7 +1011,7 @@ public class AutonomousMode extends Coordinator {
 			super(CenterMacroRight.class);
 			addState("Pathfind forward 76.74in, up 53.74in", new PathFollower( new Waypoint[] {
 					new Waypoint( 0, 0, 0 ),
-					new Waypoint( PathFinderUtil.inchesToMeters(76.7401153), PathFinderUtil.inchesToMeters(53.7401153), 0 ),
+					new Waypoint( PathFinderUtil.inchesToMeters(76.7401153), PathFinderUtil.inchesToMeters(-32), 0 ),
 			} ));
 		}
 	}
